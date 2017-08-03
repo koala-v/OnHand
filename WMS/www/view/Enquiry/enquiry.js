@@ -8,6 +8,7 @@ appControllers.controller('EnquiryListCtrl', [
     '$cordovaToast',
     'ionicDatePicker',
     'ApiService',
+    'PopupService',
     function (
         ENV,
         $scope,
@@ -17,13 +18,15 @@ appControllers.controller('EnquiryListCtrl', [
         $cordovaBarcodeScanner,
         $cordovaToast,
         ionicDatePicker,
-        ApiService) {
+        ApiService,
+        PopupService) {
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
         $scope.Detail = {
             ONHANDNO: '',
             location: '',
             Trucker: '',
+            VisibleDetailFlag: 'N',
             ChargeType: {
                 NewItem: 'PP',
             },
@@ -39,9 +42,7 @@ appControllers.controller('EnquiryListCtrl', [
             pushExercise: {
                 checked: false
             },
-            ONHAND_D: {
-                DateCompleted: '',
-            },
+            ONHAND_D: {},
         };
         $scope.ChargeType = [{
             text: 'Payment',
@@ -111,24 +112,32 @@ appControllers.controller('EnquiryListCtrl', [
                 objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Detail.ONHAND_D = result.data.results[0];
-                    $scope.Detail.ONHAND_D.ONHAND_date = checkDate($scope.Detail.ONHAND_D.ONHAND_date);
-                    $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = checkDate($scope.Detail.ONHAND_D.PICKUP_SUP_datetime);
-                    $scope.Rcbp1.selected = {
-                        BusinessPartyCode: $scope.Detail.ONHAND_D.SHP_CODE,
-                        BusinessPartyName: $scope.Detail.ONHAND_D.ShipperName
-                    };
-                    $scope.Rcbp1ForConsinnee.selected = {
-                        BusinessPartyCode: $scope.Detail.ONHAND_D.CNG_CODE,
-                        BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
-                    };
-                    CheckPush();
-                    CheckLocation();
-                    CheckTrucker();
-                    CheckChargeType();
-
+                    if (is.not.undefined($scope.Detail.ONHAND_D)) {
+                        $scope.Detail.VisibleDetailFlag = 'Y';
+                        $scope.Detail.ONHAND_D.ONHAND_date = checkDate($scope.Detail.ONHAND_D.ONHAND_date);
+                        $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = checkDate($scope.Detail.ONHAND_D.PICKUP_SUP_datetime);
+                        $scope.Rcbp1.selected = {
+                            BusinessPartyCode: $scope.Detail.ONHAND_D.SHP_CODE,
+                            BusinessPartyName: $scope.Detail.ONHAND_D.ShipperName
+                        };
+                        $scope.Rcbp1ForConsinnee.selected = {
+                            BusinessPartyCode: $scope.Detail.ONHAND_D.CNG_CODE,
+                            BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
+                        };
+                        CheckPush();
+                        CheckLocation();
+                        CheckTrucker();
+                        CheckChargeType();
+                    } else {
+                        PopupService.Info(null, 'Please Enter The Current OhandNo').then();
+                    }
                 });
+            } else {
+                $scope.Detail.VisibleDetailFlag = 'N';
+                PopupService.Info(null, 'Please Enter OhandNo').then();
             }
         };
+        // $scope.findOnhand();
         $scope.refreshRcbp1 = function (BusinessPartyName) {
             if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
@@ -182,7 +191,13 @@ appControllers.controller('EnquiryListCtrl', [
             };
             ionicDatePicker.openDatePicker(ipObj1);
         };
-
+        $scope.EditOff = function () {
+            $("input").attr("disabled", true);
+        };
+        
+        $scope.EditOn = function () {
+            $("input").attr("disabled", false);
+        };
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
         };

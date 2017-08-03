@@ -38,7 +38,7 @@ appControllers.controller('GrListCtrl', [
                 checked: false
             },
             ONHAND_D: {
-              DateCompleted: '',
+
               UserID: '',
               ONHAND_date:moment(new Date()).format('YYYY-MM-DD'),
               PICKUP_SUP_datetime:moment(new Date()).format('YYYY-MM-DD'),
