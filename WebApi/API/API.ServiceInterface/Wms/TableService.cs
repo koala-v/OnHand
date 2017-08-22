@@ -247,11 +247,22 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     ecr.data.results = imcc_Logic.ConfirmAll_ONHAND_D(request);
                 }
+                    else if (uri.IndexOf("/wms/OH_PID_D/create") > 0)
+                {
+                    ecr.data.results = imcc_Logic.Create_OH_PID_D(request);
+
+                }
                 else if (uri.IndexOf("/wms/ONHAND_D") > 0)
                 {
                     ecr.data.results = imcc_Logic.Get_ONHAND_D_List(request);
-                   
+
                 }
+                else if (uri.IndexOf("/wms/OH_PID_D") > 0)
+                {
+                    ecr.data.results = imcc_Logic.Get_OH_PID_D_List(request);
+
+                }
+               
                 else if (uri.IndexOf("/wms/ONHAND_D") > 0) {
                     ecr.data.results = imcc_Logic.Get_ONHAND_D_List(request);
                 } 

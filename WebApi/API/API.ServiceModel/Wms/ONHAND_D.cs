@@ -14,6 +14,8 @@ namespace WebApi.ServiceModel.Wms
 {
     [Route("/wms/ONHAND_D", "Get")]   //ONHAND_D?CustomerCode ,ONHAND_D?TrxNo
     [Route("/wms/ONHAND_D", "Get")]     //ONHAND_D?TrxNo
+    [Route("/wms/OH_PID_D", "Get")]     //OH_PID_D?OnhandNO
+    [Route("/wms/OH_PID_D/create", "Get")]     //OH_PID_D?OnhandNO
     [Route("/wms/ONHAND_D/confirm", "Post")]
     public class ONHAND_D : IReturn<CommonResponse>
     {
@@ -67,10 +69,103 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
-        public int ConfirmAll_ONHAND_D(ONHAND_D request)
+
+        public List<ON_PID_D> Get_OH_PID_D_List(ONHAND_D request)
+        {
+            List<ON_PID_D> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    if (!string.IsNullOrEmpty(request.strONHAND_NO))
+                    {
+
+                        string strSQL = "";
+                        strSQL = " select  " +
+                        " OH_PID_D.LineItemNo , " +
+                        " OH_PID_D.PACK_TYPE, " +
+                        " OH_PID_D.TRK_BILL_NO, " +
+                        " OH_PID_D.PID_NO, " +
+                        " OH_PID_D.UnNo, " +
+                        " OH_PID_D.LENGTH, " +
+                        " OH_PID_D.WIDTH, " +
+                        " OH_PID_D.HEIGHT, " +
+                        " OH_PID_D.GROSS_LB, " +
+                        " ISNULL(ONHAND_D.SHP_CODE, '') AS SHP_CODE, " +
+                        " ISNULL((select BusinessPartyName from rcbp1 where BusinessPartyCode = ONHAND_D.SHP_CODE ),'')  AS  'ShipperName', " +
+                        " ISNULL(ONHAND_D.CNG_CODE,'') AS CNG_CODE, " +
+                        " ISNULL( (select  BusinessPartyName from rcbp1 where BusinessPartyCode = ONHAND_D.CNG_CODE),'' ) AS  'ConsigneeName', " +
+                        " ONHAND_D.ONHAND_date, " +
+                        " ISNULL(ONHAND_D.CASE_NO,'') AS CASE_NO, " +
+                        " ISNULL( ONHAND_D.PUB_YN,'') AS PUB_YN, " +
+                        " ISNULL(ONHAND_D.HAZARDOUS_YN,'') AS HAZARDOUS_YN , " +
+                        " ISNULL(ONHAND_D.CLSF_YN,'') AS CLSF_YN, " +
+                        " ISNULL(ONHAND_D.ExerciseFlag,'') AS ExerciseFlag , " +
+                        " ISNULL(ONHAND_D.LOC_CODE,'') AS LOC_CODE, " +
+                        " ISNULL(ONHAND_D.TRK_CODE,'') AS TRK_CODE, " +
+                        " ISNULL(ONHAND_D.TRK_CHRG_TYPE,'') AS TRK_CHRG_TYPE, " +
+                        " ONHAND_D.PICKUP_SUP_datetime, " +
+                        " ISNULL(ONHAND_D.NO_INV_WH,0) AS  NO_INV_WH, " +
+                        " ISNULL((select  sum(PIECES) from OH_PID_D  ), 0) AS TotalPCS,   " +
+                        " ISNULL((select  sum(GROSS_LB) from OH_PID_D  ),0 ) AS TotalWeight    " +
+                        " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='" + request.strONHAND_NO + "'";
+                        //   " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='ONHAND06'";
+                        Result = db.Select<ON_PID_D>(strSQL);
+
+                    }
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
+
+        public int Create_OH_PID_D(ONHAND_D request)
+        {
+
+            int Result = -1;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+
+                    string onhandno = request.strONHAND_NO;
+                    if (onhandno != "") {
+                        int intMaxLineItemNo = 1;
+                        List<ON_PID_D> list1 = db.Select<ON_PID_D>("Select Max(LineItemNo) LineItemNo from OH_PID_D Where onhand_no = " + Modfunction.SQLSafeValue(onhandno));
+                        if (list1 != null)
+                        {
+                            if (list1[0].LineItemNo > 0)
+                                intMaxLineItemNo = list1[0].LineItemNo + 1;
+                        }
+                        string strSql = "";
+                        strSql = "insert into OH_PID_D( " +
+                       "   onhand_no," +
+                       "   LineItemNo, " +
+                       "   INV_NO " +
+                       "  )" +
+                           "values( " +
+                           Modfunction.SQLSafeValue(onhandno) + " , " +
+                           intMaxLineItemNo +"," +
+                          "''"+
+                           ") ";
+                        db.ExecuteSql(strSql);
+                    }
+                }                                     
+                       Result =1;
+                               
+            }
+            catch { throw; }
+            return Result;
+        }
+
+        public string ConfirmAll_ONHAND_D(ONHAND_D request)
         {
           
-            int Result = -1;
+            string  Result ="";
+            String KeyOnhandNo = "";
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
@@ -85,6 +180,7 @@ namespace WebApi.ServiceModel.Wms
                             {
                               
                                 string strSql = "";
+                                KeyOnhandNo = generateOnhandNo();
                                 string SHP_CODE = ja[i]["SHP_CODE"].ToString();
                                 string CNG_CODE = ja[i]["CNG_CODE"].ToString();
                                 string ONHAND_date = ja[i]["ONHAND_date"].ToString();
@@ -130,7 +226,7 @@ namespace WebApi.ServiceModel.Wms
                                "   StatusCode " +
                                "  )" +
                                    "values( " +
-                                   Modfunction.SQLSafeValue(generateOnhandNo()) +" , " +
+                                   Modfunction.SQLSafeValue(KeyOnhandNo) +" , " +
                                    Modfunction.SQLSafeValue(SHP_CODE)+","+
                                    Modfunction.SQLSafeValue(CNG_CODE) + "," +
                                    Modfunction.SQLSafeValue(ONHAND_date) + "," +
@@ -153,7 +249,7 @@ namespace WebApi.ServiceModel.Wms
                                 db.ExecuteSql(strSql);
                             }
                             }
-                            Result = 1;
+                            Result = KeyOnhandNo;
                         }
                     }
                 

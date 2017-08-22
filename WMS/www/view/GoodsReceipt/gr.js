@@ -4,6 +4,7 @@ appControllers.controller('GrListCtrl', [
     '$stateParams',
     '$state',
     '$cordovaKeyboard',
+    '$ionicModal',
     'ionicDatePicker',
     'ApiService',
     'PopupService',
@@ -13,12 +14,14 @@ appControllers.controller('GrListCtrl', [
         $stateParams,
         $state,
         $cordovaKeyboard,
+        $ionicModal,
         ionicDatePicker,
         ApiService,
         PopupService) {
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
         $scope.Detail = {
+            Title: 'New',
             ONHANDNO: '',
             location: '',
             Trucker: '',
@@ -39,10 +42,13 @@ appControllers.controller('GrListCtrl', [
             },
             ONHAND_D: {
 
-              UserID: '',
-              ONHAND_date:moment(new Date()).format('YYYY-MM-DD'),
-              PICKUP_SUP_datetime:moment(new Date()).format('YYYY-MM-DD'),
+                UserID: '',
+                ONHAND_date: moment(new Date()).format('YYYY-MM-DD'),
+                PICKUP_SUP_datetime: moment(new Date()).format('YYYY-MM-DD'),
             },
+            OH_PID_D_S: {
+
+            }
         };
 
         $scope.ChargeType = [{
@@ -55,6 +61,17 @@ appControllers.controller('GrListCtrl', [
             text: 'To Follow',
             value: 'TF'
         }];
+
+        $ionicModal.fromTemplateUrl('scan.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function (modal) {
+            $scope.modal = modal;
+        });
+        $scope.$on('$destroy', function () {
+            $scope.modal.remove();
+        });
+
         var CheckPush = function () {
             if ($scope.Detail.ONHAND_D.PUB_YN === 'Y') {
                 $scope.Detail.pushPublication.checked = true;
@@ -78,26 +95,26 @@ appControllers.controller('GrListCtrl', [
             }
         };
         $scope.pushChange = function () {
-                if ($scope.Detail.pushPublication.checked === true) {
-                    $scope.Detail.ONHAND_D.PUB_YN = 'Y';
-                } else {
-                    $scope.Detail.ONHAND_D.PUB_YN = 'N';
-                }
-                if ($scope.Detail.pushHazardous.checked === true) {
-                    $scope.Detail.ONHAND_D.HAZARDOUS_YN = 'Y';
-                } else {
-                    $scope.Detail.ONHAND_D.HAZARDOUS_YN = 'N';
-                }
-                if ($scope.Detail.pushClassified.checked === true) {
-                    $scope.Detail.ONHAND_D.CLSF_YN = 'Y';
-                } else {
-                    $scope.Detail.ONHAND_D.CLSF_YN = 'N';
-                }
-                if ($scope.Detail.pushExercise.checked === true) {
-                    $scope.Detail.ONHAND_D.ExerciseFlag = 'Y';
-                } else {
-                    $scope.Detail.ONHAND_D.ExerciseFlag = 'N';
-                }
+            if ($scope.Detail.pushPublication.checked === true) {
+                $scope.Detail.ONHAND_D.PUB_YN = 'Y';
+            } else {
+                $scope.Detail.ONHAND_D.PUB_YN = 'N';
+            }
+            if ($scope.Detail.pushHazardous.checked === true) {
+                $scope.Detail.ONHAND_D.HAZARDOUS_YN = 'Y';
+            } else {
+                $scope.Detail.ONHAND_D.HAZARDOUS_YN = 'N';
+            }
+            if ($scope.Detail.pushClassified.checked === true) {
+                $scope.Detail.ONHAND_D.CLSF_YN = 'Y';
+            } else {
+                $scope.Detail.ONHAND_D.CLSF_YN = 'N';
+            }
+            if ($scope.Detail.pushExercise.checked === true) {
+                $scope.Detail.ONHAND_D.ExerciseFlag = 'Y';
+            } else {
+                $scope.Detail.ONHAND_D.ExerciseFlag = 'N';
+            }
         };
         var CheckLocation = function () {
             if ($scope.Detail.ONHAND_D.LOC_CODE === 'L1') {
@@ -147,27 +164,27 @@ appControllers.controller('GrListCtrl', [
             }
         };
         $scope.Create = function () {
-          if (is.undefined($scope.Rcbp1.selected)){
-            $scope.Detail.ONHAND_D.SHP_CODE ="";
-          }else{
-                $scope.Detail.ONHAND_D.SHP_CODE =$scope.Rcbp1.selected.BusinessPartyCode;
-          }
-          if (is.undefined($scope.Rcbp1ForConsinnee.selected)){
-            $scope.Detail.ONHAND_D.CNG_CODE ="";
-          }else{
-                $scope.Detail.ONHAND_D.CNG_CODE =$scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
-          }
-          if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)){
-            $scope.Detail.ONHAND_D.CASE_NO ="";
-          }
-          if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)){
-            $scope.Detail.ONHAND_D.NO_INV_WH ="";
-          }
-          $scope.Detail.ONHAND_D.UserID= sessionStorage.getItem( 'UserId' ).toString();
-        $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
+            if (is.undefined($scope.Rcbp1.selected)) {
+                $scope.Detail.ONHAND_D.SHP_CODE = "";
+            } else {
+                $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
+            }
+            if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
+                $scope.Detail.ONHAND_D.CNG_CODE = "";
+            } else {
+                $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
+            }
+            if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
+                $scope.Detail.ONHAND_D.CASE_NO = "";
+            }
+            if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
+                $scope.Detail.ONHAND_D.NO_INV_WH = "";
+            }
+            $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
+            $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
             $scope.LocationChange();
             $scope.TruckerChange();
-              $scope.pushChange();
+            $scope.pushChange();
             var arrONHAND_D = [];
             arrONHAND_D.push($scope.Detail.ONHAND_D);
             var jsonData = {
@@ -175,9 +192,11 @@ appControllers.controller('GrListCtrl', [
             };
             var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/confirm');
             ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                PopupService.Info(null, 'Confirm Success', '').then(function (res) {
-
-                });
+                $scope.Detail.ONHANDNO = result.data.results;
+                $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
+                if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
+                    PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+                }
             });
         };
         $scope.refreshRcbp1 = function (BusinessPartyName) {
@@ -221,6 +240,47 @@ appControllers.controller('GrListCtrl', [
             ionicDatePicker.openDatePicker(ipObj1);
         };
 
+        $scope.findOH_PID_D = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D');
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    var results = result.data.results;
+                    var dataResults = new Array();
+                    if (is.not.empty(results)) {
+                        for (var i = 0; i < results.length; i++) {
+                            var objOH_PID_D = results[i];
+                            dataResults = dataResults.concat(objOH_PID_D);
+                            $scope.Detail.OH_PID_D_S = dataResults;
+                        }
+                    } else {
+                       $scope.Detail.OH_PID_D_S ="";
+                    }
+                });
+            } else {
+                PopupService.Info(null, 'Please First Create Onhand').then();
+            }
+        };
+
+        $scope.addLine = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    var results = result.data.results;
+                    if (is.not.empty(results)) {
+                        $scope.findOH_PID_D();
+                        // for (var i = 0; i < results.length; i++) {
+                        //     var objOH_PID_D = results[i];
+                        //     dataResults = dataResults.concat(objOH_PID_D);
+                        //     $scope.Detail.OH_PID_D_S = dataResults;
+                        // }
+                    } else {}
+                });
+            } else {
+                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+            }
+        };
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
         };
@@ -228,6 +288,75 @@ appControllers.controller('GrListCtrl', [
             $state.go('index.main', {}, {
                 reload: true
             });
+        };
+
+        $scope.openModal = function () {
+            $scope.modal.show();
+            $scope.findOH_PID_D();
+            // $ionicLoading.show();
+
+        };
+        $scope.closeModal = function () {
+            $scope.modal.hide();
+        };
+        $scope.returnList = function () {
+            if ($ionicHistory.backView()) {
+                $ionicHistory.goBack();
+            } else {
+                $state.go('grList', {}, {
+                    reload: true
+                });
+            }
+        };
+    }
+]);
+
+appControllers.controller('GrDetailCtrl', [
+    'ENV',
+    '$scope',
+    '$stateParams',
+    '$state',
+    '$http',
+    '$timeout',
+    '$ionicHistory',
+    '$ionicLoading',
+    '$ionicPopup',
+    '$ionicModal',
+    '$cordovaKeyboard',
+    '$cordovaToast',
+    '$cordovaBarcodeScanner',
+    'SqlService',
+    'ApiService',
+    'PopupService',
+    function (
+        ENV,
+        $scope,
+        $stateParams,
+        $state,
+        $http,
+        $timeout,
+        $ionicHistory,
+        $ionicLoading,
+        $ionicPopup,
+        $ionicModal,
+        $cordovaKeyboard,
+        $cordovaToast,
+        $cordovaBarcodeScanner,
+        SqlService,
+        ApiService,
+        PopupService) {
+        var popup = null;
+        $scope.Detail = {
+
+        };
+        $scope.returnList = function () {
+            if ($ionicHistory.backView()) {
+                $ionicHistory.goBack();
+            } else {
+                $state.go('grList', {}, {
+                    reload: true
+                });
+            }
         };
     }
 ]);
