@@ -254,7 +254,7 @@ appControllers.controller('GrListCtrl', [
                             $scope.Detail.OH_PID_D_S = dataResults;
                         }
                     } else {
-                       $scope.Detail.OH_PID_D_S ="";
+                        $scope.Detail.OH_PID_D_S = "";
                     }
                 });
             } else {
@@ -262,6 +262,20 @@ appControllers.controller('GrListCtrl', [
             }
         };
 
+        $scope.DeleteLine = function (LineItemNo) {
+            if (LineItemNo > 0) {
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/DeleteLineItem');
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                objUri.addSearch('LineItemNo', LineItemNo);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    var results = result.data.results;
+                    if (is.not.empty(results)) {
+                        $scope.findOH_PID_D();
+                    } else {}
+                });
+
+            }
+        };
         $scope.addLine = function () {
             if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
                 var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
@@ -269,6 +283,7 @@ appControllers.controller('GrListCtrl', [
                 ApiService.Get(objUri, false).then(function success(result) {
                     var results = result.data.results;
                     if (is.not.empty(results)) {
+                        $scope.updateLineItem();
                         $scope.findOH_PID_D();
                         // for (var i = 0; i < results.length; i++) {
                         //     var objOH_PID_D = results[i];
@@ -281,6 +296,32 @@ appControllers.controller('GrListCtrl', [
                 PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
             }
         };
+
+        $scope.UpdateTotal = function () {
+            if ($scope.Detail.OH_PID_D_S.length > 0) {
+                var TotalWeight = 0;
+                for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
+                    TotalWeight = TotalWeight + $scope.Detail.OH_PID_D_S[i].GROSS_LB;
+                }
+                $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
+            }
+        };
+        $scope.updateLineItem = function () {
+            var arrOH_PID_D = [];
+            var length = 0;
+            $scope.Detail.OH_PID_D_S.ONHAND_NO = $scope.Detail.ONHANDNO;
+            for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
+                length = i;
+                arrOH_PID_D.push($scope.Detail.OH_PID_D_S[i]);
+                var jsonData = {
+                    "UpdateAllString": JSON.stringify(arrOH_PID_D)
+                };
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/updateLineItem');
+                ApiService.Post(objUri, jsonData, true).then(function success(result) {
+
+                });
+            }
+        };
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
         };
@@ -291,13 +332,20 @@ appControllers.controller('GrListCtrl', [
         };
 
         $scope.openModal = function () {
-            $scope.modal.show();
-            $scope.findOH_PID_D();
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                $scope.modal.show();
+                $scope.findOH_PID_D();
+            } else {
+                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+            }
+
             // $ionicLoading.show();
 
         };
         $scope.closeModal = function () {
             $scope.modal.hide();
+            $scope.updateLineItem();
+            $scope.UpdateTotal();
         };
         $scope.returnList = function () {
             if ($ionicHistory.backView()) {

@@ -184,6 +184,7 @@
                 <div class="list card">
                     <ion-list can-swipe="true" tabindex="-1" id="div-list">
                         <ion-item nav-clear menu-close class="item item-icon-right" ng-repeat="OH_PID_D in Detail.OH_PID_D_S">
+
                             <div class="item item-body" style="padding-top: 6px;padding-bottom: 6px;">
                                 <div class="list">
                                     <div class="row">
@@ -228,7 +229,7 @@
                                         <div class="col" style="padding:0px;">
                                             <label class="item item-input">
                                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Weight</span>
-                                                <input type="text" id="" ng-model="OH_PID_D.GROSS_LB" placeholder="Weight" style="padding-right: 14px;">
+                                                <input type="number" id="" ng-model="OH_PID_D.GROSS_LB" placeholder="Weight" style="padding-right: 14px;">
                                             </label>
                                         </div>
                                     </div>
@@ -237,28 +238,34 @@
                                         <div class="col" style="padding:0px;">
                                             <label class="item item-input">
                                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">L</span>
-                                                <input type="text" id="" ng-model="OH_PID_D.LENGTH" placeholder="Length" style="padding-right: 14px;">
+                                                <input type="number" id="" ng-model="OH_PID_D.LENGTH" placeholder="Length" style="padding-right: 14px;">
                                             </label>
                                         </div>
 
                                         <div class="col" style="padding:0px;">
                                             <label class="item item-input">
                                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">W</span>
-                                                <input type="text" id="" ng-model="OH_PID_D.WIDTH" placeholder="Width" style="padding-right: 14px;">
+                                                <input type="number" id="" ng-model="OH_PID_D.WIDTH" placeholder="Width" style="padding-right: 14px;">
                                             </label>
                                         </div>
 
                                         <div class="col" style="padding:0px;">
                                             <label class="item item-input">
                                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">H</span>
-                                                <input type="text" id="" ng-model="OH_PID_D.HEIGHT" placeholder="Height" style="padding-right: 14px;">
+                                                <input type="number" id="" ng-model="OH_PID_D.HEIGHT" placeholder="Height" style="padding-right: 14px;">
                                             </label>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
 
+                            <i class="icon ion-android-arrow-dropleft"></i>
+                                              <ion-option-button class="button-assertive" ng-click="DeleteLine(OH_PID_D.LineItemNo)">
+                                                  <i class="icon ion-trash-a"></i>
+                                              </ion-option-button>
                         </ion-item>
+
                     </ion-list>
 
                     <button class="button button-block button-positive" ng-click="addLine()">add Packages</button>

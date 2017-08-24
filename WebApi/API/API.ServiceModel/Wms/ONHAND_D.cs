@@ -16,7 +16,9 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/ONHAND_D", "Get")]     //ONHAND_D?TrxNo
     [Route("/wms/OH_PID_D", "Get")]     //OH_PID_D?OnhandNO
     [Route("/wms/OH_PID_D/create", "Get")]     //OH_PID_D?OnhandNO
+    [Route("/wms/OH_PID_D/DeleteLineItem", "Get")]     //OH_PID_D?OnhandNO,
     [Route("/wms/ONHAND_D/confirm", "Post")]
+    [Route("/wms/OH_PID_D/updateLineItem", "Post")]
     public class ONHAND_D : IReturn<CommonResponse>
     {
         public string strONHAND_NO { get; set; }
@@ -24,6 +26,7 @@ namespace WebApi.ServiceModel.Wms
         public string TrxNo { get; set; }
         public string UpdateAllString { get; set; }
         public string NextNo { get; set; }
+        public string LineItemNo { get; set; }
     }
     public class imcc_loigc
     {
@@ -83,11 +86,12 @@ namespace WebApi.ServiceModel.Wms
 
                         string strSQL = "";
                         strSQL = " select  " +
+                         "OH_PID_D.ONHAND_NO  , " +
                         " OH_PID_D.LineItemNo , " +
-                        " OH_PID_D.PACK_TYPE, " +
-                        " OH_PID_D.TRK_BILL_NO, " +
-                        " OH_PID_D.PID_NO, " +
-                        " OH_PID_D.UnNo, " +
+                        " ISNULL(OH_PID_D.PACK_TYPE,'') AS PACK_TYPE, " +
+                        " ISNULL(OH_PID_D.TRK_BILL_NO,'') AS TRK_BILL_NO , " +
+                        " ISNULL(OH_PID_D.PID_NO,'') AS PID_NO , " +
+                        " ISNULL(OH_PID_D.UnNo,'') AS UnNo , " +
                         " OH_PID_D.LENGTH, " +
                         " OH_PID_D.WIDTH, " +
                         " OH_PID_D.HEIGHT, " +
@@ -122,6 +126,152 @@ namespace WebApi.ServiceModel.Wms
         }
 
 
+        public int UpdateLineItem(ONHAND_D request) {
+
+            int  Result =-1;
+         
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    if (request.UpdateAllString != null && request.UpdateAllString != "")
+                    {
+                        JArray ja = (JArray)JsonConvert.DeserializeObject(request.UpdateAllString);
+                        if (ja != null)
+                        {
+
+                            for (int i = 0; i < ja.Count(); i++)
+                            {
+
+                                string strSql = "";
+                                int LENGTH = 0;
+                                int WIDTH = 0;
+                                int HEIGHT = 0;
+                                int GROSS_LB = 0;
+                                int lineItemNo = int.Parse(ja[i]["LineItemNo"].ToString());
+                                if (lineItemNo > 0)
+                                {
+                                    string OnhandNo= ja[i]["ONHAND_NO"].ToString();
+                                    string PACK_TYPE = ja[i]["PACK_TYPE"].ToString();
+                                    string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();
+                                    string PID_NO = ja[i]["PID_NO"].ToString();
+                                    string UnNo = ja[i]["UnNo"].ToString();
+                                    LENGTH = Modfunction.ReturnZero(ja[i]["LENGTH"].ToString());
+                                    WIDTH = Modfunction.ReturnZero(ja[i]["WIDTH"].ToString());
+                                    HEIGHT = Modfunction.ReturnZero(ja[i]["HEIGHT"].ToString());
+                                    GROSS_LB = Modfunction.ReturnZero(ja[i]["GROSS_LB"].ToString());
+
+                                    //if (ja[i]["LENGTH"].ToString() == "")
+                                    //{
+                                    //    LENGTH = 0;
+                                    //}
+                                    //else
+                                    //{
+                                    //    LENGTH = int.Parse(Modfunction.CheckNull(ja[i]["LENGTH"].ToString()));
+                                    //}
+                                    //if (ja[i]["WIDTH"].ToString() == "")
+                                    //{
+                                    //    WIDTH = 0;
+                                    //}
+                                    //else
+                                    //{
+                                    //    WIDTH = int.Parse(ja[i]["WIDTH"].ToString());
+                                    //}
+                                    //if (ja[i]["HEIGHT"].ToString() == "")
+                                    //{
+                                    //    HEIGHT = 0;
+                                    //}
+                                    //else
+                                    //{
+                                    //    HEIGHT = int.Parse(ja[i]["HEIGHT"].ToString());
+                                    //}
+                                    //if (ja[i]["GROSS_LB"].ToString() == "")
+                                    //{
+                                    //    GROSS_LB = 0;
+                                    //}
+                                    //else
+                                    //{
+                                    //    GROSS_LB = int.Parse(ja[i]["GROSS_LB"].ToString());
+                                    //}                                                           
+                                    strSql = " UPDATE OH_PID_D Set " +
+                                              "PACK_TYPE='"+ PACK_TYPE + "'," +
+                                              "TRK_BILL_NO='" + TRK_BILL_NO + "'," +
+                                              "PID_NO='" + PID_NO + "'," +
+                                              "UnNo='" + UnNo + "'," +
+                                              "LENGTH=" + LENGTH + "," +
+                                              "WIDTH=" + WIDTH + "," +
+                                              "HEIGHT=" + HEIGHT + "," +
+                                              "GROSS_LB=" + GROSS_LB + ""+
+                                              " WHERE ONHAND_NO ='" + OnhandNo + "' And LineItemNo="+ lineItemNo + "  " +
+                                              "";                               
+                                    db.ExecuteSql(strSql);
+                                    aggregateMaster(OnhandNo);
+
+                                }
+
+                            }
+                        }
+                        Result = 1;
+                    }
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
+        public int DeleteLineItem(ONHAND_D request)
+        {
+
+            int Result = -1;
+
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    if (request.strONHAND_NO != null && request.strONHAND_NO != "" && request.LineItemNo != null && request.LineItemNo != "") {
+                        string strSql = "";
+                        strSql = "Delete from OH_PID_D where " +
+                          "ONHAND_NO ='"+request .strONHAND_NO +"'"+
+                          "And LineItemNo="+request.LineItemNo + "" ;
+                        db.ExecuteSql(strSql);
+                        aggregateMaster(request.strONHAND_NO);
+                    }
+                 
+                }
+                Result = 1;
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
+        public int aggregateMaster(string onhandNo) {
+            int Result = -1;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    if (onhandNo != "") {
+                  string strSql = "";
+                  strSql=  " UPDATE Onhand_D Set " +
+                 " TOT_PCS = (SELECT SUM(ISNULL(PIECES, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                 " TOT_GROSS_LB = (SELECT SUM(ISNULL(VOL_LB, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                 " TOT_VOL_FT = (SELECT SUM(ISNULL(GROSS_LB, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                 " TOT_VOL_LB = (SELECT SUM(CONVERT(INT, PIECES * LENGTH * WIDTH * HEIGHT / 1728) + ROUND((((PIECES * LENGTH * WIDTH * HEIGHT) % 1728) / 1728 * 100) / 100, 1)) FROM OH_PID_D WHERE " +
+                 " ONHAND_NO = '" + onhandNo + "') " +
+                 " WHERE ONHAND_NO ='"+ onhandNo + "'  " +
+                 "";
+                        db.ExecuteSql(strSql);
+                    }
+              
+                }
+                Result = 1;
+
+            }
+            catch { throw; }
+            return Result;
+        }
         public int Create_OH_PID_D(ONHAND_D request)
         {
 
@@ -184,7 +334,7 @@ namespace WebApi.ServiceModel.Wms
                                 string SHP_CODE = ja[i]["SHP_CODE"].ToString();
                                 string CNG_CODE = ja[i]["CNG_CODE"].ToString();
                                 string ONHAND_date = ja[i]["ONHAND_date"].ToString();
-                                string CASE_NO = CASE_NO =ja[i]["CASE_NO"].ToString();                                                           
+                                string CASE_NO  =ja[i]["CASE_NO"].ToString();                                                           
                                 string PUB_YN = ja[i]["PUB_YN"].ToString();
                                 string HAZARDOUS_YN = ja[i]["HAZARDOUS_YN"].ToString();
                                 string CLSF_YN = ja[i]["CLSF_YN"].ToString();

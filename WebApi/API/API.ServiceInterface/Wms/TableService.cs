@@ -252,6 +252,17 @@ namespace WebApi.ServiceInterface.Wms
                     ecr.data.results = imcc_Logic.Create_OH_PID_D(request);
 
                 }
+
+                 else if (uri.IndexOf("/wms/OH_PID_D/updateLineItem") > 0)
+                 {
+                    ecr.data.results = imcc_Logic.UpdateLineItem(request);
+
+                }
+                else if (uri.IndexOf("/wms/OH_PID_D/DeleteLineItem") > 0)
+                {
+                    ecr.data.results = imcc_Logic.DeleteLineItem(request);
+
+                }                
                 else if (uri.IndexOf("/wms/ONHAND_D") > 0)
                 {
                     ecr.data.results = imcc_Logic.Get_ONHAND_D_List(request);
