@@ -48,7 +48,32 @@ appControllers.controller('GrListCtrl', [
             },
             OH_PID_D_S: {
 
-            }
+            },
+            OH_PID_D: {
+                RowNum: 0,
+                LineItemNo: 0,
+                TRK_BILL_NO: '',
+                PACK_TYPE: '',
+                PID_NO: '',
+                UnNo: '',
+                GROSS_LB: 0,
+                LENGTH: 0,
+                WIDTH: 0,
+                HEIGHT: 0
+            },
+            Add_OH_PID_D: {
+                RowNum: 0,
+                LineItemNo: 0,
+                TRK_BILL_NO: '',
+                PACK_TYPE: '',
+                PID_NO: '',
+                UnNo: '',
+                GROSS_LB: 0,
+                LENGTH: 0,
+                WIDTH: 0,
+                HEIGHT: 0
+            },
+            blnNext: true
         };
 
         $scope.ChargeType = [{
@@ -70,6 +95,15 @@ appControllers.controller('GrListCtrl', [
         });
         $scope.$on('$destroy', function () {
             $scope.modal.remove();
+        });
+        $ionicModal.fromTemplateUrl('PID.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function (modal) {
+            $scope.modalPID = modal;
+        });
+        $scope.$on('$destroy', function () {
+            $scope.modalPID.remove();
         });
 
         var CheckPush = function () {
@@ -245,23 +279,74 @@ appControllers.controller('GrListCtrl', [
                 var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D');
                 objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
                 ApiService.Get(objUri, false).then(function success(result) {
-                    var results = result.data.results;
-                    var dataResults = new Array();
-                    if (is.not.empty(results)) {
-                        for (var i = 0; i < results.length; i++) {
-                            var objOH_PID_D = results[i];
-                            dataResults = dataResults.concat(objOH_PID_D);
-                            $scope.Detail.OH_PID_D_S = dataResults;
-                        }
+                    $scope.Detail.OH_PID_D_S = result.data.results;
+                    if (is.array($scope.Detail.OH_PID_D_S) && is.not.empty($scope.Detail.OH_PID_D_S)) {
+                        showPid(0);
                     } else {
-                        $scope.Detail.OH_PID_D_S = "";
+                        // PopupService.Info(null, 'This OH_PID_D has no Record Please Add').then(function (res) {
+                        //
+                        // });
                     }
+                    // var results = result.data.results;
+                    // var dataResults = new Array();
+                    // if (is.not.empty(results)) {
+                    //     for (var i = 0; i < results.length; i++) {
+                    //         var objOH_PID_D = results[i];
+                    //         dataResults = dataResults.concat(objOH_PID_D);
+                    //         $scope.Detail.OH_PID_D_S = dataResults;
+                    //         $scope.Detail.OH_PID_D_S.SNO = i;
+                    //
+                    //     }
+                    // } else {
+                    //     $scope.Detail.OH_PID_D_S = "";
+                    // }
                 });
             } else {
                 PopupService.Info(null, 'Please First Create Onhand').then();
             }
         };
 
+        var showPid = function (row) {
+            if (row !== null && $scope.Detail.OH_PID_D_S.length >= row) {
+                $scope.Detail.OH_PID_D = {
+                    RowNum: $scope.Detail.OH_PID_D_S[row].RowNum,
+                    LineItemNo: $scope.Detail.OH_PID_D_S[row].LineItemNo,
+                    TRK_BILL_NO: $scope.Detail.OH_PID_D_S[row].TRK_BILL_NO,
+                    PACK_TYPE: $scope.Detail.OH_PID_D_S[row].PACK_TYPE,
+                    PID_NO: $scope.Detail.OH_PID_D_S[row].PID_NO,
+                    UnNo: $scope.Detail.OH_PID_D_S[row].UnNo,
+                    GROSS_LB: $scope.Detail.OH_PID_D_S[row].GROSS_LB,
+                    LENGTH: $scope.Detail.OH_PID_D_S[row].LENGTH,
+                    WIDTH: $scope.Detail.OH_PID_D_S[row].WIDTH,
+                    HEIGHT: $scope.Detail.OH_PID_D_S[row].HEIGHT,
+                };
+
+            }
+            if (is.equal(row, $scope.Detail.OH_PID_D_S.length - 1)) {
+                $scope.Detail.blnNext = false;
+            } else {
+                $scope.Detail.blnNext = true;
+            }
+        };
+
+        $scope.showPrev = function () {
+            var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
+            if ($scope.Detail.OH_PID_D_S.length > 0 && intRow > 0 && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
+                // $scope.clearInput();
+                showPid(intRow - 1);
+            } else {
+                PopupService.Info(null, 'Already the first one');
+            }
+        };
+        $scope.showNext = function () {
+            var intRow = $scope.Detail.OH_PID_D.RowNum + 1;
+            if ($scope.Detail.OH_PID_D_S.length > 0 && $scope.Detail.OH_PID_D_S.length >= intRow && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
+                // $scope.clearInput();
+                showPid(intRow - 1);
+            } else {
+                PopupService.Info(null, 'Already the last one');
+            }
+        };
         $scope.DeleteLine = function (LineItemNo) {
             if (LineItemNo > 0) {
                 var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/DeleteLineItem');
@@ -270,6 +355,7 @@ appControllers.controller('GrListCtrl', [
                 ApiService.Get(objUri, false).then(function success(result) {
                     var results = result.data.results;
                     if (is.not.empty(results)) {
+                        $scope.Detail.OH_PID_D = "";
                         $scope.findOH_PID_D();
                     } else {}
                 });
@@ -277,24 +363,27 @@ appControllers.controller('GrListCtrl', [
             }
         };
         $scope.addLine = function () {
-            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
-                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
-                ApiService.Get(objUri, false).then(function success(result) {
-                    var results = result.data.results;
-                    if (is.not.empty(results)) {
-                        $scope.updateLineItem();
-                        $scope.findOH_PID_D();
-                        // for (var i = 0; i < results.length; i++) {
-                        //     var objOH_PID_D = results[i];
-                        //     dataResults = dataResults.concat(objOH_PID_D);
-                        //     $scope.Detail.OH_PID_D_S = dataResults;
-                        // }
-                    } else {}
-                });
-            } else {
-                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
-            }
+            PopupService.Confirm(null, 'Confirm', 'Are you sure to Add PID?').then(function (res) {
+                if (res) {
+                    if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                        var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
+                        objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                        ApiService.Get(objUri, false).then(function success(result) {
+                            var results = result.data.results;
+                            if (is.not.empty(results)) {
+                                $scope.updateLineItem('add', results);
+                                $scope.findOH_PID_D();
+                                $scope.closeModalAddPID();
+                            } else {}
+                        });
+                    } else {
+                        PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+                    }
+                } else {
+
+                }
+            });
+
         };
 
         $scope.UpdateTotal = function () {
@@ -306,13 +395,12 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
             }
         };
-        $scope.updateLineItem = function () {
-            var arrOH_PID_D = [];
-            var length = 0;
-            $scope.Detail.OH_PID_D_S.ONHAND_NO = $scope.Detail.ONHANDNO;
-            for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
-                length = i;
-                arrOH_PID_D.push($scope.Detail.OH_PID_D_S[i]);
+        $scope.updateLineItem = function (Type, Value) {
+            if (Type === 'add') {
+                var arrOH_PID_D = [];
+                $scope.Detail.Add_OH_PID_D.LineItemNo = Value;
+                $scope.Detail.Add_OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                arrOH_PID_D.push($scope.Detail.Add_OH_PID_D);
                 var jsonData = {
                     "UpdateAllString": JSON.stringify(arrOH_PID_D)
                 };
@@ -320,6 +408,21 @@ appControllers.controller('GrListCtrl', [
                 ApiService.Post(objUri, jsonData, true).then(function success(result) {
 
                 });
+            } else {
+                var arrOH_PID_D = [];
+                var length = 0;
+                $scope.Detail.OH_PID_D_S.ONHAND_NO = $scope.Detail.ONHANDNO;
+                for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
+                    length = i;
+                    arrOH_PID_D.push($scope.Detail.OH_PID_D_S[i]);
+                    var jsonData = {
+                        "UpdateAllString": JSON.stringify(arrOH_PID_D)
+                    };
+                    var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/updateLineItem');
+                    ApiService.Post(objUri, jsonData, true).then(function success(result) {
+
+                    });
+                }
             }
         };
         $scope.showDate = function (utc) {
@@ -336,6 +439,7 @@ appControllers.controller('GrListCtrl', [
                 $scope.modal.show();
                 $scope.findOH_PID_D();
             } else {
+
                 PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
             }
 
@@ -347,6 +451,20 @@ appControllers.controller('GrListCtrl', [
             $scope.updateLineItem();
             $scope.UpdateTotal();
         };
+
+        $scope.closeModalAddPID = function () {
+            $scope.modalPID.hide();
+            $scope.findOH_PID_D();
+            // $scope.Detail.Add_OH_PID_D="";
+        };
+
+        $scope.openModalAddPID = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                $scope.modalPID.show();
+            } else {
+                // PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+            }
+        };
         $scope.returnList = function () {
             if ($ionicHistory.backView()) {
                 $ionicHistory.goBack();
@@ -356,6 +474,18 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
+
+        // $scope.GoToDetail = function () {
+        //         if ($scope.Detail.ONHANDNO !== "") {
+        //             $state.go('grDetail', {
+        //                 'OnhandNo': $scope.Detail.ONHANDNO
+        //             }, {
+        //                 reload: true
+        //             });
+        //         }else{
+        //             PopupService.Alert(null, 'Please First Create Onhand', '').then(function (res) {});
+        //         }
+        //     };
     }
 ]);
 

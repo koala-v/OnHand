@@ -7,6 +7,7 @@ namespace WebApi.ServiceModel.Tables
 {
    public class ON_PID_D
     {
+        public int RowNum { get; set; }
         public string ONHAND_NO { get; set; }
         public int     LineItemNo { get; set; }
         public string  PACK_TYPE { get; set; }

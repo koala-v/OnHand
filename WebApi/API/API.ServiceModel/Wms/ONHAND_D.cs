@@ -86,7 +86,8 @@ namespace WebApi.ServiceModel.Wms
 
                         string strSQL = "";
                         strSQL = " select  " +
-                         "OH_PID_D.ONHAND_NO  , " +
+                        " RowNum = ROW_NUMBER() OVER(ORDER BY OH_PID_D.LineItemNo ASC) , " +
+                        " OH_PID_D.ONHAND_NO  , " +
                         " OH_PID_D.LineItemNo , " +
                         " ISNULL(OH_PID_D.PACK_TYPE,'') AS PACK_TYPE, " +
                         " ISNULL(OH_PID_D.TRK_BILL_NO,'') AS TRK_BILL_NO , " +
@@ -276,14 +277,14 @@ namespace WebApi.ServiceModel.Wms
         {
 
             int Result = -1;
+            int intMaxLineItemNo = 1;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
 
                     string onhandno = request.strONHAND_NO;
-                    if (onhandno != "") {
-                        int intMaxLineItemNo = 1;
+                    if (onhandno != "") {                
                         List<ON_PID_D> list1 = db.Select<ON_PID_D>("Select Max(LineItemNo) LineItemNo from OH_PID_D Where onhand_no = " + Modfunction.SQLSafeValue(onhandno));
                         if (list1 != null)
                         {
@@ -304,7 +305,7 @@ namespace WebApi.ServiceModel.Wms
                         db.ExecuteSql(strSql);
                     }
                 }                                     
-                       Result =1;
+                       Result = intMaxLineItemNo;
                                
             }
             catch { throw; }
