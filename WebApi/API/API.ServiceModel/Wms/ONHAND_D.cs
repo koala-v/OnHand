@@ -15,10 +15,11 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/ONHAND_D", "Get")]   //ONHAND_D?CustomerCode ,ONHAND_D?TrxNo
     [Route("/wms/ONHAND_D", "Get")]     //ONHAND_D?TrxNo
     [Route("/wms/OH_PID_D", "Get")]     //OH_PID_D?OnhandNO
-    [Route("/wms/OH_PID_D/create", "Get")]     //OH_PID_D?OnhandNO
+    [Route("/wms/OH_PID_D/create", "Post")]     //OH_PID_D?OnhandNO
     [Route("/wms/OH_PID_D/DeleteLineItem", "Get")]     //OH_PID_D?OnhandNO,
     [Route("/wms/ONHAND_D/confirm", "Post")]
     [Route("/wms/OH_PID_D/updateLineItem", "Post")]
+
     public class ONHAND_D : IReturn<CommonResponse>
     {
         public string strONHAND_NO { get; set; }
@@ -58,9 +59,9 @@ namespace WebApi.ServiceModel.Wms
                             " ISNULL(TRK_CODE,'') AS TRK_CODE, " +
                             " ISNULL(TRK_CHRG_TYPE,'') AS TRK_CHRG_TYPE, " +
                             " PICKUP_SUP_datetime, " +
-                            " ISNULL(NO_INV_WH,0) AS  NO_INV_WH, " +
+                            " ISNULL(NO_INV_WH,0) AS  NO_INV_WH, " +              
                             " ISNULL((select  sum(PIECES) from OH_PID_D where onhand_no = ONHAND_D.onhand_no ), 0) AS TotalPCS,   " +
-                            " ISNULL((select  sum(GROSS_LB) from OH_PID_D where onhand_no = ONHAND_D.onhand_no ),0 ) AS TotalWeight    " +
+                            " ISNULL((select  sum(GROSS_LB) from OH_PID_D where onhand_no = ONHAND_D.onhand_no ),0 ) AS TotalWeight   " +                  
                             " from ONHAND_D  where onhand_no ='" + request.strONHAND_NO + "'";
                         Result = db.Select<ONHAND_D_Table>(strSQL);
                  
@@ -113,7 +114,38 @@ namespace WebApi.ServiceModel.Wms
                         " ONHAND_D.PICKUP_SUP_datetime, " +
                         " ISNULL(ONHAND_D.NO_INV_WH,0) AS  NO_INV_WH, " +
                         " ISNULL((select  sum(PIECES) from OH_PID_D  ), 0) AS TotalPCS,   " +
-                        " ISNULL((select  sum(GROSS_LB) from OH_PID_D  ),0 ) AS TotalWeight    " +
+                        " ISNULL((select  sum(GROSS_LB) from OH_PID_D  ),0 ) AS TotalWeight,    " +
+                        " ISNULL (UnNo01,'') as UnNo01 , "+
+                        " ISNULL ( UnNo02,'') as UnNo02 , " +
+                        " ISNULL ( UnNo03,'') as UnNo03 , " +
+                        " ISNULL ( UnNo04,'') as UnNo04 , " +
+                        " ISNULL ( UnNo05 ,'') as UnNo05 , " +
+                        " ISNULL ( UnNo06 ,'') as UnNo06 , " +
+                        " ISNULL ( UnNo07 ,'') as UnNo07 , " +
+                        " ISNULL ( UnNo08 ,'') as UnNo08 , " +
+                        " ISNULL ( UnNo09 ,'') as UnNo09 , " +
+                        " ISNULL ( UnNo10 ,'') as UnNo10 , " +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo01) ,'') AS  DgClass01 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo02) ,'') AS  DgClass02 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo03) ,'') AS  DgClass03 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo04) ,'') AS  DgClass04 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo05) ,'') AS  DgClass05 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo06) ,'') AS  DgClass06 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo07) ,'') AS  DgClass07 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo08) ,'') AS  DgClass08 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo09) ,'') AS  DgClass09 ," +
+                        " ISNULL( (Select DgClass From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo10) ,'') AS  DgClass10 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo01) ,'') AS  DgDescription01 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo02) ,'') AS  DgDescription02 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo03) ,'') AS  DgDescription03 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo04) ,'') AS  DgDescription04 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo05) ,'') AS  DgDescription05 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo06) ,'') AS  DgDescription06 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo07) ,'') AS  DgDescription07 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo08) ,'') AS  DgDescription08 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo09) ,'') AS  DgDescription09 ," +
+                        " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo10) ,'') AS  DgDescription10 ," +
+                        " ISNULL(OH_PID_D.Remark ,'') AS Remark    " +
                         " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='" + request.strONHAND_NO + "'";
                         //   " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='ONHAND06'";
                         Result = db.Select<ON_PID_D>(strSQL);
@@ -157,43 +189,12 @@ namespace WebApi.ServiceModel.Wms
                                     string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();
                                     string PID_NO = ja[i]["PID_NO"].ToString();
                                     string UnNo = ja[i]["UnNo"].ToString();
+                                    string Remark = Modfunction.CheckNull(ja[i]["Remark"]);
                                     LENGTH = Modfunction.ReturnZero(ja[i]["LENGTH"].ToString());
                                     WIDTH = Modfunction.ReturnZero(ja[i]["WIDTH"].ToString());
                                     HEIGHT = Modfunction.ReturnZero(ja[i]["HEIGHT"].ToString());
                                     GROSS_LB = Modfunction.ReturnZero(ja[i]["GROSS_LB"].ToString());
-
-                                    //if (ja[i]["LENGTH"].ToString() == "")
-                                    //{
-                                    //    LENGTH = 0;
-                                    //}
-                                    //else
-                                    //{
-                                    //    LENGTH = int.Parse(Modfunction.CheckNull(ja[i]["LENGTH"].ToString()));
-                                    //}
-                                    //if (ja[i]["WIDTH"].ToString() == "")
-                                    //{
-                                    //    WIDTH = 0;
-                                    //}
-                                    //else
-                                    //{
-                                    //    WIDTH = int.Parse(ja[i]["WIDTH"].ToString());
-                                    //}
-                                    //if (ja[i]["HEIGHT"].ToString() == "")
-                                    //{
-                                    //    HEIGHT = 0;
-                                    //}
-                                    //else
-                                    //{
-                                    //    HEIGHT = int.Parse(ja[i]["HEIGHT"].ToString());
-                                    //}
-                                    //if (ja[i]["GROSS_LB"].ToString() == "")
-                                    //{
-                                    //    GROSS_LB = 0;
-                                    //}
-                                    //else
-                                    //{
-                                    //    GROSS_LB = int.Parse(ja[i]["GROSS_LB"].ToString());
-                                    //}                                                           
+                                                                                   
                                     strSql = " UPDATE OH_PID_D Set " +
                                               "PACK_TYPE='"+ PACK_TYPE + "'," +
                                               "TRK_BILL_NO='" + TRK_BILL_NO + "'," +
@@ -202,8 +203,9 @@ namespace WebApi.ServiceModel.Wms
                                               "LENGTH=" + LENGTH + "," +
                                               "WIDTH=" + WIDTH + "," +
                                               "HEIGHT=" + HEIGHT + "," +
-                                              "GROSS_LB=" + GROSS_LB + ""+
-                                              " WHERE ONHAND_NO ='" + OnhandNo + "' And LineItemNo="+ lineItemNo + "  " +
+                                              "GROSS_LB=" + GROSS_LB + ","+
+                                              "Remark='" + Remark + "' " +
+                                              "WHERE ONHAND_NO ='" + OnhandNo + "' And LineItemNo="+ lineItemNo + "  " +
                                               "";                               
                                     db.ExecuteSql(strSql);
                                     aggregateMaster(OnhandNo);
@@ -277,39 +279,154 @@ namespace WebApi.ServiceModel.Wms
         {
 
             int Result = -1;
-            int intMaxLineItemNo = 1;
+
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
-
-                    string onhandno = request.strONHAND_NO;
-                    if (onhandno != "") {                
-                        List<ON_PID_D> list1 = db.Select<ON_PID_D>("Select Max(LineItemNo) LineItemNo from OH_PID_D Where onhand_no = " + Modfunction.SQLSafeValue(onhandno));
-                        if (list1 != null)
+                    if (request.UpdateAllString != null && request.UpdateAllString != "")
+                    {
+                        JArray ja = (JArray)JsonConvert.DeserializeObject(request.UpdateAllString);
+                        if (ja != null)
                         {
-                            if (list1[0].LineItemNo > 0)
-                                intMaxLineItemNo = list1[0].LineItemNo + 1;
+
+                            for (int i = 0; i < ja.Count(); i++)
+                            {
+
+                                string strSql = "";
+                                int LENGTH = 0;
+                                int WIDTH = 0;
+                                int HEIGHT = 0;
+                                int GROSS_LB = 0;
+                                string OnhandNo = ja[i]["ONHAND_NO"].ToString();
+                                int intMaxLineItemNo = 1;
+                                if (OnhandNo!="")
+                                {
+                                    List<ON_PID_D> list1 = db.Select<ON_PID_D>("Select Max(LineItemNo) LineItemNo from OH_PID_D Where onhand_no = " + Modfunction.SQLSafeValue(OnhandNo));
+                                    if (list1 != null)
+                                    {
+                                        if (list1[0].LineItemNo > 0)
+                                            intMaxLineItemNo = list1[0].LineItemNo + 1;
+                                    }
+
+                                    string PACK_TYPE = ja[i]["PACK_TYPE"].ToString();
+                                    string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();
+                                    string PID_NO = ja[i]["PID_NO"].ToString();
+                                    string UnNo = ja[i]["UnNo"].ToString();
+                                    string UnNo01 = Modfunction.CheckNull(ja[i]["UnNo01"]);
+                                    string UnNo02 = Modfunction.CheckNull(ja[i]["UnNo02"]);
+                                    string UnNo03 = Modfunction.CheckNull(ja[i]["UnNo03"]);
+                                    string UnNo04= Modfunction.CheckNull(ja[i]["UnNo04"]);
+                                    string UnNo05 = Modfunction.CheckNull(ja[i]["UnNo05"]);
+                                    string UnNo06 = Modfunction.CheckNull(ja[i]["UnNo06"]);
+                                    string UnNo07 = Modfunction.CheckNull(ja[i]["UnNo07"]);
+                                    string UnNo08 = Modfunction.CheckNull(ja[i]["UnNo08"]);
+                                    string UnNo09 = Modfunction.CheckNull(ja[i]["UnNo09"]);
+                                    string UnNo10 = Modfunction.CheckNull(ja[i]["UnNo10"]);
+                                    string Remark = Modfunction.CheckNull(ja[i]["Remark"]);
+                                    LENGTH = Modfunction.ReturnZero(ja[i]["LENGTH"].ToString());
+                                    WIDTH = Modfunction.ReturnZero(ja[i]["WIDTH"].ToString());
+                                    HEIGHT = Modfunction.ReturnZero(ja[i]["HEIGHT"].ToString());
+                                    GROSS_LB = Modfunction.ReturnZero(ja[i]["GROSS_LB"].ToString());
+                                    strSql = "insert into OH_PID_D( " +
+                                              "  onhand_no," +
+                                              "  LineItemNo, " +
+                                              "  PACK_TYPE," +
+                                              "  TRK_BILL_NO," +
+                                              "  PID_NO," +
+                                              "  UnNo," +
+                                              "  LENGTH," +
+                                              "  WIDTH," +
+                                              "  HEIGHT," +
+                                              "  GROSS_LB ," +
+                                              "  INV_NO, " +
+                                              "  UnNo01, " +
+                                              "  UnNo02, " +
+                                              "  UnNo03, " +
+                                              "  UnNo04, " +
+                                              "  UnNo05, " +
+                                              "  UnNo06, " +
+                                              "  UnNo07, " +
+                                              "  UnNo08, " +
+                                              "  UnNo09, " +
+                                              "  UnNo10, " +
+                                              "  Remark " +
+                                              "  )" +
+                                                  "values( " +
+                                                  Modfunction.SQLSafeValue(OnhandNo) + " , " +
+                                                  intMaxLineItemNo + "," +
+                                                  Modfunction.SQLSafeValue(PACK_TYPE) + "," +
+                                                  Modfunction.SQLSafeValue(TRK_BILL_NO) + "," +
+                                                  Modfunction.SQLSafeValue(PID_NO) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo) + "," +
+                                                  LENGTH + "," +
+                                                  WIDTH + "," +
+                                                  HEIGHT + "," +
+                                                  GROSS_LB + "," +
+                                                  "''," +
+                                                  Modfunction.SQLSafeValue(UnNo01) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo02) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo03) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo04) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo05) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo06) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo07) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo08) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo09) + "," +
+                                                  Modfunction.SQLSafeValue(UnNo10) + "," +
+                                                  Modfunction.SQLSafeValue(Remark) + "" +
+
+                                                  ") ";
+                                    db.ExecuteSql(strSql);
+
+                                }
+
+                            }
                         }
-                        string strSql = "";
-                        strSql = "insert into OH_PID_D( " +
-                       "   onhand_no," +
-                       "   LineItemNo, " +
-                       "   INV_NO " +
-                       "  )" +
-                           "values( " +
-                           Modfunction.SQLSafeValue(onhandno) + " , " +
-                           intMaxLineItemNo +"," +
-                          "''"+
-                           ") ";
-                        db.ExecuteSql(strSql);
+                        Result = 1;
                     }
-                }                                     
-                       Result = intMaxLineItemNo;
-                               
+                }
+
             }
             catch { throw; }
             return Result;
+
+            //int Result = -1;
+            //int intMaxLineItemNo = 1;
+            //try
+            //{
+            //    using (var db = DbConnectionFactory.OpenDbConnection())
+            //    {
+
+
+
+            //        string onhandno = request.strONHAND_NO;
+            //        if (onhandno != "") {                
+            //            List<ON_PID_D> list1 = db.Select<ON_PID_D>("Select Max(LineItemNo) LineItemNo from OH_PID_D Where onhand_no = " + Modfunction.SQLSafeValue(onhandno));
+            //            if (list1 != null)
+            //            {
+            //                if (list1[0].LineItemNo > 0)
+            //                    intMaxLineItemNo = list1[0].LineItemNo + 1;
+            //            }
+            //            string strSql = "";
+            //            strSql = "insert into OH_PID_D( " +
+            //           "   onhand_no," +
+            //           "   LineItemNo, " +
+            //           "   INV_NO " +
+            //           "  )" +
+            //               "values( " +
+            //               Modfunction.SQLSafeValue(onhandno) + " , " +
+            //               intMaxLineItemNo +"," +
+            //              "''"+
+            //               ") ";
+            //            db.ExecuteSql(strSql);
+            //        }
+            //    }                                     
+            //           Result = intMaxLineItemNo;
+                               
+            //}
+            //catch { throw; }
+            //return Result;
         }
 
         public string ConfirmAll_ONHAND_D(ONHAND_D request)

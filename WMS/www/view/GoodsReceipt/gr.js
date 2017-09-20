@@ -5,6 +5,7 @@ appControllers.controller('GrListCtrl', [
     '$state',
     '$cordovaKeyboard',
     '$ionicModal',
+    '$ionicPopup',
     'ionicDatePicker',
     'ApiService',
     'PopupService',
@@ -15,10 +16,13 @@ appControllers.controller('GrListCtrl', [
         $state,
         $cordovaKeyboard,
         $ionicModal,
+        $ionicPopup,
         ionicDatePicker,
         ApiService,
         PopupService) {
         $scope.Rcbp1 = {};
+        var arrRcdg1 = new Array();
+        var arrPidUnGrid= new Array();
         $scope.Rcbp1ForConsinnee = {};
         $scope.Detail = {
             Title: 'New',
@@ -46,9 +50,7 @@ appControllers.controller('GrListCtrl', [
                 ONHAND_date: moment(new Date()).format('YYYY-MM-DD'),
                 PICKUP_SUP_datetime: moment(new Date()).format('YYYY-MM-DD'),
             },
-            OH_PID_D_S: {
-
-            },
+            OH_PID_D_S: {},
             OH_PID_D: {
                 RowNum: 0,
                 LineItemNo: 0,
@@ -73,11 +75,15 @@ appControllers.controller('GrListCtrl', [
                 WIDTH: 0,
                 HEIGHT: 0
             },
+            Rcdg1: {},
+            Rcdg1s: {},
+            PidUnGrid:{},
+            PidUnGrids:{},
             blnNext: true
         };
 
         $scope.ChargeType = [{
-            text: 'Payment',
+            text: 'Prepaid',
             value: 'PP'
         }, {
             text: 'Collect',
@@ -251,7 +257,28 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
+        $scope.refreshRcdg1UnNo = function (UnNo) {
+            if (is.not.undefined(UnNo) && is.not.empty(UnNo)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
+                objUri.addSearch('UnNo', UnNo);
+                objUri.addSearch('UnNoFlag', 'N');
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Rcdg1s = result.data.results;
+                });
+            }
+        };
 
+        $scope.ShowRcdg1 = function (UnNo) {
+            var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
+            objUri.addSearch('UnNo', UnNo);
+            objUri.addSearch('UnNoFlag', 'Y');
+            ApiService.Get(objUri, false).then(function success(result) {
+                $scope.Detail.Rcdg1 = result.data.results[0];
+            });
+            if (!ENV.fromWeb) {
+                $cordovaKeyboard.close();
+            }
+        };
         $scope.OnDatePicker = function () {
             var ipObj1 = {
                 callback: function (val) { //Mandatory
@@ -274,39 +301,80 @@ appControllers.controller('GrListCtrl', [
             ionicDatePicker.openDatePicker(ipObj1);
         };
 
-        $scope.findOH_PID_D = function () {
+        $scope.findOH_PID_D = function (Type) {
             if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
                 var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D');
                 objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Detail.OH_PID_D_S = result.data.results;
-                    if (is.array($scope.Detail.OH_PID_D_S) && is.not.empty($scope.Detail.OH_PID_D_S)) {
-                        showPid(0);
-                    } else {
-                        // PopupService.Info(null, 'This OH_PID_D has no Record Please Add').then(function (res) {
-                        //
-                        // });
+                    if (Type !== 'Update') {
+                        if (is.array($scope.Detail.OH_PID_D_S) && is.not.empty($scope.Detail.OH_PID_D_S)) {
+                            showPid(0, 'Delete');
+                        } else {
+                            // PopupService.Info(null, 'This OH_PID_D has no Record Please Add').then(function (res) {
+                            // });
+                        }
                     }
-                    // var results = result.data.results;
-                    // var dataResults = new Array();
-                    // if (is.not.empty(results)) {
-                    //     for (var i = 0; i < results.length; i++) {
-                    //         var objOH_PID_D = results[i];
-                    //         dataResults = dataResults.concat(objOH_PID_D);
-                    //         $scope.Detail.OH_PID_D_S = dataResults;
-                    //         $scope.Detail.OH_PID_D_S.SNO = i;
-                    //
-                    //     }
-                    // } else {
-                    //     $scope.Detail.OH_PID_D_S = "";
-                    // }
+                    $scope.UpdateTotal();
                 });
             } else {
                 PopupService.Info(null, 'Please First Create Onhand').then();
             }
         };
 
-        var showPid = function (row) {
+        $scope.DeleteLine = function (LineItemNo) {
+            if (LineItemNo > 0) {
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/DeleteLineItem');
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                objUri.addSearch('LineItemNo', LineItemNo);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    var results = result.data.results;
+                    if (is.not.empty(results)) {
+                        $scope.Detail.OH_PID_D = "";
+                        $scope.findOH_PID_D('Delete');
+                    } else {}
+                });
+
+            }
+        };
+        $scope.updateLineItem = function (Type) {
+            var arrOH_PID_D = [];
+            var jsonData = '';
+            var objUri = '';
+            if (Type === 'Update') {
+                if ($scope.Detail.OH_PID_D_S.length > 0) {
+                    $scope.Detail.OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                    arrOH_PID_D.push($scope.Detail.OH_PID_D);
+                    jsonData = {
+                        "UpdateAllString": JSON.stringify(arrOH_PID_D)
+                    };
+                    objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/updateLineItem');
+                    ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                        if (is.not.empty(result)) {
+                            $scope.findOH_PID_D(Type);
+                        }
+                    });
+                }
+            } else {
+                // var length = 0;
+                // $scope.Detail.OH_PID_D_S.ONHAND_NO = $scope.Detail.ONHANDNO;
+                // for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
+                //     length = i;
+                //     arrOH_PID_D.push($scope.Detail.OH_PID_D_S[i]);
+                //     jsonData = {
+                //         "UpdateAllString": JSON.stringify(arrOH_PID_D)
+                //     };
+                //     objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/updateLineItem');
+                //     ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                //     });
+                // }
+            }
+        };
+
+        var showPid = function (row, Type) {
+            if (Type !== 'Delete') {
+                $scope.updateLineItem('Update');
+            }
             if (row !== null && $scope.Detail.OH_PID_D_S.length >= row) {
                 $scope.Detail.OH_PID_D = {
                     RowNum: $scope.Detail.OH_PID_D_S[row].RowNum,
@@ -319,21 +387,113 @@ appControllers.controller('GrListCtrl', [
                     LENGTH: $scope.Detail.OH_PID_D_S[row].LENGTH,
                     WIDTH: $scope.Detail.OH_PID_D_S[row].WIDTH,
                     HEIGHT: $scope.Detail.OH_PID_D_S[row].HEIGHT,
+                    UnNo02: $scope.Detail.OH_PID_D_S[row].UnNo02,
+                    UnNo03: $scope.Detail.OH_PID_D_S[row].UnNo03,
+                    UnNo04: $scope.Detail.OH_PID_D_S[row].UnNo04,
+                    UnNo05: $scope.Detail.OH_PID_D_S[row].UnNo05,
+                    UnNo06: $scope.Detail.OH_PID_D_S[row].UnNo06,
+                    UnNo07: $scope.Detail.OH_PID_D_S[row].UnNo07,
+                    UnNo08: $scope.Detail.OH_PID_D_S[row].UnNo08,
+                    UnNo09: $scope.Detail.OH_PID_D_S[row].UnNo09,
+                    UnNo10: $scope.Detail.OH_PID_D_S[row].UnNo10,
+                    Remark: $scope.Detail.OH_PID_D_S[row].Remark,
                 };
 
+getPidUngrid($scope.Detail.OH_PID_D_S[row]);
             }
-            if (is.equal(row, $scope.Detail.OH_PID_D_S.length - 1)) {
-                $scope.Detail.blnNext = false;
-            } else {
-                $scope.Detail.blnNext = true;
-            }
+
+            $scope.Detail.blnNext = true;
+            // if (is.equal(row, $scope.Detail.OH_PID_D_S.length - 1)) {
+            //     $scope.Detail.blnNext = false;
+            // } else {
+            //     $scope.Detail.blnNext = true;
+            // }
         };
+
+      var  getPidUngrid=function(PidRows){
+          arrPidUnGrid=new Array();
+          $scope.Detail.PidUnGrids='';
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo01,
+            DGClass:PidRows.DgClass01,
+          DGDescription:PidRows.DgDescription01
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo02,
+            DGClass:PidRows.DgClass02,
+            DGDescription:PidRows.DgDescription02
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo03,
+            DGClass:PidRows.DgClass03,
+            DGDescription:PidRows.DgDescription03
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo04,
+            DGClass:PidRows.DgClass04,
+            DGDescription:PidRows.DgDescription04
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo05,
+            DGClass:PidRows.DgClass05,
+            DGDescription:PidRows.DgDescription05
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo06,
+            DGClass:PidRows.DgClass06,
+            DGDescription:PidRows.DgDescription06
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo07,
+            DGClass:PidRows.DgClass07,
+            DGDescription:PidRows.DgDescription07
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo08,
+            DGClass:PidRows.DgClass08,
+            DGDescription:PidRows.DgDescription08
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo09,
+            DGClass:PidRows.DgClass09,
+            DGDescription:PidRows.DgDescription09
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrid={
+            UnNo:PidRows.UnNo10,
+            DGClass:PidRows.DgClass10,
+            DGDescription:PidRows.DgDescription10
+          };
+          arrPidUnGrid.push($scope.Detail.PidUnGrid);
+
+          $scope.Detail.PidUnGrids=arrPidUnGrid;
+        };
+
 
         $scope.showPrev = function () {
             var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
             if ($scope.Detail.OH_PID_D_S.length > 0 && intRow > 0 && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
                 // $scope.clearInput();
-                showPid(intRow - 1);
+                showPid(intRow - 1, '');
             } else {
                 PopupService.Info(null, 'Already the first one');
             }
@@ -342,50 +502,87 @@ appControllers.controller('GrListCtrl', [
             var intRow = $scope.Detail.OH_PID_D.RowNum + 1;
             if ($scope.Detail.OH_PID_D_S.length > 0 && $scope.Detail.OH_PID_D_S.length >= intRow && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
                 // $scope.clearInput();
-                showPid(intRow - 1);
+                showPid(intRow - 1, '');
             } else {
                 PopupService.Info(null, 'Already the last one');
             }
         };
-        $scope.DeleteLine = function (LineItemNo) {
-            if (LineItemNo > 0) {
-                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/DeleteLineItem');
-                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
-                objUri.addSearch('LineItemNo', LineItemNo);
-                ApiService.Get(objUri, false).then(function success(result) {
-                    var results = result.data.results;
-                    if (is.not.empty(results)) {
-                        $scope.Detail.OH_PID_D = "";
-                        $scope.findOH_PID_D();
-                    } else {}
-                });
 
-            }
-        };
         $scope.addLine = function () {
             PopupService.Confirm(null, 'Confirm', 'Are you sure to Add PID?').then(function (res) {
                 if (res) {
                     if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                        var arrOH_PID_D = [];
+                        $scope.Detail.Add_OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                        //add UnNo start
+                        for (var i = 0; i < $scope.Detail.Rcdg1s.length; i++) {
+                            if (i === 0) {
+                                $scope.Detail.Add_OH_PID_D.UnNo01 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 1) {
+                                $scope.Detail.Add_OH_PID_D.UnNo02 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 2) {
+                                $scope.Detail.Add_OH_PID_D.UnNo03 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 3) {
+                                $scope.Detail.Add_OH_PID_D.UnNo04 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 4) {
+                                $scope.Detail.Add_OH_PID_D.UnNo05 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 5) {
+                                $scope.Detail.Add_OH_PID_D.UnNo06 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 6) {
+                                $scope.Detail.Add_OH_PID_D.UnNo07 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 7) {
+                                $scope.Detail.Add_OH_PID_D.UnNo08 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 8) {
+                                $scope.Detail.Add_OH_PID_D.UnNo09 = $scope.Detail.Rcdg1s[i].UnNo;
+                            } else if (i === 9) {
+                                $scope.Detail.Add_OH_PID_D.UnNo10 = $scope.Detail.Rcdg1s[i].UnNo;
+                            }
+                            //add UnNo end
+
+                        }
+                        arrOH_PID_D.push($scope.Detail.Add_OH_PID_D);
+
+                        var jsonData = {
+                            "UpdateAllString": JSON.stringify(arrOH_PID_D)
+                        };
                         var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
-                        objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
-                        ApiService.Get(objUri, false).then(function success(result) {
+                        ApiService.Post(objUri, jsonData, true).then(function success(result) {
                             var results = result.data.results;
                             if (is.not.empty(results)) {
-                                $scope.updateLineItem('add', results);
-                                $scope.findOH_PID_D();
                                 $scope.closeModalAddPID();
                             } else {}
                         });
+
                     } else {
                         PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
                     }
-                } else {
-
-                }
+                } else {}
             });
 
         };
 
+        $scope.AddUnNo = function () {
+            var myPopup = $ionicPopup.show({
+                templateUrl: 'popup-UnNo.html',
+                title: 'Add UnNo',
+                scope: $scope,
+                buttons: [{
+                    text: 'Cancel',
+                    onTap: function (e) {}
+                }, {
+                    text: 'Add',
+                    type: 'button-positive',
+                    onTap: function (e) {
+                        if ($scope.Detail.Rcdg1.UnNo !== '' && is.not.undefined($scope.Detail.Rcdg1.UnNo)) {
+                            arrRcdg1.push($scope.Detail.Rcdg1);
+                            $scope.Detail.Rcdg1s = arrRcdg1;
+                            $scope.Detail.Rcdg1 = '';
+                        }
+                    }
+                }]
+            });
+
+        };
         $scope.UpdateTotal = function () {
             if ($scope.Detail.OH_PID_D_S.length > 0) {
                 var TotalWeight = 0;
@@ -395,76 +592,68 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
             }
         };
-        $scope.updateLineItem = function (Type, Value) {
-            if (Type === 'add') {
-                var arrOH_PID_D = [];
-                $scope.Detail.Add_OH_PID_D.LineItemNo = Value;
-                $scope.Detail.Add_OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
-                arrOH_PID_D.push($scope.Detail.Add_OH_PID_D);
-                var jsonData = {
-                    "UpdateAllString": JSON.stringify(arrOH_PID_D)
-                };
-                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/updateLineItem');
-                ApiService.Post(objUri, jsonData, true).then(function success(result) {
 
-                });
+        $scope.openModal = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                $scope.modal.show();
+                $scope.findOH_PID_D('');
             } else {
-                var arrOH_PID_D = [];
-                var length = 0;
-                $scope.Detail.OH_PID_D_S.ONHAND_NO = $scope.Detail.ONHANDNO;
-                for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
-                    length = i;
-                    arrOH_PID_D.push($scope.Detail.OH_PID_D_S[i]);
-                    var jsonData = {
-                        "UpdateAllString": JSON.stringify(arrOH_PID_D)
-                    };
-                    var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/updateLineItem');
-                    ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+            }
+            // $ionicLoading.show();
+        };
 
-                    });
-                }
+        $scope.closeModal = function () {
+            $scope.modal.hide();
+            $scope.updateLineItem('Update');
+
+        };
+
+        $scope.closeModalAddPID = function () {
+            $scope.modalPID.hide();
+            $scope.findOH_PID_D('');
+        };
+
+        $scope.openModalAddPID = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                $scope.updateLineItem('Update');
+                $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                $scope.Detail.Add_OH_PID_D.PACK_TYPE = '';
+                $scope.Detail.Add_OH_PID_D.PID_NO = '';
+                $scope.Detail.Add_OH_PID_D.UnNo = '';
+                $scope.Detail.Add_OH_PID_D.GROSS_LB = 0;
+                $scope.Detail.Add_OH_PID_D.LENGTH = 0;
+                $scope.Detail.Add_OH_PID_D.WIDTH = 0;
+                $scope.Detail.Add_OH_PID_D.HEIGHT = 0;
+                $scope.Detail.Add_OH_PID_D.Remark = '';
+                $scope.Detail.Rcdg1s = '';
+                $scope.Detail.Add_OH_PID_D.UnNo01 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo02 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo03 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo04 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo05 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo06 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo07 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo08 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo09 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo10 = '';
+                arrRcdg1 = new Array();
+                $scope.modalPID.show();
+            } else {
+                // PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
             }
         };
+
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
         };
+
         $scope.returnMain = function () {
             $state.go('index.main', {}, {
                 reload: true
             });
         };
 
-        $scope.openModal = function () {
-            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-                $scope.modal.show();
-                $scope.findOH_PID_D();
-            } else {
-
-                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
-            }
-
-            // $ionicLoading.show();
-
-        };
-        $scope.closeModal = function () {
-            $scope.modal.hide();
-            $scope.updateLineItem();
-            $scope.UpdateTotal();
-        };
-
-        $scope.closeModalAddPID = function () {
-            $scope.modalPID.hide();
-            $scope.findOH_PID_D();
-            // $scope.Detail.Add_OH_PID_D="";
-        };
-
-        $scope.openModalAddPID = function () {
-            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-                $scope.modalPID.show();
-            } else {
-                // PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
-            }
-        };
         $scope.returnList = function () {
             if ($ionicHistory.backView()) {
                 $ionicHistory.goBack();
@@ -474,18 +663,6 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
-
-        // $scope.GoToDetail = function () {
-        //         if ($scope.Detail.ONHANDNO !== "") {
-        //             $state.go('grDetail', {
-        //                 'OnhandNo': $scope.Detail.ONHANDNO
-        //             }, {
-        //                 reload: true
-        //             });
-        //         }else{
-        //             PopupService.Alert(null, 'Please First Create Onhand', '').then(function (res) {});
-        //         }
-        //     };
     }
 ]);
 

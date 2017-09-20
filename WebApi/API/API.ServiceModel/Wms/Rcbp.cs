@@ -11,12 +11,15 @@ using WebApi.ServiceModel.Tables;
 namespace WebApi.ServiceModel.Wms
 {
 				//[Route("/wms/rcbp1/sps", "Get")]				//sps?RecordCount= & BusinessPartyName=
-				[Route("/wms/rcbp1", "Get")]								//rcbp1?BusinessPartyName= &TrxNo=			
+				[Route("/wms/rcbp1", "Get")]                                //rcbp1?BusinessPartyName= &TrxNo=			
+                [Route("/wms/rcdg1/UnNo", "Get")]
     public class Rcbp : IReturn<CommonResponse>
     {
         public string TrxNo { get; set; }
         public string BusinessPartyName { get; set; }
-								public string RecordCount { get; set; }
+	   public string RecordCount { get; set; }
+        public string  UnNo { get; set; }
+        public string UnNoFlag { get; set; }
     }
     public class Rcbp_Logic
     {        
@@ -42,6 +45,40 @@ namespace WebApi.ServiceModel.Wms
             catch { throw; }
             return Result;
         }
-			
-				}
+
+       
+        public List<Rcdg1> Get_Rcdg1UnNo_List(Rcbp request)
+        {
+            List<Rcdg1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+                    if (!string.IsNullOrEmpty(request.UnNo))
+                    {
+                        if (request.UnNoFlag == "Y")
+                        {
+                            string strSQL = "Select UnNo,DGClass,DGDescription  From Rcdg1 Where UnNo = '" + request.UnNo + "' ";
+                            Result = db.Select<Rcdg1>(strSQL);
+                        }
+                        else {
+                            string strSQL = "Select UnNo,DGClass,DGDescription  From Rcdg1 Where UnNo LIKE '" + request.UnNo + "%'  Order By UnNo Asc";
+                            Result = db.Select<Rcdg1>(strSQL);
+                        }
+                       
+                    }
+                    else
+                    {
+                        Result = null;
+                    }
+
+                }
+            }
+            catch { throw; }
+            return Result;
+        }
+
+
+
+    }
 }

@@ -45,7 +45,7 @@ appControllers.controller('EnquiryListCtrl', [
             ONHAND_D: {},
         };
         $scope.ChargeType = [{
-            text: 'Payment',
+            text: 'Prepaid',
             value: 'PP'
         }, {
             text: 'Collect',
@@ -194,7 +194,7 @@ appControllers.controller('EnquiryListCtrl', [
         $scope.EditOff = function () {
             $("input").attr("disabled", true);
         };
-        
+
         $scope.EditOn = function () {
             $("input").attr("disabled", false);
         };

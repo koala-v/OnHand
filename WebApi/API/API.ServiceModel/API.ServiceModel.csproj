@@ -96,6 +96,7 @@
     <Compile Include="Tables\Imcc2.cs" />
     <Compile Include="Tables\Imgi3.cs" />
     <Compile Include="Tables\ON_PID_D.cs" />
+    <Compile Include="Tables\Rcdg1.cs" />
     <Compile Include="Tables\saal1.cs" />
     <Compile Include="Tables\Imgi2_Verify.cs" />
     <Compile Include="Tables\Imgi2_Picking.cs" />

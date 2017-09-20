@@ -17,6 +17,10 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     ecr.data.results = rcbp_Logic.Get_Rcbp1_List(request);
                 }
+                else if (uri.IndexOf("/wms/rcdg1/UnNo") > 0)
+                {
+                    ecr.data.results = rcbp_Logic.Get_Rcdg1UnNo_List(request);
+                }
                 ecr.meta.code = 200;
                 ecr.meta.message = "OK";
             }

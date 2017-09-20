@@ -3,7 +3,7 @@ var appConfig = angular.module('WMSAPP.config',[]);
 appConfig.constant('ENV', {
     website:      'www.sysfreight.net/app/wms/onhand',
     api:          'www.sysfreight.net/apis/wms/onhand',
-    //  api:        'localhost:18104',
+    // api:        'localhost:18104',
     reset:  {
         website:      'www.sysfreight.net/app/wms/onhand',
         api:          'www.sysfreight.net/apis/wms/onhand',
@@ -29,7 +29,7 @@ appConfig.constant('ENV', {
     updateFile:   'update.json',
     rootPath:     'onhandPath',
     configFile:   'config.txt',
-    version:      '1.0.1.1',
+    version:      '1.0.1.2',
     parameter: {
         showSerialNo : false
     },
