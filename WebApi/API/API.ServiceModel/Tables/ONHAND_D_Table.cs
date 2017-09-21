@@ -7,7 +7,8 @@ namespace WebApi.ServiceModel.Tables
 {
     public class ONHAND_D_Table
     {
-    
+        
+        public string onhand_no { get; set; }
         public string SHP_CODE { get; set; }
         public string ShipperName { get; set; }
         public string CNG_CODE { get; set; }

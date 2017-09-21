@@ -270,7 +270,7 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                 controller: 'EnquiryListCtrl'
             } )
             .state( 'grList', {
-                url: '/gr/list',
+                url: '/gr/list/:Type',
                 cache: 'false',
                 templateUrl: 'view/GoodsReceipt/list.html',
                 controller: 'GrListCtrl'

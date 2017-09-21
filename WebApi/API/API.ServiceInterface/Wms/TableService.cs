@@ -246,19 +246,23 @@ namespace WebApi.ServiceInterface.Wms
         {
             if (auth.AuthResult(token, uri))
             {
-              
-                 if (uri.IndexOf("/wms/ONHAND_D/confirm") > 0)
+
+                if (uri.IndexOf("/wms/ONHAND_D/confirm") > 0)
                 {
                     ecr.data.results = imcc_Logic.ConfirmAll_ONHAND_D(request);
                 }
-                    else if (uri.IndexOf("/wms/OH_PID_D/create") > 0)
+                else if (uri.IndexOf("/wms/ONHAND_D/update") > 0)
+                {
+                    ecr.data.results = imcc_Logic.Update_ONHAND_D(request);
+                }
+                else if (uri.IndexOf("/wms/OH_PID_D/create") > 0)
                 {
                     ecr.data.results = imcc_Logic.Create_OH_PID_D(request);
 
                 }
 
-                 else if (uri.IndexOf("/wms/OH_PID_D/updateLineItem") > 0)
-                 {
+                else if (uri.IndexOf("/wms/OH_PID_D/updateLineItem") > 0)
+                {
                     ecr.data.results = imcc_Logic.UpdateLineItem(request);
 
                 }
@@ -266,7 +270,11 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     ecr.data.results = imcc_Logic.DeleteLineItem(request);
 
-                }                
+                }
+                else if (uri.IndexOf("wms/ONHAND_D/OnhandNo") > 0)
+                {
+                    ecr.data.results = imcc_Logic.Get_ONHANDNo(request);
+                }
                 else if (uri.IndexOf("/wms/ONHAND_D") > 0)
                 {
                     ecr.data.results = imcc_Logic.Get_ONHAND_D_List(request);
@@ -277,8 +285,9 @@ namespace WebApi.ServiceInterface.Wms
                     ecr.data.results = imcc_Logic.Get_OH_PID_D_List(request);
 
                 }
-               
-                else if (uri.IndexOf("/wms/ONHAND_D") > 0) {
+
+                else if (uri.IndexOf("/wms/ONHAND_D") > 0)
+                {
                     ecr.data.results = imcc_Logic.Get_ONHAND_D_List(request);
                 } 
                 

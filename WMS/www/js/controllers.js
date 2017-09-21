@@ -354,10 +354,12 @@ appControllers.controller( 'UpdateCtrl', [
 appControllers.controller( 'MainCtrl', [
     '$scope',
     '$state',
+    '$stateParams',
     '$ionicPopup',
     function(
         $scope,
         $state,
+        $stateParams,
         $ionicPopup ) {
         $scope.func_Enquiry = function() {
             $state.go( 'enquiryList', {}, {
@@ -370,11 +372,15 @@ appControllers.controller( 'MainCtrl', [
             } );
             */
         };
-        $scope.func_GR = function() {
-            $state.go( 'grList', {}, {
+        $scope.func_GR = function(Type) {
+            $state.go( 'grList', {
+              'Type':Type
+            }, {
                 reload: true
             } );
         };
+
+
         $scope.func_Putaway = function() {
             $state.go( 'putawayList', {}, {
                 reload: true

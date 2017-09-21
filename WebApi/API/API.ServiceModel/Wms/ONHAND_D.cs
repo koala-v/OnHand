@@ -14,10 +14,12 @@ namespace WebApi.ServiceModel.Wms
 {
     [Route("/wms/ONHAND_D", "Get")]   //ONHAND_D?CustomerCode ,ONHAND_D?TrxNo
     [Route("/wms/ONHAND_D", "Get")]     //ONHAND_D?TrxNo
+    [Route("/wms/ONHAND_D/OnhandNo", "Get")]     //ONHAND_D?TrxNo
     [Route("/wms/OH_PID_D", "Get")]     //OH_PID_D?OnhandNO
     [Route("/wms/OH_PID_D/create", "Post")]     //OH_PID_D?OnhandNO
     [Route("/wms/OH_PID_D/DeleteLineItem", "Get")]     //OH_PID_D?OnhandNO,
     [Route("/wms/ONHAND_D/confirm", "Post")]
+    [Route("/wms/ONHAND_D/update", "Post")]
     [Route("/wms/OH_PID_D/updateLineItem", "Post")]
 
     public class ONHAND_D : IReturn<CommonResponse>
@@ -73,7 +75,27 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+        public List<ONHAND_D_Table> Get_ONHANDNo(ONHAND_D request)
+        {
 
+            List<ONHAND_D_Table> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    if (!string.IsNullOrEmpty(request.strONHAND_NO))
+                    {
+
+                        string strSQL = "Select onhand_no  From ONHAND_D Where onhand_no LIKE '" + request.strONHAND_NO + "%'  Order By onhand_no Asc";
+                        Result = db.Select<ONHAND_D_Table>(strSQL);                 
+                    }
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
         public List<ON_PID_D> Get_OH_PID_D_List(ONHAND_D request)
         {
             List<ON_PID_D> Result = null;
@@ -390,43 +412,7 @@ namespace WebApi.ServiceModel.Wms
             }
             catch { throw; }
             return Result;
-
-            //int Result = -1;
-            //int intMaxLineItemNo = 1;
-            //try
-            //{
-            //    using (var db = DbConnectionFactory.OpenDbConnection())
-            //    {
-
-
-
-            //        string onhandno = request.strONHAND_NO;
-            //        if (onhandno != "") {                
-            //            List<ON_PID_D> list1 = db.Select<ON_PID_D>("Select Max(LineItemNo) LineItemNo from OH_PID_D Where onhand_no = " + Modfunction.SQLSafeValue(onhandno));
-            //            if (list1 != null)
-            //            {
-            //                if (list1[0].LineItemNo > 0)
-            //                    intMaxLineItemNo = list1[0].LineItemNo + 1;
-            //            }
-            //            string strSql = "";
-            //            strSql = "insert into OH_PID_D( " +
-            //           "   onhand_no," +
-            //           "   LineItemNo, " +
-            //           "   INV_NO " +
-            //           "  )" +
-            //               "values( " +
-            //               Modfunction.SQLSafeValue(onhandno) + " , " +
-            //               intMaxLineItemNo +"," +
-            //              "''"+
-            //               ") ";
-            //            db.ExecuteSql(strSql);
-            //        }
-            //    }                                     
-            //           Result = intMaxLineItemNo;
-                               
-            //}
-            //catch { throw; }
-            //return Result;
+     
         }
 
         public string ConfirmAll_ONHAND_D(ONHAND_D request)
@@ -525,6 +511,81 @@ namespace WebApi.ServiceModel.Wms
             catch { throw; }
             return Result;
         }
+
+        public string Update_ONHAND_D(ONHAND_D request)
+        { 
+
+
+            string Result = "";         
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    if (request.UpdateAllString != null && request.UpdateAllString != "")
+                    {
+                        JArray ja = (JArray)JsonConvert.DeserializeObject(request.UpdateAllString);
+                        if (ja != null)
+                        {
+
+                            for (int i = 0; i < ja.Count(); i++)
+                            {
+
+                                string strSql = "";
+                               string ONHAND_NO = ja[i]["ONHAND_NO"].ToString();
+                                string SHP_CODE = ja[i]["SHP_CODE"].ToString();
+                                string CNG_CODE = ja[i]["CNG_CODE"].ToString();
+                                string ONHAND_date = ja[i]["ONHAND_date"].ToString();
+                                string CASE_NO = ja[i]["CASE_NO"].ToString();
+                                string PUB_YN = ja[i]["PUB_YN"].ToString();
+                                string HAZARDOUS_YN = ja[i]["HAZARDOUS_YN"].ToString();
+                                string CLSF_YN = ja[i]["CLSF_YN"].ToString();
+                                string ExerciseFlag = ja[i]["ExerciseFlag"].ToString();
+                                string LOC_CODE = ja[i]["LOC_CODE"].ToString();
+                                string TRK_CODE = ja[i]["TRK_CODE"].ToString();
+                                string TRK_CHRG_TYPE = ja[i]["TRK_CHRG_TYPE"].ToString();
+                                string PICKUP_SUP_datetime = ja[i]["PICKUP_SUP_datetime"].ToString();
+                                int NO_INV_WH;
+                                string UserID = ja[i]["UserID"].ToString();
+                                if (ja[i]["NO_INV_WH"].ToString() == "")
+                                {
+                                    NO_INV_WH = 0;
+                                }
+                                else
+                                {
+                                    NO_INV_WH = int.Parse(ja[i]["NO_INV_WH"].ToString());
+                                }
+
+                                strSql = "Update  ONHAND_D   Set" +
+                               "   SHP_CODE ='" +SHP_CODE+ "'," +
+                               "   CNG_CODE ='" + CNG_CODE + "'," +
+                               "   ONHAND_date ='" + ONHAND_date + "'," +
+                               "   CASE_NO ='" + CASE_NO + "'," +
+                               "   PUB_YN ='" + PUB_YN + "'," +
+                               "   HAZARDOUS_YN  ='" + HAZARDOUS_YN + "'," +
+                               "   CLSF_YN  ='" + CLSF_YN + "'," +
+                               "   ExerciseFlag  ='" + ExerciseFlag + "'," +
+                               "   LOC_CODE  ='" + LOC_CODE + "'," +
+                               "   TRK_CODE  ='" + TRK_CODE + "'," +
+                               "   TRK_CHRG_TYPE  ='" + TRK_CHRG_TYPE+ "'," +
+                               "   PICKUP_SUP_datetime ='" + PICKUP_SUP_datetime+ "'," +
+                               "   NO_INV_WH =" +NO_INV_WH + "," +
+                               "   UpdateBy =GETDATE()," +
+                               "   UpdateDateTime =GETDATE() " +
+                               "   WHERE ONHAND_NO ='" + ONHAND_NO+ "'"+
+                               "";
+
+                                db.ExecuteSql(strSql);
+                            }
+                        }
+                        Result ="1";
+                    }
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
 
         private string generateOnhandNo()
         {

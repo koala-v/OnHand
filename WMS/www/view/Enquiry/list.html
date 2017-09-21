@@ -2,6 +2,7 @@
     <ion-header-bar class="bar-positive" align-title="center">
         <button class="button button-icon icon ion-android-arrow-back" ng-click="returnMain()"></button>
         <div class="h1 title">Enquiry</div>
+            <button class="button button-icon icon ion-android-open" ng-click="openModal()"></button>
         <!-- <button class="button button-icon icon ion-edit" ng-click="EditOff()"></button> -->
         <!-- <button class="button button-icon icon ion-edit" ng-click="EditOff()"></button> -->
     </ion-header-bar>
@@ -197,6 +198,313 @@
                 </div>
             </div>
         </div>
-
     </ion-content>
+
+    <!--  start Pid page -->
+    <script id="scan.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-header-bar class="bar-positive" align-title="center">
+                <button class="button button-icon icon ion-android-arrow-back" ng-click="closeModal()"></button>
+                <div class="h1 title">PID</div>
+                <button class="button button-icon icon ion-plus-round" ng-click="openModalAddPID()"></button>
+            </ion-header-bar>
+            <ion-content overflow-scroll="true">
+                <div class="list card" ng-if="Detail.OH_PID_D.LineItemNo>0">
+                    <!-- <ion-list can-swipe="true" tabindex="-1" id="div-list">
+                        <ion-item nav-clear menu-close class="item item-icon-right"> -->
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Trucker Bill</span>
+                                        <input type="text" id="" ng-model="Detail.OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill" style="padding-right: 14px;">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <div class="item item-input item-select">
+                                        <div class="input-label">
+                                            Pack Type
+                                        </div>
+                                        <select ng-model="Detail.OH_PID_D.PACK_TYPE">
+                                            <option value="">None</option>
+                                            <option value="Carton Box">Carton Box</option>
+                                            <option value="Random Pack Type">Random Pack Type</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
+                                        <input type="text" id="" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;">
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- 要去APP.CSS 写样式  Class="imc-scroll"-->
+                            <div class="item">
+                                <div class="imc-scroll">
+                                    <div>
+                                        <table border="1px">
+                                            <tr>
+                                                <th> &nbsp;&nbsp;Un No &nbsp;</th>
+                                                <th>DG Class &nbsp;</th>
+                                                <th>DG Description &nbsp;</th>
+                                            </tr>
+                                            <tr class="" ng-repeat="PidUnGrid in Detail.PidUnGrids">
+                                                <td> &nbsp;&nbsp;<span ng-bind="PidUnGrid.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
+                                                <td> <span ng-bind="PidUnGrid.DGClass"></span> &nbsp;</td>
+                                                <td> <span ng-bind="PidUnGrid.DGDescription"></span> &nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Weight</span>
+                                        <input type="number" id="" ng-model="Detail.OH_PID_D.GROSS_LB" placeholder="Weight" style="padding-right: 14px;">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Length</span>
+                                    </label>
+                                </div>
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Width</span>
+                                    </label>
+                                </div>
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">height</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <input type="number" id="" ng-model="Detail.OH_PID_D.LENGTH" placeholder="Length" style="padding-right: 14px;">
+                                    </label>
+                                </div>
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <input type="number" id="" ng-model="Detail.OH_PID_D.WIDTH" placeholder="Width" style="padding-right: 14px;">
+                                    </label>
+                                </div>
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <input type="number" id="" ng-model="Detail.OH_PID_D.HEIGHT" placeholder="Height" style="padding-right: 14px;">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="padding:0px;">
+                                    <label class="item item-input">
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Remark</span>
+                                        <input type="text" id="" ng-model="Detail.OH_PID_D.Remark" placeholder=Remark>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- <i class="icon ion-android-arrow-dropleft"></i>
+                            <ion-option-button class="button-assertive" ng-click="DeleteLine(Detail.OH_PID_D.LineItemNo)">
+                                <i class="icon ion-trash-a"></i>
+                            </ion-option-button>
+                        </ion-item>
+                    </ion-list> -->
+                </div>
+            </ion-content>
+            <ion-footer-bar class="bar-positive">
+                <div class="button-bar">
+                    <button class="button" ng-click="showPrev()">
+                        Previous
+                    </button>
+                    <button class="button" ng-show="Detail.blnNext" ng-click="showNext()">
+                        Next
+                    </button>
+                    <button class="button"  ng-click="DeleteLine(Detail.OH_PID_D.LineItemNo)">
+                        Del
+                    </button>
+                    <button class="button" ng-click="closeModal()">
+                        Cancel
+                    </button>
+                </div>
+            </ion-footer-bar>
+        </ion-modal-view>
+    </script>
+    <!--  End Pid page -->
+    <!-- start add Pid Page -->
+    <script id="PID.html" type="text/ng-template">
+        <ion-modal-view>
+            <ion-header-bar class="bar-positive" align-title="center">
+                <button class="button button-icon icon ion-android-arrow-back" ng-click="closeModalAddPID()"></button>
+                <div class="h1 title">ADD PID</div>
+            </ion-header-bar>
+            <ion-content overflow-scroll="true">
+                <div class="card" style="padding-top: 3px;padding-bottom: 3px;">
+                    <div class="item">
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Trucker Bill</span>
+                                    <input type="text" id="" ng-model="Detail.Add_OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <div class="item item-input item-select">
+                                    <div class="input-label">
+                                        Pack Type
+                                    </div>
+                                    <select ng-model="Detail.Add_OH_PID_D.PACK_TYPE">
+                                        <option value="">None</option>
+                                        <option value="Carton Box">Carton Box</option>
+                                        <option value="Random Pack Type">Random Pack Type</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
+                                    <input type="text" id="" ng-model="Detail.Add_OH_PID_D.PID_NO" placeholder="Pid">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-bar">
+                        <button class="button icon ion-plus-round button-positive" ng-click="AddUnNo()">
+                            Add UnNo
+                        </button>
+                    </div>
+                    <!-- 要去APP.CSS 写样式 -->
+                    <div class="imc-scroll">
+                        <div>
+                            <table border="1px">
+                                <tr>
+                                    <th> &nbsp;&nbsp;Un No &nbsp;</th>
+                                    <th>DG Class &nbsp;</th>
+                                    <th>DG Description &nbsp;</th>
+                                </tr>
+                                <tr class="" ng-repeat="Rcdg1 in Detail.Rcdg1s">
+                                    <td> &nbsp;&nbsp;<span ng-bind="Rcdg1.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
+                                    <td> <span ng-bind="Rcdg1.DGClass"></span> &nbsp;</td>
+                                    <td> <span ng-bind="Rcdg1.DGDescription"></span> &nbsp;</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="item" style="padding: 0px">
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Weight</span>
+                                    <input type="number" id="" ng-model="Detail.Add_OH_PID_D.GROSS_LB" placeholder="Weight">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Length</span>
+                                </label>
+                            </div>
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Width</span>
+                                </label>
+                            </div>
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Height</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <input type="number" id="" ng-model="Detail.Add_OH_PID_D.LENGTH" placeholder="Length">
+                                </label>
+                            </div>
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <input type="number" id="" ng-model="Detail.Add_OH_PID_D.WIDTH" placeholder="Width">
+                                </label>
+                            </div>
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <input type="number" id="" ng-model="Detail.Add_OH_PID_D.HEIGHT" placeholder="Height">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding:0px;">
+                                <label class="item item-input">
+                                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Remark</span>
+                                    <input type="text" id="" ng-model="Detail.Add_OH_PID_D.Remark" placeholder=Remark>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ion-content>
+            <ion-footer-bar class="bar-positive">
+                <div class="button-bar">
+                    <button class="button icon ion-android-done" ng-click="addLine()">
+                        Save
+                    </button>
+                    <button class="button icon ion-arrow-return-right" ng-click="closeModalAddPID()">
+                        Cancel
+                    </button>
+                </div>
+            </ion-footer-bar>
+        </ion-modal-view>
+    </script>
+    <script id="popup-UnNo.html" type="text/ng-template">
+        <div class="list card">
+            <h5>&nbsp;&nbsp;&nbsp;UnNo :</h5>
+            <div class="row">
+                <div class="col col-10" style="text-align:center;">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;"></span>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <ui-select ng-model="Rcdg1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowRcdg1(Rcdg1.selected.UnNo)">
+                        <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.UnNo | limitTo:16}}</ui-select-match>
+                        <ui-select-choices repeat="Rcdg1 in Rcdg1s track by $index" refresh="refreshRcdg1UnNo($select.search)" refresh-delay="0" position="down">
+                            <div ng-bind-html="Rcdg1.UnNo | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+            <hr/>
+            <h5>&nbsp;&nbsp;&nbsp;DG Class :</h5>
+            <div class="row">
+                <div class="col col-10" style="text-align:center;">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;"></span>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">{{Detail.Rcdg1.DGClass}}</span>
+                </div>
+            </div>
+            <hr/>
+            <h5>&nbsp;&nbsp;&nbsp;DG Description :</h5>
+            <div class="row">
+                <div class="col col-10" style="text-align:center;">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;"></span>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">{{Detail.Rcdg1.DGDescription}}</span>
+                </div>
+            </div>
+        </div>
+    </script>
+    <!-- End add Pid page -->
+    
 </ion-view>

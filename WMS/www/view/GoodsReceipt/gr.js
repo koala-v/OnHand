@@ -20,15 +20,19 @@ appControllers.controller('GrListCtrl', [
         ionicDatePicker,
         ApiService,
         PopupService) {
+      var arrRcdg1 = new Array();
+      var arrPidUnGrid = new Array();
+        $scope.Type=$stateParams.Type;
         $scope.Rcbp1 = {};
-        var arrRcdg1 = new Array();
-        var arrPidUnGrid= new Array();
         $scope.Rcbp1ForConsinnee = {};
+
         $scope.Detail = {
+           TableTitle:'Create Onhand',
             Title: 'New',
             ONHANDNO: '',
             location: '',
             Trucker: '',
+            VisibleDetailFlag: 'N',
             ChargeType: {
                 NewItem: 'PP',
             },
@@ -77,8 +81,8 @@ appControllers.controller('GrListCtrl', [
             },
             Rcdg1: {},
             Rcdg1s: {},
-            PidUnGrid:{},
-            PidUnGrids:{},
+            PidUnGrid: {},
+            PidUnGrids: {},
             blnNext: true
         };
 
@@ -92,26 +96,24 @@ appControllers.controller('GrListCtrl', [
             text: 'To Follow',
             value: 'TF'
         }];
-
-        $ionicModal.fromTemplateUrl('scan.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function (modal) {
-            $scope.modal = modal;
-        });
-        $scope.$on('$destroy', function () {
-            $scope.modal.remove();
-        });
-        $ionicModal.fromTemplateUrl('PID.html', {
-            scope: $scope,
-            animation: 'slide-in-up'
-        }).then(function (modal) {
-            $scope.modalPID = modal;
-        });
-        $scope.$on('$destroy', function () {
-            $scope.modalPID.remove();
-        });
-
+        $scope.refreshRcbp1 = function (BusinessPartyName) {
+            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
+                objUri.addSearch('BusinessPartyName', BusinessPartyName);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Rcbp1s = result.data.results;
+                });
+            }
+        };
+        $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName) {
+            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
+                objUri.addSearch('BusinessPartyName', BusinessPartyName);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Rcbp1ForConsinnees = result.data.results;
+                });
+            }
+        };
         var CheckPush = function () {
             if ($scope.Detail.ONHAND_D.PUB_YN === 'Y') {
                 $scope.Detail.pushPublication.checked = true;
@@ -239,46 +241,50 @@ appControllers.controller('GrListCtrl', [
                 }
             });
         };
-        $scope.refreshRcbp1 = function (BusinessPartyName) {
-            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
-                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
-                objUri.addSearch('BusinessPartyName', BusinessPartyName);
-                ApiService.Get(objUri, false).then(function success(result) {
-                    $scope.Rcbp1s = result.data.results;
-                });
+
+        $scope.Update = function () {
+          if ($scope.Detail.ONHANDNO !==''){
+            if (is.undefined($scope.Rcbp1.selected)) {
+                $scope.Detail.ONHAND_D.SHP_CODE = "";
+            } else {
+                $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
             }
-        };
-        $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName) {
-            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
-                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
-                objUri.addSearch('BusinessPartyName', BusinessPartyName);
-                ApiService.Get(objUri, false).then(function success(result) {
-                    $scope.Rcbp1ForConsinnees = result.data.results;
-                });
+            if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
+                $scope.Detail.ONHAND_D.CNG_CODE = "";
+            } else {
+                $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
             }
-        };
-        $scope.refreshRcdg1UnNo = function (UnNo) {
-            if (is.not.undefined(UnNo) && is.not.empty(UnNo)) {
-                var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
-                objUri.addSearch('UnNo', UnNo);
-                objUri.addSearch('UnNoFlag', 'N');
-                ApiService.Get(objUri, false).then(function success(result) {
-                    $scope.Rcdg1s = result.data.results;
-                });
+            if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
+                $scope.Detail.ONHAND_D.CASE_NO = "";
+            }
+            if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
+                $scope.Detail.ONHAND_D.NO_INV_WH = "";
+            }
+            $scope.Detail.ONHAND_D.ONHAND_NO=$scope.Detail.ONHANDNO;
+            $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
+            $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
+            $scope.LocationChange();
+            $scope.TruckerChange();
+            $scope.pushChange();
+            var arrONHAND_D = [];
+            arrONHAND_D.push($scope.Detail.ONHAND_D);
+            var jsonData = {
+                "UpdateAllString": JSON.stringify(arrONHAND_D)
+            };
+            var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/update');
+            ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                // $scope.Detail.ONHANDNO = result.data.results;
+                // $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
+                // if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
+                //     PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+                // }
+            });
             }
         };
 
-        $scope.ShowRcdg1 = function (UnNo) {
-            var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
-            objUri.addSearch('UnNo', UnNo);
-            objUri.addSearch('UnNoFlag', 'Y');
-            ApiService.Get(objUri, false).then(function success(result) {
-                $scope.Detail.Rcdg1 = result.data.results[0];
-            });
-            if (!ENV.fromWeb) {
-                $cordovaKeyboard.close();
-            }
-        };
+
+
+
         $scope.OnDatePicker = function () {
             var ipObj1 = {
                 callback: function (val) { //Mandatory
@@ -301,6 +307,67 @@ appControllers.controller('GrListCtrl', [
             ionicDatePicker.openDatePicker(ipObj1);
         };
 
+        $scope.showDate = function (utc) {
+            return moment(utc).format('DD-MMM-YYYY');
+        };
+
+        $scope.returnMain = function () {
+            $state.go('index.main', {}, {
+                reload: true
+            });
+        };
+
+
+ // start Enquiry
+ var CheckTableTitle=function (){
+   if($scope.Type==='Enquiry')  {
+     $scope.Detail.TableTitle='Enquiry';
+   }
+};
+CheckTableTitle();
+$scope.refreshOnhand_D = function (OnhandNo) {
+    if (is.not.undefined(OnhandNo) && is.not.empty(OnhandNo)) {
+        var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/OnhandNo');
+        objUri.addSearch('strONHAND_NO', OnhandNo);
+        ApiService.Get(objUri, false).then(function success(result) {
+            $scope.Onhand_DForOnhandNos = result.data.results;
+        });
+    }
+};
+$scope.findOnhand = function (ONHANDNO) {
+  $scope.Detail.ONHANDNO =ONHANDNO;
+    if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+        var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D');
+        objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+        ApiService.Get(objUri, false).then(function success(result) {
+            $scope.Detail.ONHAND_D = result.data.results[0];
+            if (is.not.undefined($scope.Detail.ONHAND_D)) {
+                $scope.Detail.VisibleDetailFlag = 'Y';
+                $scope.Detail.ONHAND_D.ONHAND_date = checkDate($scope.Detail.ONHAND_D.ONHAND_date);
+                $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = checkDate($scope.Detail.ONHAND_D.PICKUP_SUP_datetime);
+                $scope.Rcbp1.selected = {
+                    BusinessPartyCode: $scope.Detail.ONHAND_D.SHP_CODE,
+                    BusinessPartyName: $scope.Detail.ONHAND_D.ShipperName
+                };
+                $scope.Rcbp1ForConsinnee.selected = {
+                    BusinessPartyCode: $scope.Detail.ONHAND_D.CNG_CODE,
+                    BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
+                };
+                CheckPush();
+                CheckLocation();
+                CheckTrucker();
+                CheckChargeType();
+            } else {
+                PopupService.Info(null, 'Please Enter The Current OhandNo').then();
+            }
+        });
+    } else {
+        $scope.Detail.VisibleDetailFlag = 'N';
+        // PopupService.Info(null, 'Please Enter OhandNo').then();
+    }
+};
+
+ // end Enquiry
         $scope.findOH_PID_D = function (Type) {
             if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
                 var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D');
@@ -320,6 +387,36 @@ appControllers.controller('GrListCtrl', [
             } else {
                 PopupService.Info(null, 'Please First Create Onhand').then();
             }
+        };
+
+        // start PId Page
+        $ionicModal.fromTemplateUrl('scan.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function (modal) {
+            $scope.modal = modal;
+        });
+        $scope.$on('$destroy', function () {
+            $scope.modal.remove();
+        });
+        $scope.openModal = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                $scope.modal.show();
+                $scope.findOH_PID_D('');
+            } else {
+              if($scope.Type==='Enquiry')  {
+              PopupService.Info(null, 'Please First Enter Onhand', '').then(function (res) {});
+            }else{
+                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+            }
+          }
+            // $ionicLoading.show();
+        };
+
+        $scope.closeModal = function () {
+            $scope.modal.hide();
+            $scope.updateLineItem('Update');
+
         };
 
         $scope.DeleteLine = function (LineItemNo) {
@@ -398,8 +495,7 @@ appControllers.controller('GrListCtrl', [
                     UnNo10: $scope.Detail.OH_PID_D_S[row].UnNo10,
                     Remark: $scope.Detail.OH_PID_D_S[row].Remark,
                 };
-
-getPidUngrid($scope.Detail.OH_PID_D_S[row]);
+                getPidUngrid($scope.Detail.OH_PID_D_S[row]);
             }
 
             $scope.Detail.blnNext = true;
@@ -410,84 +506,71 @@ getPidUngrid($scope.Detail.OH_PID_D_S[row]);
             // }
         };
 
-      var  getPidUngrid=function(PidRows){
-          arrPidUnGrid=new Array();
-          $scope.Detail.PidUnGrids='';
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo01,
-            DGClass:PidRows.DgClass01,
-          DGDescription:PidRows.DgDescription01
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo02,
-            DGClass:PidRows.DgClass02,
-            DGDescription:PidRows.DgDescription02
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo03,
-            DGClass:PidRows.DgClass03,
-            DGDescription:PidRows.DgDescription03
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo04,
-            DGClass:PidRows.DgClass04,
-            DGDescription:PidRows.DgDescription04
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo05,
-            DGClass:PidRows.DgClass05,
-            DGDescription:PidRows.DgDescription05
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo06,
-            DGClass:PidRows.DgClass06,
-            DGDescription:PidRows.DgDescription06
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo07,
-            DGClass:PidRows.DgClass07,
-            DGDescription:PidRows.DgDescription07
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo08,
-            DGClass:PidRows.DgClass08,
-            DGDescription:PidRows.DgDescription08
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo09,
-            DGClass:PidRows.DgClass09,
-            DGDescription:PidRows.DgDescription09
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrid={
-            UnNo:PidRows.UnNo10,
-            DGClass:PidRows.DgClass10,
-            DGDescription:PidRows.DgDescription10
-          };
-          arrPidUnGrid.push($scope.Detail.PidUnGrid);
-
-          $scope.Detail.PidUnGrids=arrPidUnGrid;
+        var getPidUngrid = function (PidRows) {
+            arrPidUnGrid = new Array();
+            $scope.Detail.PidUnGrids = '';
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo01,
+                DGClass: PidRows.DgClass01,
+                DGDescription: PidRows.DgDescription01
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo02,
+                DGClass: PidRows.DgClass02,
+                DGDescription: PidRows.DgDescription02
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo03,
+                DGClass: PidRows.DgClass03,
+                DGDescription: PidRows.DgDescription03
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo04,
+                DGClass: PidRows.DgClass04,
+                DGDescription: PidRows.DgDescription04
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo05,
+                DGClass: PidRows.DgClass05,
+                DGDescription: PidRows.DgDescription05
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo06,
+                DGClass: PidRows.DgClass06,
+                DGDescription: PidRows.DgDescription06
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo07,
+                DGClass: PidRows.DgClass07,
+                DGDescription: PidRows.DgDescription07
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo08,
+                DGClass: PidRows.DgClass08,
+                DGDescription: PidRows.DgDescription08
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo09,
+                DGClass: PidRows.DgClass09,
+                DGDescription: PidRows.DgDescription09
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrid = {
+                UnNo: PidRows.UnNo10,
+                DGClass: PidRows.DgClass10,
+                DGDescription: PidRows.DgDescription10
+            };
+            arrPidUnGrid.push($scope.Detail.PidUnGrid);
+            $scope.Detail.PidUnGrids = arrPidUnGrid;
         };
-
 
         $scope.showPrev = function () {
             var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
@@ -508,6 +591,83 @@ getPidUngrid($scope.Detail.OH_PID_D_S[row]);
             }
         };
 
+        // End Pid Page
+
+        // start Add Pid Page
+        $ionicModal.fromTemplateUrl('PID.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function (modal) {
+            $scope.modalPID = modal;
+        });
+        $scope.$on('$destroy', function () {
+            $scope.modalPID.remove();
+        });
+
+        $scope.UpdateTotal = function () {
+            if ($scope.Detail.OH_PID_D_S.length > 0) {
+                var TotalWeight = 0;
+                for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
+                    TotalWeight = TotalWeight + $scope.Detail.OH_PID_D_S[i].GROSS_LB;
+                }
+                $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
+            }
+        };
+        $scope.closeModalAddPID = function () {
+            $scope.modalPID.hide();
+            $scope.findOH_PID_D('');
+        };
+        $scope.openModalAddPID = function () {
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                $scope.updateLineItem('Update');
+                $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                $scope.Detail.Add_OH_PID_D.PACK_TYPE = '';
+                $scope.Detail.Add_OH_PID_D.PID_NO = '';
+                $scope.Detail.Add_OH_PID_D.UnNo = '';
+                $scope.Detail.Add_OH_PID_D.GROSS_LB = 0;
+                $scope.Detail.Add_OH_PID_D.LENGTH = 0;
+                $scope.Detail.Add_OH_PID_D.WIDTH = 0;
+                $scope.Detail.Add_OH_PID_D.HEIGHT = 0;
+                $scope.Detail.Add_OH_PID_D.Remark = '';
+                $scope.Detail.Rcdg1s = '';
+                $scope.Detail.Add_OH_PID_D.UnNo01 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo02 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo03 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo04 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo05 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo06 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo07 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo08 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo09 = '';
+                $scope.Detail.Add_OH_PID_D.UnNo10 = '';
+                arrRcdg1 = new Array();
+                $scope.modalPID.show();
+            } else {
+                // PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+            }
+        };
+
+        $scope.refreshRcdg1UnNo = function (UnNo) {
+            if (is.not.undefined(UnNo) && is.not.empty(UnNo)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
+                objUri.addSearch('UnNo', UnNo);
+                objUri.addSearch('UnNoFlag', 'N');
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Rcdg1s = result.data.results;
+                });
+            }
+        };
+        $scope.ShowRcdg1 = function (UnNo) {
+            var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
+            objUri.addSearch('UnNo', UnNo);
+            objUri.addSearch('UnNoFlag', 'Y');
+            ApiService.Get(objUri, false).then(function success(result) {
+                $scope.Detail.Rcdg1 = result.data.results[0];
+            });
+            if (!ENV.fromWeb) {
+                $cordovaKeyboard.close();
+            }
+        };
         $scope.addLine = function () {
             PopupService.Confirm(null, 'Confirm', 'Are you sure to Add PID?').then(function (res) {
                 if (res) {
@@ -583,86 +743,18 @@ getPidUngrid($scope.Detail.OH_PID_D_S[row]);
             });
 
         };
-        $scope.UpdateTotal = function () {
-            if ($scope.Detail.OH_PID_D_S.length > 0) {
-                var TotalWeight = 0;
-                for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
-                    TotalWeight = TotalWeight + $scope.Detail.OH_PID_D_S[i].GROSS_LB;
-                }
-                $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
-            }
-        };
 
-        $scope.openModal = function () {
-            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-                $scope.modal.show();
-                $scope.findOH_PID_D('');
-            } else {
-                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
-            }
-            // $ionicLoading.show();
-        };
+        // End Add Pid Page
 
-        $scope.closeModal = function () {
-            $scope.modal.hide();
-            $scope.updateLineItem('Update');
-
-        };
-
-        $scope.closeModalAddPID = function () {
-            $scope.modalPID.hide();
-            $scope.findOH_PID_D('');
-        };
-
-        $scope.openModalAddPID = function () {
-            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-                $scope.updateLineItem('Update');
-                $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
-                $scope.Detail.Add_OH_PID_D.PACK_TYPE = '';
-                $scope.Detail.Add_OH_PID_D.PID_NO = '';
-                $scope.Detail.Add_OH_PID_D.UnNo = '';
-                $scope.Detail.Add_OH_PID_D.GROSS_LB = 0;
-                $scope.Detail.Add_OH_PID_D.LENGTH = 0;
-                $scope.Detail.Add_OH_PID_D.WIDTH = 0;
-                $scope.Detail.Add_OH_PID_D.HEIGHT = 0;
-                $scope.Detail.Add_OH_PID_D.Remark = '';
-                $scope.Detail.Rcdg1s = '';
-                $scope.Detail.Add_OH_PID_D.UnNo01 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo02 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo03 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo04 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo05 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo06 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo07 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo08 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo09 = '';
-                $scope.Detail.Add_OH_PID_D.UnNo10 = '';
-                arrRcdg1 = new Array();
-                $scope.modalPID.show();
-            } else {
-                // PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
-            }
-        };
-
-        $scope.showDate = function (utc) {
-            return moment(utc).format('DD-MMM-YYYY');
-        };
-
-        $scope.returnMain = function () {
-            $state.go('index.main', {}, {
-                reload: true
-            });
-        };
-
-        $scope.returnList = function () {
-            if ($ionicHistory.backView()) {
-                $ionicHistory.goBack();
-            } else {
-                $state.go('grList', {}, {
-                    reload: true
-                });
-            }
-        };
+        // $scope.returnList = function () {
+        //     if ($ionicHistory.backView()) {
+        //         $ionicHistory.goBack();
+        //     } else {
+        //         $state.go('grList', {}, {
+        //             reload: true
+        //         });
+        //     }
+        // };
     }
 ]);
 
