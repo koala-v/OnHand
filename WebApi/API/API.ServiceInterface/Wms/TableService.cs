@@ -242,6 +242,35 @@ namespace WebApi.ServiceInterface.Wms
             }
         }
 
+        public void TS_aeaw(Auth auth, aeaw request, Aeaw_Logic aeaw_Logic, CommonResponse ecr, string[] token, string uri)
+        {
+            if (auth.AuthResult(token, uri))
+            {
+
+                if (uri.IndexOf("/wms/awaw1/MAwbNo") > 0)
+                {
+                    ecr.data.results = aeaw_Logic.Get_Aeaw1_List(request);
+                }
+                else if (uri.IndexOf("/wms/awaw1/MasterJobNo") > 0)
+                {
+                    ecr.data.results = aeaw_Logic.Get_Aeaw1MasterJoNo_List(request);
+                }
+                else if (uri.IndexOf("/wms/awaw1/Pid") > 0)
+                {
+                    ecr.data.results = aeaw_Logic.Get_PID_List(request);
+                }
+               
+                ecr.meta.code = 200;
+                ecr.meta.message = "OK";
+            }
+            else
+            {
+                ecr.meta.code = 401;
+                ecr.meta.message = "Unauthorized";
+            }
+        }
+    
+
         public void TS_Imcc(Auth auth, ONHAND_D request, imcc_loigc imcc_Logic, CommonResponse ecr, string[] token, string uri)
         {
             if (auth.AuthResult(token, uri))

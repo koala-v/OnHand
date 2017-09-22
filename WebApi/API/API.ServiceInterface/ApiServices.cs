@@ -91,6 +91,21 @@ namespace WebApi.ServiceInterface
             catch (Exception ex) { cr(ecr, ex); }
             return ecr;
         }
+
+        public ServiceModel.Wms.Aeaw_Logic wms_Aeaw_Logic { get; set; }
+        public object Any(ServiceModel.Wms.aeaw request)
+        {
+            CommonResponse ecr = new CommonResponse();
+            ecr.initial();
+            try
+            {
+                ServiceInterface.Wms.TableService ts = new ServiceInterface.Wms.TableService();
+                ts.TS_aeaw(auth, request, wms_Aeaw_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
+            }
+            catch (Exception ex) { cr(ecr, ex); }
+            return ecr;
+        }
+
         public ServiceModel.Wms.Imgi_Logic wms_Imgi_Logic { get; set; }
         public object Any(ServiceModel.Wms.Imgi request)
         {

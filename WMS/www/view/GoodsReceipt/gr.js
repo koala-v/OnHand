@@ -365,6 +365,9 @@ $scope.findOnhand = function (ONHANDNO) {
         $scope.Detail.VisibleDetailFlag = 'N';
         // PopupService.Info(null, 'Please Enter OhandNo').then();
     }
+    if (!ENV.fromWeb) {
+        $cordovaKeyboard.close();
+    }
 };
 
  // end Enquiry

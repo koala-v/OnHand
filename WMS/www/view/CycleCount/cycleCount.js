@@ -12,39 +12,47 @@ appControllers.controller('cycleCountCtrl', [
         $state,
         $cordovaKeyboard,
         ApiService) {
-        $scope.Rcbp1 = {};
-        $scope.TrxNo = {};
-        $scope.Imcc1s = {};
-        $scope.refreshRcbp1 = function (BusinessPartyName) {
-            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
-                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
-                objUri.addSearch('BusinessPartyName', BusinessPartyName);
+        $scope.Aeaw1 = {
+        MasterJobNo:'',
+        };
+        $scope.Detail={
+          Pid:{},
+        };
+        $scope.refreshAeaw = function (MAwbNo) {
+            if (is.not.undefined(MAwbNo) && is.not.empty(MAwbNo)) {
+                var objUri = ApiService.Uri(true, '/api/wms/awaw1/MAwbNo');
+                objUri.addSearch('MAwbNo', MAwbNo);
                 ApiService.Get(objUri, false).then(function success(result) {
-                    $scope.Rcbp1s = result.data.results;
+                    $scope.Aeaw1s = result.data.results;
                 });
             }
         };
-        $scope.refreshTrxNos = function (Grn) {
-            if (is.not.undefined(Grn) && is.not.empty(Grn)) {
-                var objUri = ApiService.Uri(true, '/api/wms/imcc1');
-                objUri.addSearch('TrxNo', Grn);
-                ApiService.Get(objUri, false).then(function success(result) {
-                    $scope.TrxNos = result.data.results;
-                });
-            }
-        };
-        $scope.ShowImcc1 = function (Customer) {
-            if (is.not.undefined(Customer) && is.not.empty(Customer)) {
-                var objUri = ApiService.Uri(true, '/api/wms/imcc1');
-                objUri.addSearch('CustomerCode', Customer);
+
+        $scope.ShowAeaw = function (MAwbNo) {
+            if (is.not.undefined(MAwbNo) && is.not.empty(MAwbNo)) {
+                var objUri = ApiService.Uri(true, '/api/wms/awaw1/MasterJobNo');
+                objUri.addSearch('MAwbNo', MAwbNo);
                 ApiService.Get(objUri, true).then(function success(result) {
-                    $scope.Imcc1s = result.data.results;
+                    $scope.Aeaw1 = result.data.results[0];
+                    getPid($scope.Aeaw1.MasterJobNo);
                 });
             }
             if (!ENV.fromWeb) {
                 $cordovaKeyboard.close();
             }
         };
+
+ var getPid=function(MasterJobNo){
+   if (MasterJobNo!==''){
+     var objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
+     objUri.addSearch('MasterJobNo', MasterJobNo);
+     ApiService.Get(objUri, true).then(function success(result) {
+           $scope.Detail.Pid = result.data.results;
+     });
+   }
+
+ };
+
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
         };
