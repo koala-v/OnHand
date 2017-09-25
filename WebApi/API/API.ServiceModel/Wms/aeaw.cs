@@ -10,10 +10,13 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/awaw1/MAwbNo", "Get")]
     [Route("/wms/awaw1/MasterJobNo", "Get")]
     [Route("/wms/awaw1/Pid", "Get")]
+
     public class aeaw : IReturn<CommonResponse>
     {
         public string MAwbNo { get; set; }
         public string MasterJobNo { get; set; }
+        public string FromAeawFlag  { get; set; }
+        public string PID_NO { get; set; }
     }
     public class Aeaw_Logic
     {
@@ -72,23 +75,39 @@ namespace WebApi.ServiceModel.Wms
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
 
-                    if (!string.IsNullOrEmpty(request.MasterJobNo))
-                    {                     
-                       string strSQL = "";
-                        strSQL = " select  " +
-                        " RowNum = ROW_NUMBER() OVER(ORDER BY OH_PID_D.LineItemNo ASC) , " +
-                        " OH_PID_D.ONHAND_NO  , " +
-                        " OH_PID_D.LineItemNo , " +                      
-                        " ISNULL(OH_PID_D.PID_NO,'') AS PID_NO , " +                    
-                        " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no=(Select Onhand_No from Onhand_D where MasterJoNo ='"+request.MasterJobNo +"')";
-                        Result = db.Select<Pid_AEMT1>(strSQL);
+                    if (request.FromAeawFlag == "Y") {
+                        if (!string.IsNullOrEmpty(request.MasterJobNo))
+                        {                    
+                            string strSQL = "";
+                            strSQL = "select "+                  
+                                "  PID_NO " +
+                                " From OH_PID_D " +
+                                " Where " +
+                                " ( PID_NO is  not null And  PID_NO !='' and PID_NO " +
+                                " not in(select PID_NO  from AEMT1 where AEMT1.MawbNo in (select Aeaw1.MawbNo from Aeaw1 where MasterJobNo = '" + request.MasterJobNo + "')) ) " +
+                                " and onhand_no  in (select ONHAND_NO from  ONHAND_D where  MasterJobNo = '" + request.MasterJobNo + "' ) ";
+                            Result = db.Select<Pid_AEMT1>(strSQL);
+                        }
+                    }
+                    else {
+                        if (!string.IsNullOrEmpty(request.MasterJobNo))
+                        {
+                            string strSQL = "";
+                            strSQL = "select " +
+                              " PID_NO " +
+                              " From AEMT1 "+
+                              " Where Mawbno in (select MawbNo from Aeaw1 where MasterJobNo = '"+request.MasterJobNo +"')";                         
+                            Result = db.Select<Pid_AEMT1>(strSQL);
 
+                        }
                     }
                 }
-
             }
             catch { throw; }
             return Result;
         }
+
+
+ 
     }
 }

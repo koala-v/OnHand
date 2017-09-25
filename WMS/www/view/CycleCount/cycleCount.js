@@ -4,6 +4,7 @@ appControllers.controller('cycleCountCtrl', [
     '$stateParams',
     '$state',
     '$cordovaKeyboard',
+    'PopupService',
     'ApiService',
     function (
         ENV,
@@ -11,12 +12,17 @@ appControllers.controller('cycleCountCtrl', [
         $stateParams,
         $state,
         $cordovaKeyboard,
+        PopupService,
         ApiService) {
         $scope.Aeaw1 = {
-        MasterJobNo:'',
+            MasterJobNo: '',
         };
-        $scope.Detail={
-          Pid:{},
+        $scope.Detail = {
+            PidS: {},
+            Aemt1S: {},
+            Scan: {
+                PID_NO: ''
+            }
         };
         $scope.refreshAeaw = function (MAwbNo) {
             if (is.not.undefined(MAwbNo) && is.not.empty(MAwbNo)) {
@@ -42,16 +48,83 @@ appControllers.controller('cycleCountCtrl', [
             }
         };
 
- var getPid=function(MasterJobNo){
-   if (MasterJobNo!==''){
-     var objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
-     objUri.addSearch('MasterJobNo', MasterJobNo);
-     ApiService.Get(objUri, true).then(function success(result) {
-           $scope.Detail.Pid = result.data.results;
-     });
-   }
+        var getPid = function (MasterJobNo) {
+            if (MasterJobNo !== '') {
+                var objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
+                objUri.addSearch('MasterJobNo', MasterJobNo);
+                objUri.addSearch('FromAeawFlag', 'Y');
+                ApiService.Get(objUri, true).then(function success(result) {
+                    $scope.Detail.PidS = result.data.results;
+                });
 
- };
+                objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
+                objUri.addSearch('MasterJobNo', MasterJobNo);
+                objUri.addSearch('FromAeawFlag', 'N');
+                ApiService.Get(objUri, true).then(function success(result) {
+                    $scope.Detail.Aemt1S = result.data.results;
+                });
+            }
+
+        };
+
+        $scope.enter = function (ev, type) {
+            if (is.equal(ev.keyCode, 13)) {
+                if (is.equal(type, 'PID_NO') && is.not.empty($scope.Detail.Scan.PID_NO)) {
+                    if (blnVerifyInput('PID_NO')) {
+                    }
+                }
+                if (!ENV.fromWeb) {
+                    $cordovaKeyboard.close();
+                }
+            }
+        };
+
+        $scope.openCam = function (type) {
+            if (!ENV.fromWeb) {
+                if (is.equal(type, 'PID_NO')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        $scope.Detail.Scan.PID_NO = imageData.text;
+                        if (blnVerifyInput('PID_NO')) {
+                        }
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
+                }
+            }
+        };
+
+        var blnVerifyInput = function (type) {
+            var blnPass = true;
+            if (is.equal(type, 'PID_NO')) {
+                if ($scope.Detail.PidS.length > 0) {
+                    for (var i = 0; i < $scope.Detail.PidS.length; i++) {
+                        if ($scope.Detail.Scan.PID_NO !== $scope.Detail.PidS[i].PID_NO) {
+                            blnPass = false;
+                        } else {
+                            blnPass = true;
+                            break;
+                        }
+                    }
+                } else {
+                    blnPass = false;
+                }
+            }
+            if (blnPass) {
+                PopupService.Alert(null, ' Pid No').then();
+            } else {
+                PopupService.Alert(null, 'Invalid Pid No').then();
+            }
+            return blnPass;
+        };
+
+        $scope.clearInput = function (type) {
+            if (is.equal(type, 'PID_NO')) {
+                if ($scope.Detail.Scan.PID_NO.length > 0) {
+                    $scope.Detail.Scan.PID_NO = '';
+                    $('#txt-PID_NO').focus();
+                }
+            }
+        };
 
         $scope.showDate = function (utc) {
             return moment(utc).format('DD-MMM-YYYY');
@@ -189,10 +262,10 @@ appControllers.controller('cycleCountDetailCtrl', [
                         };
                         var strFilter = 'TrxNo=' + $scope.Detail.Imcc2.TrxNo + ' And LineItemNo=' + $scope.Detail.Imcc2.LineItemNo;
                         SqlService.Update('Imcc2_CycleCount', obj, strFilter).then(function (res) {
-                             $scope.Detail.Imcc2s[intRow-2].PackingQtyTempValue=$scope.Detail.Imcc2.PackingQtyTempValue;
-                            $scope.Detail.Imcc2s[intRow-2].WholeQtyTempValue=$scope.Detail.Imcc2.WholeQtyTempValue;
-                            $scope.Detail.Imcc2s[intRow-2].LooseQtyTempValue=$scope.Detail.Imcc2.LooseQtyTempValue ;
-                              showImcc2(intRow - 1);
+                            $scope.Detail.Imcc2s[intRow - 2].PackingQtyTempValue = $scope.Detail.Imcc2.PackingQtyTempValue;
+                            $scope.Detail.Imcc2s[intRow - 2].WholeQtyTempValue = $scope.Detail.Imcc2.WholeQtyTempValue;
+                            $scope.Detail.Imcc2s[intRow - 2].LooseQtyTempValue = $scope.Detail.Imcc2.LooseQtyTempValue;
+                            showImcc2(intRow - 1);
                             // SqlService.Select('Imcc2_CycleCount', '*').then(function (results) {
                             //     if (results.rows.length > 0) {
                             //         for (var i = 0; i < results.rows.length; i++) {
@@ -274,29 +347,28 @@ appControllers.controller('cycleCountDetailCtrl', [
         };
         $scope.Confirm = function () {
             $scope.showNext(2);
-            if ($scope.Detail.NextStatus === true) {
-            } else if ($scope.Detail.NextStatus === false) {
-              SqlService.Select('Imcc2_CycleCount', '*').then(function (results) {
-                  if (results.rows.length > 0) {
-                      for (var i = 0; i < results.rows.length; i++) {
-                          var Imcc2_CycleCount = results.rows.item(i);
-                          Imcc2_CycleCount.UserId=sessionStorage.getItem('UserId').toString();
-                          Imcc2dataResults = Imcc2dataResults.concat(Imcc2_CycleCount);
-                      }
-                      var jsonData= {
-                        "UpdateAllString": JSON.stringify(Imcc2dataResults)
-                      } ;
+            if ($scope.Detail.NextStatus === true) {} else if ($scope.Detail.NextStatus === false) {
+                SqlService.Select('Imcc2_CycleCount', '*').then(function (results) {
+                    if (results.rows.length > 0) {
+                        for (var i = 0; i < results.rows.length; i++) {
+                            var Imcc2_CycleCount = results.rows.item(i);
+                            Imcc2_CycleCount.UserId = sessionStorage.getItem('UserId').toString();
+                            Imcc2dataResults = Imcc2dataResults.concat(Imcc2_CycleCount);
+                        }
+                        var jsonData = {
+                            "UpdateAllString": JSON.stringify(Imcc2dataResults)
+                        };
                         var objUri = ApiService.Uri(true, '/api/wms/imcc2/confirm');
-                      ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                                  PopupService.Info(null, 'Confirm Success', '').then(function (res) {
-                                      $scope.returnList();
-                                  });
-                              });
-                  }
-                  $ionicLoading.hide();
-              }, function (res) {
-                  $ionicLoading.hide();
-              });
+                        ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                            PopupService.Info(null, 'Confirm Success', '').then(function (res) {
+                                $scope.returnList();
+                            });
+                        });
+                    }
+                    $ionicLoading.hide();
+                }, function (res) {
+                    $ionicLoading.hide();
+                });
             }
         };
         var GetImcc2ProductTrxNo = function (TrxNo) {
@@ -304,7 +376,7 @@ appControllers.controller('cycleCountDetailCtrl', [
             objUri.addSearch('TrxNo', TrxNo);
             ApiService.Get(objUri, true).then(function success(result) {
                 $scope.Detail.Imcc2s = result.data.results;
-                  if ($scope.Detail.Imcc2s !== null && $scope.Detail.Imcc2s.length > 0) {
+                if ($scope.Detail.Imcc2s !== null && $scope.Detail.Imcc2s.length > 0) {
                     SqlService.Delete('Imcc2_CycleCount').then(function (res) {
                         for (var i = 0; i < $scope.Detail.Imcc2s.length; i++) {
                             var objImcc2 = $scope.Detail.Imcc2s[i];
@@ -312,11 +384,11 @@ appControllers.controller('cycleCountDetailCtrl', [
                         }
                         showImcc2(0);
                     });
-                  }else{
+                } else {
                     PopupService.Info(null, 'Imcc2 Not Record', '').then(function (res) {
                         $scope.returnList();
                     });
-                  }
+                }
 
             });
         };

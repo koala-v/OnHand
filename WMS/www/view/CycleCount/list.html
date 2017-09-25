@@ -7,7 +7,7 @@
         <div style="padding:0px;">
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-33" style="text-align:center;">
-               <label>MAWB No</label>
+                    <label>MAWB No</label>
                 </div>
                 <div class="col col-67">
                     <ui-select ng-model="Aeaw1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowAeaw(Aeaw1.selected.MAwbNo)">
@@ -18,65 +18,63 @@
                     </ui-select>
                 </div>
             </div>
-      	<div class="row" >
-                <div class="col col-80" >
-                <label class="item item-input "  >
-                    <span class="input-label"  style="padding-top:2px; padding-bottom: 2px;">Pid No&nbsp;&nbsp;</span>
-                    <input type="text" id="txt-barcode" ng-model="Detail.Scan.BarCode" style="padding-right: 14px;" ng-keypress="enter($event, 'BarCode')" >
-                </label>
+            <div class="row">
+                <div class="col col-80">
+                    <label class="item item-input ">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid No&nbsp;&nbsp;</span>
+                        <input type="text" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
+                    </label>
                 </div>
                 <div class="col col-10">
-                  <button class="button button-clear button-positive button-small" ng-click="openCam('BarCode')"><i class="icon ion-qr-scanner"></i></button>
+                    <button class="button button-clear button-positive button-small" ng-click="openCam('PID_NO')"><i class="icon ion-qr-scanner"></i></button>
                 </div>
                 <div class="col">
-                  <button class="button button-clear button-positive button-small" ng-click="clearInput('BarCode')"><i class="icon ion-android-close"></i></button>
+                    <button class="button button-clear button-positive button-small" ng-click="clearInput('PID_NO')"><i class="icon ion-android-close"></i></button>
                 </div>
             </div>
-
 
             <hr style="margin-top:-0.3em;">
         </div>
     </ion-pane>
     <ion-content style="margin-top:100px;">
         <ion-list id="div-grt-list">
-            <div class="card" ng-repeat="Imcc1 in Imcc1s" id="Imcc1-{{ Imcc1.Index }}" ng-click="GoToDetail(Imcc1)">
-                <div class="item item-input">
-                    <div class="col-33">
-                        <p>Trx No<span class="pull-right">:&nbsp;</span></p>
-                    </div>
-                    <div class="col-67">
-                        <div class="item-text-wrap">
-                            <p>
-                                <span ng-bind="Imcc1.TrxNo"></span>
-                            </p>
+            <div>
+                <div class="row">
+                    <div class="col col-50" style="text-align:center;">
+                        <div class="card" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
+                            <div class="item item-input">
+                                <div class="col-33">
+                                    <p>Pid No<span class="pull-right">:&nbsp;</span></p>
+                                </div>
+                                <div class="col-67">
+                                    <div class="item-text-wrap">
+                                        <p>
+                                            <span ng-bind="Pid.PID_NO"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="item item-input">
-                    <div class="col-33">
-                        <p>Date<span class="pull-right">:&nbsp;</span></p>
-                    </div>
-                    <div class="col-67">
-                        <div class="item-text-wrap">
-                            <p>
-                                <span ng-bind="showDate(Imcc1.CycleCountDateTime)"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="item item-input">
-                    <div class="col-33">
-                        <p>Ref No<span class="pull-right">:&nbsp;</span></p>
-                    </div>
-                    <div class="col-67">
-                        <div class="item-text-wrap">
-                            <p>
-                                <span ng-bind="Imcc1.RefNo"></span>
-                            </p>
+                    <div class="col" style="padding:0px;">
+                        <div class="card" ng-repeat="Aemt1 in Detail.Aemt1S" id="" ng-click="">
+                            <div class="item item-input">
+                                <div class="col-33">
+                                    <p>Pid No<span class="pull-right">:&nbsp;</span></p>
+                                </div>
+                                <div class="col-67">
+                                    <div class="item-text-wrap">
+                                        <p>
+                                            <span ng-bind="Aemt1.PID_NO"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </ion-list>
     </ion-content>
 </ion-view>
