@@ -4,6 +4,8 @@ appControllers.controller('cycleCountCtrl', [
     '$stateParams',
     '$state',
     '$cordovaKeyboard',
+    '$cordovaBarcodeScanner',
+    '$cordovaToast',
     'PopupService',
     'ApiService',
     function (
@@ -12,12 +14,16 @@ appControllers.controller('cycleCountCtrl', [
         $stateParams,
         $state,
         $cordovaKeyboard,
+        $cordovaBarcodeScanner,
+        $cordovaToast,
         PopupService,
         ApiService) {
         $scope.Aeaw1 = {
             MasterJobNo: '',
         };
+        $scope.Ae1 = {};
         $scope.Detail = {
+            Aemt1: {},
             PidS: {},
             Aemt1S: {},
             Scan: {
@@ -30,6 +36,12 @@ appControllers.controller('cycleCountCtrl', [
                 objUri.addSearch('MAwbNo', MAwbNo);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Aeaw1s = result.data.results;
+                    if ($scope.Aeaw1s !== null && $scope.Aeaw1s.length > 0) {
+                        $scope.Ae1.selected = $scope.Aeaw1s[0];
+                        // $scope.ShowAeaw();
+                    } else {
+                        $scope.Aeaw1s = [];
+                    }
                 });
             }
         };
@@ -42,6 +54,9 @@ appControllers.controller('cycleCountCtrl', [
                     $scope.Aeaw1 = result.data.results[0];
                     getPid($scope.Aeaw1.MasterJobNo);
                 });
+            } else {
+                $scope.Detail.PidS='';
+                $scope.Detail.Aemt1S='';
             }
             if (!ENV.fromWeb) {
                 $cordovaKeyboard.close();
@@ -93,6 +108,24 @@ appControllers.controller('cycleCountCtrl', [
             }
         };
 
+        var insertAEMT1 = function () {
+            $scope.Detail.Aemt1.MAwbNo = $scope.Aeaw1.MAwbNo;
+            $scope.Detail.Aemt1.PID_NO = $scope.Detail.Scan.PID_NO;
+            $scope.Detail.Aemt1.UserID = sessionStorage.getItem('UserId').toString();
+            var arrAemt1 = [];
+            arrAemt1.push($scope.Detail.Aemt1);
+            var jsonData = {
+                "UpdateAllString": JSON.stringify(arrAemt1)
+            };
+            var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Insert');
+            ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                PopupService.Alert(null, 'This PID No is vailed under this MAWB').then(
+                    $scope.ShowAeaw($scope.Detail.Aemt1.MAwbNo)
+                );
+
+            });
+
+        };
         var blnVerifyInput = function (type) {
             var blnPass = true;
             if (is.equal(type, 'PID_NO')) {
@@ -110,11 +143,13 @@ appControllers.controller('cycleCountCtrl', [
                 }
             }
             if (blnPass) {
-                PopupService.Alert(null, ' Pid No').then();
+                insertAEMT1();
             } else {
-                PopupService.Alert(null, 'Invalid Pid No').then();
+                PopupService.Alert(null, 'This PID No is not under this MAWB').then();
             }
+            $scope.Detail.Scan.PID_NO = '';
             return blnPass;
+
         };
 
         $scope.clearInput = function (type) {

@@ -4,24 +4,25 @@
         <div class="h1 title">Cargo Outbound</div>
     </ion-header-bar>
     <ion-pane style="margin-top:44px; height:70px; overflow:visible;">
-        <div style="padding:0px;">
+        <div class="list card" style="overflow:visible;">
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-33" style="text-align:center;">
-                    <label>MAWB No</label>
+                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAWB No</label>
                 </div>
                 <div class="col col-67">
-                    <ui-select ng-model="Aeaw1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowAeaw(Aeaw1.selected.MAwbNo)">
+                    <ui-select ng-model="Ae1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowAeaw(Ae1.selected.MAwbNo)">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.MAwbNo | limitTo:16}}</ui-select-match>
-                        <ui-select-choices repeat="Aeaw1 in Aeaw1s track by $index" refresh="refreshAeaw($select.search)" refresh-delay="0" position="down">
-                            <div ng-bind-html="Aeaw1.MAwbNo | highlight: $select.search"></div>
+                        <ui-select-choices repeat="Ae1 in Aeaw1s track by $index" refresh="refreshAeaw($select.search)" refresh-delay="0" position="down">
+                            <div ng-bind-html="Ae1.MAwbNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-80">
-                    <label class="item item-input ">
-                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid No&nbsp;&nbsp;</span>
+                    <label class="item item-input" style="margin-left:5px;">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid No&nbsp;</span>
                         <input type="text" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
                     </label>
                 </div>
@@ -33,48 +34,47 @@
                 </div>
             </div>
 
-            <hr style="margin-top:-0.3em;">
         </div>
+
     </ion-pane>
     <ion-content style="margin-top:100px;">
-        <ion-list id="div-grt-list">
-            <div>
-                <div class="row">
-                    <div class="col col-50" style="text-align:center;">
-                        <div class="card" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
-                            <div class="item item-input">
-                                <div class="col-33">
-                                    <p>Pid No<span class="pull-right">:&nbsp;</span></p>
-                                </div>
-                                <div class="col-67">
-                                    <div class="item-text-wrap">
-                                        <p>
-                                            <span ng-bind="Pid.PID_NO"></span>
-                                        </p>
-                                    </div>
+        <div class="list card">
+            <div class="row">
+                <div class="col col-50">
+                    <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PID No&nbsp;:</h5>
+                    <div class="" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
+                        <div class="item item-input">
+                            <div class="col-43">
+                                <p>Pid No<span class="pull-right">:&nbsp;</span></p>
+                            </div>
+                            <div class="col-57">
+                                <div class="item-text-wrap">
+                                    <p>
+                                        <span ng-bind="Pid.PID_NO"></span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col" style="padding:0px;">
-                        <div class="card" ng-repeat="Aemt1 in Detail.Aemt1S" id="" ng-click="">
-                            <div class="item item-input">
-                                <div class="col-33">
-                                    <p>Pid No<span class="pull-right">:&nbsp;</span></p>
-                                </div>
-                                <div class="col-67">
-                                    <div class="item-text-wrap">
-                                        <p>
-                                            <span ng-bind="Aemt1.PID_NO"></span>
-                                        </p>
-                                    </div>
+                </div>
+                <div class="col">
+                    <h5>Unmatched PID No&nbsp;:</h5>
+                    <div class="" ng-repeat="Aemt1 in Detail.Aemt1S" id="" ng-click="">
+                        <div class="item item-input">
+                            <div class="col-43">
+                                <p>Pid No<span class="pull-right">:&nbsp;</span></p>
+                            </div>
+                            <div class="col-57">
+                                <div class="item-text-wrap">
+                                    <p>
+                                        <span ng-bind="Aemt1.PID_NO"></span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-        </ion-list>
+        </div>
     </ion-content>
 </ion-view>
