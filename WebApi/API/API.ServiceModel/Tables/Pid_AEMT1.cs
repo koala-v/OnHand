@@ -9,5 +9,8 @@ namespace WebApi.ServiceModel.Tables
     {
               public string MAwbNo { get; set; }
               public string PID_NO { get; set; }
+              public string LOC_CODE { get; set; }
+
+        
     } 
 }

@@ -338,7 +338,7 @@ namespace WebApi.ServiceModel.Wms
                                     string UnNo01 = Modfunction.CheckNull(ja[i]["UnNo01"]);
                                     string UnNo02 = Modfunction.CheckNull(ja[i]["UnNo02"]);
                                     string UnNo03 = Modfunction.CheckNull(ja[i]["UnNo03"]);
-                                    string UnNo04= Modfunction.CheckNull(ja[i]["UnNo04"]);
+                                    string UnNo04 = Modfunction.CheckNull(ja[i]["UnNo04"]);
                                     string UnNo05 = Modfunction.CheckNull(ja[i]["UnNo05"]);
                                     string UnNo06 = Modfunction.CheckNull(ja[i]["UnNo06"]);
                                     string UnNo07 = Modfunction.CheckNull(ja[i]["UnNo07"]);
