@@ -85,7 +85,7 @@ namespace WebApi.ServiceModel.Wms
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
-                   
+
                     if (request.FromAeawFlag == "Y") {
                         if (!string.IsNullOrEmpty(request.MasterJobNo))
                         {
@@ -95,44 +95,123 @@ namespace WebApi.ServiceModel.Wms
                             string strWhereLoc = "";
                             if (strLoc_Code.Length > 0)
                             {
-                                strLoc = strLoc_Code.Substring(1,strLoc_Code.Length-1);                             
+                                strLoc = strLoc_Code.Substring(1, strLoc_Code.Length - 1);
                                 string[] arrLoc = strLoc.Split(',');
-                                for (int i=0;i<arrLoc.Length;i++)
+                                for (int i = 0; i < arrLoc.Length; i++)
                                 {
-                                    strForLoc = strForLoc+ "Or Loc_Code ='" + arrLoc[i] + "'";
-                                  
+                                    strForLoc = strForLoc + "Or Loc_Code ='" + arrLoc[i] + "'";
+
                                 }
                                 if (strForLoc.Length > 0)
                                 {
-                                    strWhereLoc = "And (" + strForLoc.Substring(2, strForLoc.Length-2) + ")";
+                                    strWhereLoc = "And (" + strForLoc.Substring(2, strForLoc.Length - 2) + ")";
                                 }
                             }
 
                             string strSQL = "";
                             strSQL = "select " +
                                 "  PID_NO  ," +
-                                " (Select ISNULL(LOC_CODE,'') From ONHAND_D Where ONHAND_D.Onhand_No = OH_PID_D.Onhand_No ) as LOC_CODE " +
-                                " From OH_PID_D " +
-                                " Where " +
+                                "  (Select top 1 MAwbNo From Aeaw1 Where MasterJobNo='" + request.MasterJobNo + "' )  AS  MAwbNo ," +
+                                "  (Select ISNULL(LOC_CODE,'') From ONHAND_D Where ONHAND_D.Onhand_No = OH_PID_D.Onhand_No ) as LOC_CODE " +
+                                "  From OH_PID_D " +
+                                "  Where " +
                                 "  PID_NO is  not null And  PID_NO !='' " +
-                                " and onhand_no  in (select ONHAND_NO from  ONHAND_D where  MasterJobNo = '" + request.MasterJobNo + "' " + strWhereLoc + " ) ";
+                                "  and onhand_no  in (select ONHAND_NO from  ONHAND_D where  MasterJobNo = '" + request.MasterJobNo + "' " + strWhereLoc + " ) ";
                             Result = db.Select<Pid_AEMT1>(strSQL);
                             Insert_Aemt1(Result);
                         }
                     }
-                 
+
                 }
             }
             catch { throw; }
             return Result;
         }
 
-        public string Insert_Aemt1(object objAemt1) {
-            //for (int i = 0; i < objAemt1.ToString().Length; i++) {
-            //    string PID_NO = objAemt1.;
-            //}
-           return "1";
+        public string Insert_Aemt1(List<Pid_AEMT1> objAemt1)
+        {
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+                    string KeyMAwbNo = setKeyMAwbNo(Modfunction.CheckNull(objAemt1[0].MAwbNo));
+                    for (int i = 0; i < objAemt1.Count; i++)
+                    {
+
+                        string strSql = "";
+                        string TallyById = "S";
+                        string MAwbNo = Modfunction.CheckNull(objAemt1[i].MAwbNo);
+                        string PID_NO = Modfunction.CheckNull(objAemt1[i].PID_NO);
+                        string LOC_CODE = Modfunction.CheckNull(objAemt1[i].LOC_CODE);
+                        strSql = "insert into Aemt1( " +
+                                  "  KeyMAwbNo ,"+
+                                  "  MAwbNo," +
+                                  "  PID_NO, " +
+                                  "  LOC_CODE, " +
+                                  "  TallyById," +
+                                  "  TallyByDateTime" +
+                                  "  )" +
+                                      "values( " +
+                                      Modfunction.SQLSafeValue(KeyMAwbNo) + ", " +
+                                      Modfunction.SQLSafeValue(MAwbNo) + " , " +
+                                      Modfunction.SQLSafeValue(PID_NO) + " , " +
+                                      Modfunction.SQLSafeValue(LOC_CODE) + " , " +
+                                      Modfunction.SQLSafeValue(TallyById) + "," +
+                                      " GetDate()" +
+                                      ") ";
+                        db.ExecuteSql(strSql);
+
+                    };
+
+                }
+            }
+            catch { throw; }
+            return "";
         }
+
+        private string setKeyMAwbNo(string MAwbNo)
+        {
+            string returnMawbNo = "";
+            List<Pid_AEMT1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    int[] arrayMawbNo = { };
+                    int MaxMawbNo = 0;
+                    List<int> b = arrayMawbNo.ToList();
+                    string strSql = "Select ISNULL(KeyMAwbNo,'') as  KeyMAwbNo From Aemt1 Where MAwbNo ='" + MAwbNo + "' ";
+                    Result = db.Select<Pid_AEMT1>(strSql);
+                    if (Result.Count > 0)
+                    {
+                        for (int i = 0; i < Result.Count; i++)
+                        {
+                            int intMAwbNo = Result[i].MAwbNo.LastIndexOf("_", Result[i].MAwbNo.Length);
+                            int length = Result[i].MAwbNo.Length;
+                            if (intMAwbNo > 0)
+                            {
+                                int intForMAwbNo = Convert.ToInt32(Result[i].MAwbNo.Substring(intMAwbNo+1));
+                                b.Add(intForMAwbNo);
+                                arrayMawbNo = b.ToArray();
+                            }
+                          
+                        }
+
+                        MaxMawbNo = arrayMawbNo.Max();
+
+                    }
+                     MaxMawbNo = MaxMawbNo + 1;
+                     returnMawbNo = MAwbNo + "_"+ MaxMawbNo;                                
+                }
+
+ }
+            catch { throw; }
+            return returnMawbNo;
+       
+    }
+
+
         //public int Insert_Aemt1(aeaw request)
         //{
 
