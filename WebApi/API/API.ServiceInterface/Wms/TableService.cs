@@ -262,7 +262,12 @@ namespace WebApi.ServiceInterface.Wms
                 else if (uri.IndexOf("/wms/Aemt1/Insert") > 0)
                 {
                     //ecr.data.results = aeaw_Logic.Insert_Aemt1(request);
-                } else if (uri.IndexOf ("/wms/LOCATION_K/LOC_CODE") >0)
+                }
+                else if (uri.IndexOf("/wms/Aemt1/Update") > 0)
+                {
+                    ecr.data.results = aeaw_Logic.Update_Aemt1(request);
+                }
+                else if (uri.IndexOf ("/wms/LOCATION_K/LOC_CODE") >0)
                 {
                     ecr.data.results = aeaw_Logic.Get_LOC_CODE_List(request);
                 }

@@ -6,6 +6,7 @@ appControllers.controller('GrListCtrl', [
     '$cordovaKeyboard',
     '$ionicModal',
     '$ionicPopup',
+    '$cordovaBarcodeScanner',
     'ionicDatePicker',
     'ApiService',
     'PopupService',
@@ -17,6 +18,7 @@ appControllers.controller('GrListCtrl', [
         $cordovaKeyboard,
         $ionicModal,
         $ionicPopup,
+        $cordovaBarcodeScanner,
         ionicDatePicker,
         ApiService,
         PopupService) {
@@ -392,6 +394,26 @@ $scope.findOnhand = function (ONHANDNO) {
             }
         };
 
+
+        $scope.openCam = function (type) {
+            if (!ENV.fromWeb) {
+                if (is.equal(type, 'AddPID_NO')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        $scope.Detail.Add_OH_PID_D.PID_NO= imageData.text;
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
+                }
+            }
+        };
+        $scope.clearInput = function (type) {
+            if (is.equal(type, 'AddPID_NO')) {
+                if ($scope.Detail.Add_OH_PID_D.PID_NO.length > 0) {
+                    $scope.Detail.Add_OH_PID_D.PID_NO = '';
+                    $('#txt-PID_NO').focus();
+                }
+            }
+        };
         // start PId Page
         $ionicModal.fromTemplateUrl('scan.html', {
             scope: $scope,
@@ -610,10 +632,13 @@ $scope.findOnhand = function (ONHANDNO) {
         $scope.UpdateTotal = function () {
             if ($scope.Detail.OH_PID_D_S.length > 0) {
                 var TotalWeight = 0;
+                var TotalPCS =0;
                 for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
                     TotalWeight = TotalWeight + $scope.Detail.OH_PID_D_S[i].GROSS_LB;
+                    TotalPCS=TotalPCS+  $scope.Detail.OH_PID_D_S[i].PIECES;
                 }
                 $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
+                  $scope.Detail.ONHAND_D.TotalPCS=  TotalPCS;
             }
         };
         $scope.closeModalAddPID = function () {

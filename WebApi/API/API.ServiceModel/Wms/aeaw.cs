@@ -16,6 +16,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/awaw1/MasterJobNo", "Get")]
     [Route("/wms/awaw1/Pid", "Get")]
     [Route("/wms/Aemt1/Insert", "Post")]
+    [Route("/wms/Aemt1/Update", "Get")]
     [Route("/wms/LOCATION_K/LOC_CODE", "Get")]
     public class aeaw : IReturn<CommonResponse>
     {
@@ -25,9 +26,9 @@ namespace WebApi.ServiceModel.Wms
         public string PID_NO { get; set; }
         public string UpdateAllString { get; set; }
         public string LOC_CODE { get; set; }
-
-
-
+        public string KeyMAwbNo { get; set; }
+        public string strTallyById { get; set; }
+        public string matchFlag { get; set; }
     }
     public class Aeaw_Logic
     {
@@ -41,7 +42,7 @@ namespace WebApi.ServiceModel.Wms
                 {
                     if (!string.IsNullOrEmpty(request.MAwbNo))
                     {
-                        string strSQL = "Select  top 50 MAwbNo, MasterJobNo  From Aeaw1 Where StatusCode = 'USE' And MAwbNo LIKE '" + request.MAwbNo + "%'  Order By MAwbNo Asc";
+                        string strSQL = "Select  DISTINCT MAwbNo, MasterJobNo  From Aeaw1 Where StatusCode = 'USE' And MAwbNo LIKE '" + request.MAwbNo + "%'  Order By MAwbNo Asc";
                         Result = db.Select<Aeaw1>(strSQL);
                     }
                     else
@@ -86,7 +87,8 @@ namespace WebApi.ServiceModel.Wms
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
 
-                    if (request.FromAeawFlag == "Y") {
+                    if (request.FromAeawFlag == "Y")
+                    {
                         if (!string.IsNullOrEmpty(request.MasterJobNo))
                         {
                             string strLoc_Code = request.LOC_CODE;
@@ -118,8 +120,20 @@ namespace WebApi.ServiceModel.Wms
                                 "  PID_NO is  not null And  PID_NO !='' " +
                                 "  and onhand_no  in (select ONHAND_NO from  ONHAND_D where  MasterJobNo = '" + request.MasterJobNo + "' " + strWhereLoc + " ) ";
                             Result = db.Select<Pid_AEMT1>(strSQL);
+                            if (Result.Count > 0) { 
                             Insert_Aemt1(Result);
+                            Result = getAemt1(request.MasterJobNo, "Y", request.MAwbNo);
+                            }
+
                         }
+                    }
+                    else if (request.FromAeawFlag == "N")
+                    {
+                        Result = getAemt1(request.MasterJobNo, "N", request.MAwbNo);
+                    }
+                    else if(request.FromAeawFlag == "K")
+                    {
+                        Result = getAemt1(request.MasterJobNo, "K", request.MAwbNo);
                     }
 
                 }
@@ -128,18 +142,57 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+
+        public List<Pid_AEMT1> getAemt1(string MasterJoNo,string Flag,string MAwbNo)
+        {
+            List<Pid_AEMT1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+                    string strWhere = "";
+                    if (Flag == "N")
+                    {
+                        strWhere = " And MatchFlag ='Y'";
+                    }
+                    else 
+                    {
+                        strWhere = " And (MatchFlag ='' Or MatchFlag is null Or MatchFlag ='N')";
+                    }
+                    string strSQL = "";
+                    string strMAwbNo = MAwbNo + "_";
+                    strSQL = " Select " +
+                               " MAwbNo ," +
+                               " PID_NO ," +
+                               " KeyMAwbNo ," +
+                               " LOC_CODE " +
+                               " From  AEMT1 " +
+                               " Where   KeyMAwbNo =  '"+ strMAwbNo + "'+cast((select max(cast(right(KeyMawbNo,len(KeyMawbNo) -len('"+ strMAwbNo + "')) AS int)) from aemt1 where left(KeyMawbNo,len('" + strMAwbNo + "'))='" + strMAwbNo + "')as varchar ) " + strWhere;
+
+                               //" Where KeyMAwbNo in (  Select MAX(KeyMAwbNo) From Aemt1 Where MAwbNo in(Select top 1 MAwbNo From Aeaw1 Where MasterJobNo='" + MasterJoNo + "')) "  + strWhere;
+                         Result = db.Select<Pid_AEMT1>(strSQL);
+
+                }
+            }
+            catch { throw; }
+            return Result;
+
+          
+
+        }
         public string Insert_Aemt1(List<Pid_AEMT1> objAemt1)
         {
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
                 {
+                   
                     string KeyMAwbNo = setKeyMAwbNo(Modfunction.CheckNull(objAemt1[0].MAwbNo));
                     for (int i = 0; i < objAemt1.Count; i++)
                     {
 
                         string strSql = "";
-                        string TallyById = "S";
+                        string TallyById = "";
                         string MAwbNo = Modfunction.CheckNull(objAemt1[i].MAwbNo);
                         string PID_NO = Modfunction.CheckNull(objAemt1[i].PID_NO);
                         string LOC_CODE = Modfunction.CheckNull(objAemt1[i].LOC_CODE);
@@ -211,6 +264,26 @@ namespace WebApi.ServiceModel.Wms
        
     }
 
+        public int Update_Aemt1(aeaw request)
+        {
+            int Result = -1;
+
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+                    if (request.KeyMAwbNo != null && request.KeyMAwbNo != "" && request.PID_NO !=null && request.PID_NO !="" )
+                    {
+                        string strSQL = "";
+                        strSQL = "Update Aemt1 set MatchFlag='Y' ,TallyByDateTime =getdate(),TallyById='"+request.strTallyById + "' Where KeyMAwbNo ='" + request.KeyMAwbNo+"' And PID_NO ='"+request.PID_NO+"' ";
+                        db.ExecuteSql(strSQL);
+                    }
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
 
         //public int Insert_Aemt1(aeaw request)
         //{

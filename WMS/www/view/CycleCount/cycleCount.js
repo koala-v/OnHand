@@ -145,24 +145,43 @@ appControllers.controller('cycleCountCtrl', [
                 for (var i = 0; i < objLocation.length; i++) {
                     strLocation = strLocation + ',' + objLocation[i].LOC_CODE;
                 }
-
                 var objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
                 objUri.addSearch('MasterJobNo', MasterJobNo);
+                objUri.addSearch('MAwbNo', $scope.Aeaw1.MAwbNo);
                 objUri.addSearch('FromAeawFlag', 'Y');
                 objUri.addSearch('LOC_CODE', strLocation);
                 ApiService.Get(objUri, true).then(function success(result) {
                     $scope.Detail.PidS = result.data.results;
+                    if($scope.Detail.PidS.length>0){
+                         getMatch(MasterJobNo,'N');
+                    }
+
                 });
 
-                // objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
-                // objUri.addSearch('MasterJobNo', MasterJobNo);
-                // objUri.addSearch('FromAeawFlag', 'N');
-                // ApiService.Get(objUri, true).then(function success(result) {
-                //     $scope.Detail.Aemt1S = result.data.results;
-                // });
             }
 
         };
+
+
+        var getMatch =function (MasterJobNo ,Flag){
+          objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
+          objUri.addSearch('MasterJobNo', MasterJobNo);
+            objUri.addSearch('MAwbNo', $scope.Aeaw1.MAwbNo);
+          objUri.addSearch('FromAeawFlag',Flag);
+          if(Flag ==='K'){
+            ApiService.Get(objUri, true).then(function success(result) {
+                  $scope.Detail.PidS = result.data.results;
+            });
+
+          }else if(Flag ==='N')
+          {
+            ApiService.Get(objUri, true).then(function success(result) {
+                    $scope.Detail.Aemt1S = result.data.results;
+            });
+          }
+
+      };
+
 
         $scope.enter = function (ev, type) {
             if (is.equal(ev.keyCode, 13)) {
@@ -188,24 +207,36 @@ appControllers.controller('cycleCountCtrl', [
             }
         };
 
-        var insertAEMT1 = function () {
-            $scope.Detail.Aemt1.MAwbNo = $scope.Aeaw1.MAwbNo;
-            $scope.Detail.Aemt1.PID_NO = $scope.Detail.Scan.PID_NO;
-            $scope.Detail.Aemt1.UserID = sessionStorage.getItem('UserId').toString();
-            var arrAemt1 = [];
-            arrAemt1.push($scope.Detail.Aemt1);
-            var jsonData = {
-                "UpdateAllString": JSON.stringify(arrAemt1)
-            };
-            var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Insert');
-            ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                PopupService.Alert(null, 'This PID No is vailed under this MAWB').then(
-                    $scope.ShowAeaw($scope.Detail.Aemt1.MAwbNo, '')
-                );
 
-            });
+ var UpdateAEMT1=function(){
+   var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Update');
+   objUri.addSearch('KeyMAwbNo', $scope.Detail.PidS[0].KeyMAwbNo);
+    objUri.addSearch('PID_NO', $scope.Detail.Scan.PID_NO);
+      objUri.addSearch('strTallyById', sessionStorage.getItem('UserId').toString());
+   ApiService.Get(objUri, false).then(function success(result) {
+        getMatch($scope.Aeaw1.MasterJobNo,'N');
+          getMatch($scope.Aeaw1.MasterJobNo,'K');
+   });
 
-        };
+ };
+        // var insertAEMT1 = function () {
+        //     $scope.Detail.Aemt1.MAwbNo = $scope.Aeaw1.MAwbNo;
+        //     $scope.Detail.Aemt1.PID_NO = $scope.Detail.Scan.PID_NO;
+        //     $scope.Detail.Aemt1.UserID = sessionStorage.getItem('UserId').toString();
+        //     var arrAemt1 = [];
+        //     arrAemt1.push($scope.Detail.Aemt1);
+        //     var jsonData = {
+        //         "UpdateAllString": JSON.stringify(arrAemt1)
+        //     };
+        //     var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Insert');
+        //     ApiService.Post(objUri, jsonData, true).then(function success(result) {
+        //         PopupService.Alert(null, 'This PID No is vailed under this MAWB').then(
+        //             $scope.ShowAeaw($scope.Detail.Aemt1.MAwbNo, '')
+        //         );
+        //
+        //     });
+        //
+        // };
         var blnVerifyInput = function (type) {
             var blnPass = true;
             if (is.equal(type, 'PID_NO')) {
@@ -223,7 +254,7 @@ appControllers.controller('cycleCountCtrl', [
                 }
             }
             if (blnPass) {
-                insertAEMT1();
+                 UpdateAEMT1();
             } else {
                 PopupService.Alert(null, 'This PID No is not under this MAWB').then();
             }

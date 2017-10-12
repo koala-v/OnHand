@@ -210,12 +210,19 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col" style="padding:0px;">
+                        <div class="col col-100" style="padding:0px;">
                             <label class="item item-input">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
                                 <input type="text" id="" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;">
                             </label>
-                        </div>
+                          </div>
+                            <!-- <div class="col col-10">
+                                <button class="button button-clear button-positive button-small" ng-click="openCam('PID_NO')"><i class="icon ion-qr-scanner"></i></button>
+                            </div>
+                            <div class="col">
+                                <button class="button button-clear button-positive button-small" ng-click="clearInput('PID_NO')"><i class="icon ion-android-close"></i></button>
+                            </div> -->
+
                     </div>
                     <!-- 要去APP.CSS 写样式  Class="imc-scroll"-->
                     <div class="item">
@@ -346,11 +353,17 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="padding:0px;">
+                            <div class="col col-80" style="padding:0px;">
                                 <label class="item item-input">
                                     <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
                                     <input type="text" id="" ng-model="Detail.Add_OH_PID_D.PID_NO" placeholder="Pid">
                                 </label>
+                            </div>
+                            <div class="col col-10">
+                                <button class="button button-clear button-positive button-small" ng-click="openCam('AddPID_NO')"><i class="icon ion-qr-scanner"></i></button>
+                            </div>
+                            <div class="col">
+                                <button class="button button-clear button-positive button-small" ng-click="clearInput('AddPID_NO')"><i class="icon ion-android-close"></i></button>
                             </div>
                         </div>
                     </div>

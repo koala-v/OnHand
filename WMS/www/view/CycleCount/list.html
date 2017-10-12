@@ -83,8 +83,30 @@
 
         <div class="list card">
             <div class="row">
-                <div class="col col-60">
-                    <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
+
+              <div class="col col-60">
+                  <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
+                  <div class="" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
+                      <div class="item item-input">
+
+                          <div class="col-57">
+                              <div class="item-text-wrap">
+                                  <p>
+                                      <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
+                                  </p>
+                              </div>
+                          </div>
+                          <div class="col-43">
+                              <p>
+                                  &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
+                              </p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+                <div class="col">
+                    <h5> PID No&nbsp;:</h5>
                     <div class="" ng-repeat="Aemt1 in Detail.Aemt1S" id="" ng-click="">
                         <div class="item item-input">
                             <div class="col-57">
@@ -103,26 +125,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <h5>PID No&nbsp;:</h5>
-                    <div class="" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
-                        <div class="item item-input">
 
-                            <div class="col-57">
-                                <div class="item-text-wrap">
-                                    <p>
-                                        <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-43">
-                                <p>
-                                    &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
         </div>

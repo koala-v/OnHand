@@ -120,6 +120,7 @@ namespace WebApi.ServiceModel.Wms
                         " OH_PID_D.WIDTH, " +
                         " OH_PID_D.HEIGHT, " +
                         " OH_PID_D.GROSS_LB, " +
+                        " OH_PID_D.PIECES, " +                     
                         " ISNULL(ONHAND_D.SHP_CODE, '') AS SHP_CODE, " +
                         " ISNULL((select BusinessPartyName from rcbp1 where BusinessPartyCode = ONHAND_D.SHP_CODE ),'')  AS  'ShipperName', " +
                         " ISNULL(ONHAND_D.CNG_CODE,'') AS CNG_CODE, " +
@@ -360,6 +361,7 @@ namespace WebApi.ServiceModel.Wms
                                               "  LENGTH," +
                                               "  WIDTH," +
                                               "  HEIGHT," +
+                                              "  PIECES,"+
                                               "  GROSS_LB ," +
                                               "  INV_NO, " +
                                               "  UnNo01, " +
@@ -372,7 +374,7 @@ namespace WebApi.ServiceModel.Wms
                                               "  UnNo08, " +
                                               "  UnNo09, " +
                                               "  UnNo10, " +
-                                              "  Remark " +
+                                              "  Remark " +                                            
                                               "  )" +
                                                   "values( " +
                                                   Modfunction.SQLSafeValue(OnhandNo) + " , " +
@@ -384,6 +386,7 @@ namespace WebApi.ServiceModel.Wms
                                                   LENGTH + "," +
                                                   WIDTH + "," +
                                                   HEIGHT + "," +
+                                                  "1" + "," +
                                                   GROSS_LB + "," +
                                                   "''," +
                                                   Modfunction.SQLSafeValue(UnNo01) + "," +

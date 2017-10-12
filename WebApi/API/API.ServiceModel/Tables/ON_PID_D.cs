@@ -18,6 +18,7 @@ namespace WebApi.ServiceModel.Tables
         public int WIDTH { get; set; }
         public int HEIGHT { get; set; }
         public int GROSS_LB { get; set; }
+        public int PIECES { get; set; }
         public string UnNo01 { get; set; }
         public string UnNo02 { get; set; }
         public string UnNo03{ get; set; }
