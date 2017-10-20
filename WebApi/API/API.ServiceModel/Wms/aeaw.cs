@@ -18,6 +18,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/Aemt1/Insert", "Post")]
     [Route("/wms/Aemt1/Update", "Get")]
     [Route("/wms/LOCATION_K/LOC_CODE", "Get")]
+    [Route("/wms/Aemt1/select", "Get")]
     public class aeaw : IReturn<CommonResponse>
     {
         public string MAwbNo { get; set; }
@@ -79,6 +80,32 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+        public List<Pid_AEMT1> SelectAemt1(aeaw request)
+        {
+            List<Pid_AEMT1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    string strMAwbNo = request.MAwbNo;
+                    if (!string.IsNullOrEmpty(strMAwbNo))
+                        {
+                           string strSQL = "";
+                            strSQL = "select " +
+                                "  PID_NO ," +
+                                "  KeyMAwbNo ," +
+                                "  MAwbNo , " +
+                                "  LOC_CODE "+ 
+                                "  From Aemt1  "+
+                                "  Where  MAwbNo = '" + strMAwbNo + "' ";
+                            Result = db.Select<Pid_AEMT1>(strSQL);                                                                
+                    }               
+                }
+            }
+            catch { throw; }
+            return Result;
+        }
         public List<Pid_AEMT1> Get_PID_List(aeaw request)
         {
             List<Pid_AEMT1> Result = null;

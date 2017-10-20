@@ -263,6 +263,10 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     //ecr.data.results = aeaw_Logic.Insert_Aemt1(request);
                 }
+                else if (uri.IndexOf ("/wms/Aemt1/select")>0)
+                {
+                    ecr.data.results = aeaw_Logic.SelectAemt1(request);
+                }
                 else if (uri.IndexOf("/wms/Aemt1/Update") > 0)
                 {
                     ecr.data.results = aeaw_Logic.Update_Aemt1(request);

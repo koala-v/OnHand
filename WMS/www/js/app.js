@@ -334,7 +334,7 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                 controller: 'cycleCountCtrl'
             } )
             .state( 'cycleCountDetail', {
-                url: '/CycleCount/detail/:CustomerCode/:TrxNo',
+                url: '/CycleCount/detail/:MAwbNo',
                 cache: 'false',
                 templateUrl: 'view/CycleCount/detail.html',
                 controller: 'cycleCountDetailCtrl'
