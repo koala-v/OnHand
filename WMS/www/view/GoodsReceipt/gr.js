@@ -22,14 +22,14 @@ appControllers.controller('GrListCtrl', [
         ionicDatePicker,
         ApiService,
         PopupService) {
-      var arrRcdg1 = new Array();
-      var arrPidUnGrid = new Array();
-        $scope.Type=$stateParams.Type;
+        var arrRcdg1 = new Array();
+        var arrPidUnGrid = new Array();
+        $scope.Type = $stateParams.Type;
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
 
         $scope.Detail = {
-           TableTitle:'Create Onhand',
+            TableTitle: 'Create Onhand',
             Title: 'New',
             ONHANDNO: '',
             location: '',
@@ -179,19 +179,19 @@ appControllers.controller('GrListCtrl', [
             }
         };
         var CheckTrucker = function () {
-            if ($scope.Detail.ONHAND_D.TRK_CODE === 'F') {
+            if ($scope.Detail.ONHAND_D.TRK_CODE.toUpperCase().indexOf('FEDEX') >=0 ) {
                 $scope.Detail.Trucker = 'Fedex';
-            } else if ($scope.Detail.ONHAND_D.TRK_CODE === 'T') {
+            } else if ($scope.Detail.ONHAND_D.TRK_CODE === '') {
                 $scope.Detail.Trucker = 'Others';
-            } else {
-                $scope.Detail.Trucker = '';
+            // } else {
+            //     $scope.Detail.Trucker = '';
             }
         };
         $scope.TruckerChange = function () {
             if ($scope.Detail.Trucker === 'Fedex') {
-                $scope.Detail.ONHAND_D.TRK_CODE = 'F';
+                $scope.Detail.ONHAND_D.TRK_CODE = 'Fedex';
             } else if ($scope.Detail.Trucker === 'Others') {
-                $scope.Detail.ONHAND_D.TRK_CODE = 'T';
+                $scope.Detail.ONHAND_D.TRK_CODE = '';
             } else {
                 $scope.Detail.ONHAND_D.TRK_CODE = '';
             }
@@ -245,47 +245,44 @@ appControllers.controller('GrListCtrl', [
         };
 
         $scope.Update = function () {
-          if ($scope.Detail.ONHANDNO !==''){
-            if (is.undefined($scope.Rcbp1.selected)) {
-                $scope.Detail.ONHAND_D.SHP_CODE = "";
-            } else {
-                $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
-            }
-            if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
-                $scope.Detail.ONHAND_D.CNG_CODE = "";
-            } else {
-                $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
-            }
-            if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
-                $scope.Detail.ONHAND_D.CASE_NO = "";
-            }
-            if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
-                $scope.Detail.ONHAND_D.NO_INV_WH = "";
-            }
-            $scope.Detail.ONHAND_D.ONHAND_NO=$scope.Detail.ONHANDNO;
-            $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
-            $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
-            $scope.LocationChange();
-            $scope.TruckerChange();
-            $scope.pushChange();
-            var arrONHAND_D = [];
-            arrONHAND_D.push($scope.Detail.ONHAND_D);
-            var jsonData = {
-                "UpdateAllString": JSON.stringify(arrONHAND_D)
-            };
-            var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/update');
-            ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                // $scope.Detail.ONHANDNO = result.data.results;
-                // $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
-                // if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
-                //     PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
-                // }
-            });
+            if ($scope.Detail.ONHANDNO !== '') {
+                if (is.undefined($scope.Rcbp1.selected)) {
+                    $scope.Detail.ONHAND_D.SHP_CODE = "";
+                } else {
+                    $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
+                }
+                if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
+                    $scope.Detail.ONHAND_D.CNG_CODE = "";
+                } else {
+                    $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
+                }
+                if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
+                    $scope.Detail.ONHAND_D.CASE_NO = "";
+                }
+                if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
+                    $scope.Detail.ONHAND_D.NO_INV_WH = "";
+                }
+                $scope.Detail.ONHAND_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
+                $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
+                $scope.LocationChange();
+                $scope.TruckerChange();
+                $scope.pushChange();
+                var arrONHAND_D = [];
+                arrONHAND_D.push($scope.Detail.ONHAND_D);
+                var jsonData = {
+                    "UpdateAllString": JSON.stringify(arrONHAND_D)
+                };
+                var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/update');
+                ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                    // $scope.Detail.ONHANDNO = result.data.results;
+                    // $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
+                    // if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
+                    //     PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+                    // }
+                });
             }
         };
-
-
-
 
         $scope.OnDatePicker = function () {
             var ipObj1 = {
@@ -319,60 +316,59 @@ appControllers.controller('GrListCtrl', [
             });
         };
 
-
- // start Enquiry
- var CheckTableTitle=function (){
-   if($scope.Type==='Enquiry')  {
-     $scope.Detail.TableTitle='Enquiry';
-   }
-};
-CheckTableTitle();
-$scope.refreshOnhand_D = function (OnhandNo) {
-    if (is.not.undefined(OnhandNo) && is.not.empty(OnhandNo)) {
-        var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/OnhandNo');
-        objUri.addSearch('strONHAND_NO', OnhandNo);
-        ApiService.Get(objUri, false).then(function success(result) {
-            $scope.Onhand_DForOnhandNos = result.data.results;
-        });
-    }
-};
-$scope.findOnhand = function (ONHANDNO) {
-  $scope.Detail.ONHANDNO =ONHANDNO;
-    if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-        var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D');
-        objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
-        ApiService.Get(objUri, false).then(function success(result) {
-            $scope.Detail.ONHAND_D = result.data.results[0];
-            if (is.not.undefined($scope.Detail.ONHAND_D)) {
-                $scope.Detail.VisibleDetailFlag = 'Y';
-                $scope.Detail.ONHAND_D.ONHAND_date = checkDate($scope.Detail.ONHAND_D.ONHAND_date);
-                $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = checkDate($scope.Detail.ONHAND_D.PICKUP_SUP_datetime);
-                $scope.Rcbp1.selected = {
-                    BusinessPartyCode: $scope.Detail.ONHAND_D.SHP_CODE,
-                    BusinessPartyName: $scope.Detail.ONHAND_D.ShipperName
-                };
-                $scope.Rcbp1ForConsinnee.selected = {
-                    BusinessPartyCode: $scope.Detail.ONHAND_D.CNG_CODE,
-                    BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
-                };
-                CheckPush();
-                CheckLocation();
-                CheckTrucker();
-                CheckChargeType();
-            } else {
-                PopupService.Info(null, 'Please Enter The Current OhandNo').then();
+        // start Enquiry
+        var CheckTableTitle = function () {
+            if ($scope.Type === 'Enquiry') {
+                $scope.Detail.TableTitle = 'Enquiry';
             }
-        });
-    } else {
-        $scope.Detail.VisibleDetailFlag = 'N';
-        // PopupService.Info(null, 'Please Enter OhandNo').then();
-    }
-    if (!ENV.fromWeb) {
-        $cordovaKeyboard.close();
-    }
-};
+        };
+        CheckTableTitle();
+        $scope.refreshOnhand_D = function (OnhandNo) {
+            if (is.not.undefined(OnhandNo) && is.not.empty(OnhandNo)) {
+                var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/OnhandNo');
+                objUri.addSearch('strONHAND_NO', OnhandNo);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Onhand_DForOnhandNos = result.data.results;
+                });
+            }
+        };
+        $scope.findOnhand = function (ONHANDNO) {
+            $scope.Detail.ONHANDNO = ONHANDNO;
+            if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D');
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Detail.ONHAND_D = result.data.results[0];
+                    if (is.not.undefined($scope.Detail.ONHAND_D)) {
+                        $scope.Detail.VisibleDetailFlag = 'Y';
+                        $scope.Detail.ONHAND_D.ONHAND_date = checkDate($scope.Detail.ONHAND_D.ONHAND_date);
+                        $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = checkDate($scope.Detail.ONHAND_D.PICKUP_SUP_datetime);
+                        $scope.Rcbp1.selected = {
+                            BusinessPartyCode: $scope.Detail.ONHAND_D.SHP_CODE,
+                            BusinessPartyName: $scope.Detail.ONHAND_D.ShipperName
+                        };
+                        $scope.Rcbp1ForConsinnee.selected = {
+                            BusinessPartyCode: $scope.Detail.ONHAND_D.CNG_CODE,
+                            BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
+                        };
+                        CheckPush();
+                        CheckLocation();
+                        CheckTrucker();
+                        CheckChargeType();
+                    } else {
+                        PopupService.Info(null, 'Please Enter The Current OhandNo').then();
+                    }
+                });
+            } else {
+                $scope.Detail.VisibleDetailFlag = 'N';
+                // PopupService.Info(null, 'Please Enter OhandNo').then();
+            }
+            if (!ENV.fromWeb) {
+                $cordovaKeyboard.close();
+            }
+        };
 
- // end Enquiry
+        // end Enquiry
         $scope.findOH_PID_D = function (Type) {
             if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
                 var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D');
@@ -394,12 +390,11 @@ $scope.findOnhand = function (ONHANDNO) {
             }
         };
 
-
         $scope.openCam = function (type) {
             if (!ENV.fromWeb) {
                 if (is.equal(type, 'AddPID_NO')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
-                        $scope.Detail.Add_OH_PID_D.PID_NO= imageData.text;
+                        $scope.Detail.Add_OH_PID_D.PID_NO = imageData.text;
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
@@ -429,12 +424,12 @@ $scope.findOnhand = function (ONHANDNO) {
                 $scope.modal.show();
                 $scope.findOH_PID_D('');
             } else {
-              if($scope.Type==='Enquiry')  {
-              PopupService.Info(null, 'Please First Enter Onhand', '').then(function (res) {});
-            }else{
-                PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+                if ($scope.Type === 'Enquiry') {
+                    PopupService.Info(null, 'Please First Enter Onhand', '').then(function (res) {});
+                } else {
+                    PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
+                }
             }
-          }
             // $ionicLoading.show();
         };
 
@@ -632,13 +627,13 @@ $scope.findOnhand = function (ONHANDNO) {
         $scope.UpdateTotal = function () {
             if ($scope.Detail.OH_PID_D_S.length > 0) {
                 var TotalWeight = 0;
-                var TotalPCS =0;
+                var TotalPCS = 0;
                 for (var i = 0; i < $scope.Detail.OH_PID_D_S.length; i++) {
                     TotalWeight = TotalWeight + $scope.Detail.OH_PID_D_S[i].GROSS_LB;
-                    TotalPCS=TotalPCS+  $scope.Detail.OH_PID_D_S[i].PIECES;
+                    TotalPCS = TotalPCS + $scope.Detail.OH_PID_D_S[i].PIECES;
                 }
                 $scope.Detail.ONHAND_D.TotalWeight = TotalWeight;
-                  $scope.Detail.ONHAND_D.TotalPCS=  TotalPCS;
+                $scope.Detail.ONHAND_D.TotalPCS = TotalPCS;
             }
         };
         $scope.closeModalAddPID = function () {
@@ -772,6 +767,17 @@ $scope.findOnhand = function (ONHANDNO) {
 
         };
 
+        $scope.GoToDetail = function (OnhandNo) {
+            if (OnhandNo !== null && OnhandNo.length > 0) {
+                $state.go('grDetail', {
+                    'OnhandNo': OnhandNo,
+                }, {
+                    reload: true
+                });
+            } else {
+                PopupService.Info(null, 'Please First Enter Onhand', '').then(function (res) {});
+            }
+        };
         // End Add Pid Page
 
         // $scope.returnList = function () {
@@ -821,9 +827,87 @@ appControllers.controller('GrDetailCtrl', [
         ApiService,
         PopupService) {
         var popup = null;
+        $scope.OnhandNo = $stateParams.OnhandNo;
         $scope.Detail = {
-
+            Address: '',
+            Address1:'',
+          Address2:'',
         };
+        $scope.findAddress = function () {
+            if (!ENV.fromWeb) {
+                cordova.plugins.zbtprinter.find(function (result) {
+                    if (typeof result == 'string') {
+                        PopupService.Info(null, 'Message1', mac).then();
+                        $scope.Detail.Address = mac;
+                    } else {
+                        PopupService.Info(null, 'Message2', result.address + ', ' + result.friendlyName).then();
+                        $scope.Detail.Address = result.address + ', ' + result.friendlyName;
+                    }
+                }, function (fail) {
+                    PopupService.Info(null, 'Message3', 'not found address please check already open Bluetooth or IP/DNS').then();
+                    // $scope.Detail.Address = fail;
+
+                });
+            }
+        };
+        $scope.print = function () {
+
+            if (!ENV.fromWeb) {
+                var strDate = 'Hello Word first print';
+                  // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
+                cordova.plugins.zbtprinter.print($scope.Detail.Address, strData,
+                    function (success) {
+                        PopupService.Info(null, 'Print ok').then();
+                    },
+                    function (fail) {
+                        PopupService.Info(null, fail).then();
+                    }
+                );
+            }
+        };
+
+
+        $scope.print1 = function () {
+            if (!ENV.fromWeb) {
+                var strDate = 'Hello Word first print';
+                    // PopupService.Info(null, 'print1'  +$scope.Detail.Address1).then();
+                cordova.plugins.zbtprinter.print($scope.Detail.Address1, strData,
+                    function (success) {
+                        PopupService.Info(null, 'Print ok').then();
+                    },
+                    function (fail) {
+                        PopupService.Info(null, fail).then();
+                    }
+                );
+            }
+        };
+
+
+        $scope.print2 = function () {
+            if (!ENV.fromWeb) {
+                var strDate = 'Hello Word first print';
+                    // PopupService.Info(null,'print2'  + $scope.Detail.Address2).then();
+                cordova.plugins.zbtprinter.print($scope.Detail.Address2, strData,
+                    function (success) {
+                        PopupService.Info(null, 'Print ok').then();
+                    },
+                    function (fail) {
+                        PopupService.Info(null, fail).then();
+                    }
+                );
+            }
+        };
+
+        $scope.openBluetooth = function () {
+            if (!ENV.fromWeb) {
+                bluetoothle.enable(function () {
+                    PopupService.Info(null, "Bluetooth is enabled").then();　　　　　
+                }, 　　function () {
+                    PopupService.Info(null, "The user did *not* enable Bluetooth").then();　　　　　　　
+                });
+            }
+        };
+
         $scope.returnList = function () {
             if ($ionicHistory.backView()) {
                 $ionicHistory.goBack();

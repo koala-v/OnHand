@@ -5,12 +5,12 @@
         </div>
         <div class="h1 title">{{Detail.TableTitle}}</div>
         <div class="buttons">
-            <button class="button button-icon icon ion-android-print" ng-click=""></button>
+            <button class="button button-icon icon ion-android-print" ng-click="GoToDetail('Detail.ONHANDNO')"></button>
             <button class="button button-icon icon ion-android-open" ng-click="openModal()"></button>
         </div>
     </ion-header-bar>
-    <ion-content style="margin-top:0px;">
-        <div class="list card">
+    <ion-content style="margin-top:0px;" >
+        <div class="list card" style="overflow:visible;">
             <div ng-show="Detail.TableTitle ==='Create Onhand'">
                 <h4 align="Center">{{Detail.Title}}</h4>
                 <button class="button button-block button-positive" ng-show="Detail.Title ==='New'" ng-click="Create()">Create</button>
@@ -18,7 +18,7 @@
             </div>
 
             <div ng-show="Detail.TableTitle ==='Enquiry'">
-                <div class="row">
+                <div class="row" >
                     <div class="col col-33" style="text-align:center;">
                         <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">&nbsp;&nbsp;&nbsp;OnhandNo</span>
                     </div>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="">
-                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
+                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }}</ui-select-match>
                                 <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
                                     <div ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"></div>
                                 </ui-select-choices>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1ForConsinnee.selected" theme="bootstrap" reset-search-input="true" on-select="">
-                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName | limitTo:16}}</ui-select-match>
+                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }}</ui-select-match>
                                 <ui-select-choices repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee($select.search)" refresh-delay="0" position="down">
                                     <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyName | highlight: $select.search"></div>
                                 </ui-select-choices>

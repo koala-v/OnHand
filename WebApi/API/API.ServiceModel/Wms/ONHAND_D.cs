@@ -282,7 +282,10 @@ namespace WebApi.ServiceModel.Wms
                   string strSql = "";
                   strSql=  " UPDATE Onhand_D Set " +
                  " TOT_PCS = (SELECT SUM(ISNULL(PIECES, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
-                 " TOT_GROSS_LB = (SELECT SUM(ISNULL(VOL_LB, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                 " No_PCS_WH = (SELECT SUM(ISNULL(PIECES, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                 " Tot_trk_pkg  = (SELECT SUM(ISNULL(PIECES, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                 " TOT_GROSS_LB = (SELECT SUM(ISNULL(GROSS_LB, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
+                "  Tot_wt_wh = (SELECT SUM(ISNULL(GROSS_LB, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
                  " TOT_VOL_FT = (SELECT SUM(ISNULL(GROSS_LB, 0)) FROM OH_PID_D WHERE ONHAND_NO = '" + onhandNo + "'), " +
                  " TOT_VOL_LB = (SELECT SUM(CONVERT(INT, PIECES * LENGTH * WIDTH * HEIGHT / 1728) + ROUND((((PIECES * LENGTH * WIDTH * HEIGHT) % 1728) / 1728 * 100) / 100, 1)) FROM OH_PID_D WHERE " +
                  " ONHAND_NO = '" + onhandNo + "') " +
@@ -465,7 +468,7 @@ namespace WebApi.ServiceModel.Wms
                                "   onhand_no,"+
                                "   SHP_CODE," +
                                "   CNG_CODE ," +
-                               "   ONHAND_date," +
+                               "   ONHAND_date," +                              
                                "   CASE_NO ," +
                                "   PUB_YN," +
                                "   HAZARDOUS_YN ," +
@@ -475,7 +478,24 @@ namespace WebApi.ServiceModel.Wms
                                "   TRK_CODE ," +
                                "   TRK_CHRG_TYPE ," +
                                "   PICKUP_SUP_datetime," +
+                               "   TRK_DEL_datetime," +
                                "   NO_INV_WH," +
+                               "   NO_DOC_INV, " +
+                               "   Prate_YN, " +
+                               "   Sector, " +
+                               "   CargoPickupSector, " +
+                               "   Zip_code, " +
+                               "   Cargopickupzipcode, " +
+                               "   Shippername," +
+                               "   shipperaddress1," +
+                               "   shipperaddress2," +
+                               "   shipperaddress3," +
+                               "   shipperaddress4," +
+                               "   Consigneename," +
+                               "   ConsigneeAddress1," +
+                               "   ConsigneeAddress2," +
+                               "   ConsigneeAddress3," +
+                               "   ConsigneeAddress4," +
                                "   CreateBy," +
                                "   UpdateBy," +
                                "   CreateDateTime," +
@@ -496,7 +516,24 @@ namespace WebApi.ServiceModel.Wms
                                    Modfunction.SQLSafeValue(TRK_CODE) + "," +
                                    Modfunction.SQLSafeValue(TRK_CHRG_TYPE) + "," +
                                    Modfunction.SQLSafeValue(PICKUP_SUP_datetime) + "," +
+                                   Modfunction.SQLSafeValue(PICKUP_SUP_datetime) + "," +
                                    NO_INV_WH + "," +
+                                   NO_INV_WH + "," +
+                                   "'N'," +
+                                  "( Select sectorcode  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select sectorcode  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select postalcode  From Rcbp1  Where businesspartycode='" + SHP_CODE + "'),"+
+                                  "( Select postalcode  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select BusinessPartyName  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select Address1  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select Address2  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select Address3  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select Address4  From Rcbp1  Where businesspartycode='" + SHP_CODE + "')," +
+                                  "( Select BusinessPartyName  From Rcbp1  Where businesspartycode='" + CNG_CODE + "')," +
+                                  "( Select Address1  From Rcbp1  Where businesspartycode='" + CNG_CODE + "')," +
+                                  "( Select Address2  From Rcbp1  Where businesspartycode='" + CNG_CODE + "')," +
+                                  "( Select Address3  From Rcbp1  Where businesspartycode='" + CNG_CODE + "')," +
+                                  "( Select Address4  From Rcbp1  Where businesspartycode='" + CNG_CODE + "')," +
                                    Modfunction.SQLSafeValue(UserID) + "," +
                                    Modfunction.SQLSafeValue(UserID) + "," +
                                    "GETDATE()," +
@@ -571,8 +608,24 @@ namespace WebApi.ServiceModel.Wms
                                "   TRK_CODE  ='" + TRK_CODE + "'," +
                                "   TRK_CHRG_TYPE  ='" + TRK_CHRG_TYPE+ "'," +
                                "   PICKUP_SUP_datetime ='" + PICKUP_SUP_datetime+ "'," +
+                               "   TRK_DEL_datetime  ='" + PICKUP_SUP_datetime + "'," +
                                "   NO_INV_WH =" +NO_INV_WH + "," +
-                               "   UpdateBy =GETDATE()," +
+                               "    NO_DOC_INV =" + NO_INV_WH + "," +
+                               "   Sector=  (Select sectorcode  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   CargoPickupSector=  (Select sectorcode  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                                "   Zip_code=  (Select postalcode  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   Cargopickupzipcode=  (Select postalcode  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   Shippername=  (Select BusinessPartyName  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   shipperaddress1=  (Select Address1  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   shipperaddress2=  (Select Address2   From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   shipperaddress3=  (Select Address3  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   shipperaddress4=  (Select Address4  From Rcbp1  Where businesspartycode = '" + SHP_CODE + "')," +
+                               "   Consigneename=  (Select BusinessPartyName  From Rcbp1  Where businesspartycode = '" + CNG_CODE + "')," +
+                               "   ConsigneeAddress1=  (Select Address1  From Rcbp1  Where businesspartycode = '" + CNG_CODE + "')," +
+                               "   ConsigneeAddress2=  (Select Address2  From Rcbp1  Where businesspartycode = '" + CNG_CODE + "')," +
+                               "   ConsigneeAddress3=  (Select Address3  From Rcbp1  Where businesspartycode = '" + CNG_CODE + "')," +
+                               "   ConsigneeAddress4=  (Select Address4  From Rcbp1  Where businesspartycode = '" + CNG_CODE + "')," +
+                               "   UpdateBy ='" + UserID + "'," +
                                "   UpdateDateTime =GETDATE() " +
                                "   WHERE ONHAND_NO ='" + ONHAND_NO+ "'"+
                                "";

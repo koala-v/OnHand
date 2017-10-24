@@ -36,7 +36,9 @@
     "cordova-plugin-inappbrowser",
     "cordova-plugin-whitelist",
     "cordova-sqlite-storage",
-    "cordova-plugin-crosswalk-webview"
+    "cordova-plugin-crosswalk-webview",
+    "https://github.com/EnriqueV/ZebraPrinterPlugin.git",
+    "cordova-plugin-bluetooth-serial"
   ],
   "cordovaPlatforms": []
 }
