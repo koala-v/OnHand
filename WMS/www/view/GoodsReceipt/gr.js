@@ -34,6 +34,7 @@ appControllers.controller('GrListCtrl', [
             ONHANDNO: '',
             location: '',
             Trucker: '',
+            disabled: true,
             VisibleDetailFlag: 'N',
             ChargeType: {
                 NewItem: 'PP',
@@ -116,6 +117,22 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
+
+        $scope.getLocation = function () {
+                var objUri = ApiService.Uri(true, '/api/wms/LOCATION_K/LOC_CODE');
+                objUri.addSearch('LOC_CODE', "");
+                ApiService.Get(objUri, false).then(function success(result) {
+                    // $scope.LOCATION_KS = result.data.results[0];
+                    var arrlocation_K= new Array();
+                    if (result.data.results.length>0){
+                      for (var i =0; i<result.data.results.length;i++){
+                      arrlocation_K.push(result.data.results[i].LOC_CODE);
+                      }
+                      $scope.LOCATION_KS=arrlocation_K;
+                    }
+                });
+        };
+          $scope.getLocation();
         var CheckPush = function () {
             if ($scope.Detail.ONHAND_D.PUB_YN === 'Y') {
                 $scope.Detail.pushPublication.checked = true;
@@ -160,24 +177,24 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.ExerciseFlag = 'N';
             }
         };
-        var CheckLocation = function () {
-            if ($scope.Detail.ONHAND_D.LOC_CODE === 'L1') {
-                $scope.Detail.location = 'Location1';
-            } else if ($scope.Detail.ONHAND_D.LOC_CODE === 'L2') {
-                $scope.Detail.location = 'Location2';
-            } else {
-                $scope.Detail.location = '';
-            }
-        };
-        $scope.LocationChange = function () {
-            if ($scope.Detail.location === 'Location1') {
-                $scope.Detail.ONHAND_D.LOC_CODE = 'L1';
-            } else if ($scope.Detail.location === 'Location2') {
-                $scope.Detail.ONHAND_D.LOC_CODE = 'L2';
-            } else {
-                $scope.Detail.ONHAND_D.LOC_CODE = '';
-            }
-        };
+        // var CheckLocation = function () {
+        //     if ($scope.Detail.ONHAND_D.LOC_CODE === 'L1') {
+        //         $scope.Detail.location = 'Location1';
+        //     } else if ($scope.Detail.ONHAND_D.LOC_CODE === 'L2') {
+        //         $scope.Detail.location = 'Location2';
+        //     } else {
+        //         $scope.Detail.location = '';
+        //     }
+        // };
+        // $scope.LocationChange = function () {
+        //     if ($scope.Detail.location === 'Location1') {
+        //         $scope.Detail.ONHAND_D.LOC_CODE = 'L1';
+        //     } else if ($scope.Detail.location === 'Location2') {
+        //         $scope.Detail.ONHAND_D.LOC_CODE = 'L2';
+        //     } else {
+        //         $scope.Detail.ONHAND_D.LOC_CODE = '';
+        //     }
+        // };
         var CheckTrucker = function () {
             if ($scope.Detail.ONHAND_D.TRK_CODE.toUpperCase().indexOf('FEDEX') >=0 ) {
                 $scope.Detail.Trucker = 'Fedex';
@@ -226,7 +243,7 @@ appControllers.controller('GrListCtrl', [
             }
             $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
             $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
-            $scope.LocationChange();
+            // $scope.LocationChange();
             $scope.TruckerChange();
             $scope.pushChange();
             var arrONHAND_D = [];
@@ -265,7 +282,7 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.ONHAND_NO = $scope.Detail.ONHANDNO;
                 $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
                 $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
-                $scope.LocationChange();
+                // $scope.LocationChange();
                 $scope.TruckerChange();
                 $scope.pushChange();
                 var arrONHAND_D = [];
@@ -352,7 +369,7 @@ appControllers.controller('GrListCtrl', [
                             BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
                         };
                         CheckPush();
-                        CheckLocation();
+                        // CheckLocation();
                         CheckTrucker();
                         CheckChargeType();
                     } else {
@@ -390,6 +407,15 @@ appControllers.controller('GrListCtrl', [
             }
         };
 
+        var blnVerifyInput = function (type ,value) {
+            var blnPass = true;
+            if (is.equal(type, 'AddPID_NO') ) {
+
+                blnPass = false;
+                PopupService.Alert(popup, 'Invalid Store No').then();
+            }
+            return blnPass;
+        };
         $scope.openCam = function (type) {
             if (!ENV.fromWeb) {
                 if (is.equal(type, 'AddPID_NO')) {
@@ -398,6 +424,24 @@ appControllers.controller('GrListCtrl', [
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
+                }else if(is.equal(type, 'TruckerBill')){
+                  $cordovaBarcodeScanner.scan().then(function (imageData) {
+                      $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = imageData.text;
+                  }, function (error) {
+                      $cordovaToast.showShortBottom(error);
+                  });
+                }else if(is.equal(type, 'PID_NO')){
+                  $cordovaBarcodeScanner.scan().then(function (imageData) {
+                    $scope.Detail.OH_PID_D.PID_NO = imageData.text;
+                  }, function (error) {
+                      $cordovaToast.showShortBottom(error);
+                  });
+                }else if(is.equal(type, 'PID_TruckerBill')){
+                  $cordovaBarcodeScanner.scan().then(function (imageData) {
+                    $scope.Detail.OH_PID_D.TRK_BILL_NO = imageData.text;
+                  }, function (error) {
+                      $cordovaToast.showShortBottom(error);
+                  });
                 }
             }
         };
@@ -405,8 +449,23 @@ appControllers.controller('GrListCtrl', [
             if (is.equal(type, 'AddPID_NO')) {
                 if ($scope.Detail.Add_OH_PID_D.PID_NO.length > 0) {
                     $scope.Detail.Add_OH_PID_D.PID_NO = '';
-                    $('#txt-PID_NO').focus();
+                    $('#txt-addPID_NO').focus();
                 }
+            }else if(is.equal(type, 'TruckerBill')){
+              if ($scope.Detail.Add_OH_PID_D.TRK_BILL_NO.length > 0) {
+                $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                  $('#txt-addTruckerBill').focus();
+              }
+            }else if(is.equal(type, 'PID_NO')){
+              if ($scope.Detail.OH_PID_D.PID_NO.length > 0) {
+                $scope.Detail.OH_PID_D.PID_NO = '';
+                  $('#txt-PID_NO').focus();
+              }
+            }else if(is.equal(type, 'PID_TruckerBill')){
+              if ($scope.Detail.OH_PID_D.TRK_BILL_NO.length > 0) {
+                $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                  $('#txt-TruckerBill').focus();
+              }
             }
         };
         // start PId Page
@@ -692,6 +751,8 @@ appControllers.controller('GrListCtrl', [
             }
         };
         $scope.addLine = function () {
+
+          if ( $scope.Detail.Add_OH_PID_D.PACK_TYPE.length>0){
             PopupService.Confirm(null, 'Confirm', 'Are you sure to Add PID?').then(function (res) {
                 if (res) {
                     if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
@@ -741,6 +802,10 @@ appControllers.controller('GrListCtrl', [
                     }
                 } else {}
             });
+          }else{
+              PopupService.Alert(null, 'Pack Type Must be Enter', '').then(function (res) {});
+          }
+
 
         };
 

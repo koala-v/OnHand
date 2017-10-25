@@ -91,15 +91,30 @@ namespace WebApi.ServiceModel.Wms
                     string strMAwbNo = request.MAwbNo;
                     if (!string.IsNullOrEmpty(strMAwbNo))
                         {
+
+
+
+
                            string strSQL = "";
-                            strSQL = "select " +
-                                "  PID_NO ," +
-                                "  KeyMAwbNo ," +
-                                "  MAwbNo , " +
-                                "  LOC_CODE "+ 
-                                "  From Aemt1  "+
-                                "  Where  MAwbNo = '" + strMAwbNo + "' ";
-                            Result = db.Select<Pid_AEMT1>(strSQL);                                                                
+                        strSQL = "select distinct" +
+                            "  PID_NO ," +
+                            "  KeyMAwbNo ," +
+                            "  MAwbNo , " +
+                            "  LOC_CODE " +
+                            "  From Aemt1  " +
+                            "  Where  MAwbNo = '" + strMAwbNo + "' ";
+                        Result = db.Select<Pid_AEMT1>(strSQL);
+
+
+
+
+                        //    strSQL = "Select LOC_CODE,MAwbNo,PID_NO From Aemt1 Where KeyMAwbNo in (select KeyMAwbNo From Aemt1 Where MAwbNo='"+ strMAwbNo + "' )";
+
+                        //Result = db.Select<Pid_AEMT1>(strSQL);
+
+
+
+
                     }               
                 }
             }
@@ -377,7 +392,9 @@ namespace WebApi.ServiceModel.Wms
                     }
                     else
                     {
-                        Result = null;
+
+                        string strSQL = "Select ISNULL(LocCode,'') AS  LOC_CODE  From LOCATION_K";
+                        Result = db.Select<LOCATION_K>(strSQL);
                     }
 
                 }
