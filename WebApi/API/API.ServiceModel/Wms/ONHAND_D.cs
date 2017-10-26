@@ -21,6 +21,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/ONHAND_D/confirm", "Post")]
     [Route("/wms/ONHAND_D/update", "Post")]
     [Route("/wms/OH_PID_D/updateLineItem", "Post")]
+    [Route("/wms/OH_PID_D/validate", "Get")]     //OH_PID_D?PID_NO
 
     public class ONHAND_D : IReturn<CommonResponse>
     {
@@ -30,6 +31,8 @@ namespace WebApi.ServiceModel.Wms
         public string UpdateAllString { get; set; }
         public string NextNo { get; set; }
         public string LineItemNo { get; set; }
+        public string strPID_NO { get; set; }
+
     }
     public class imcc_loigc
     {
@@ -421,6 +424,33 @@ namespace WebApi.ServiceModel.Wms
      
         }
 
+        public List<ON_PID_D> ValidatePID_NO(ONHAND_D request)
+        {
+
+            List<ON_PID_D> Result = null;
+
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+
+                    string PID_NO = request.strPID_NO; 
+
+                    if (PID_NO != "")
+                    {
+                        string strSql = "Select PID_NO From OH_PID_D Where PID_NO ='"+ PID_NO + "'";
+
+                        Result= db.Select<ON_PID_D>(strSql);
+                    }
+
+                                   
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
         public string ConfirmAll_ONHAND_D(ONHAND_D request)
         {
           
@@ -449,7 +479,7 @@ namespace WebApi.ServiceModel.Wms
                                 string HAZARDOUS_YN = ja[i]["HAZARDOUS_YN"].ToString();
                                 string CLSF_YN = ja[i]["CLSF_YN"].ToString();
                                 string ExerciseFlag = ja[i]["ExerciseFlag"].ToString();
-                                string LOC_CODE = ja[i]["LOC_CODE"].ToString();
+                                string LOC_CODE = Modfunction.CheckNull(ja[i]["LOC_CODE"]);
                                 string TRK_CODE = ja[i]["TRK_CODE"].ToString();
                                 string TRK_CHRG_TYPE = ja[i]["TRK_CHRG_TYPE"].ToString();
                                 string PICKUP_SUP_datetime = ja[i]["PICKUP_SUP_datetime"].ToString();                                                       
@@ -551,6 +581,8 @@ namespace WebApi.ServiceModel.Wms
             catch { throw; }
             return Result;
         }
+
+         
 
         public string Update_ONHAND_D(ONHAND_D request)
         { 

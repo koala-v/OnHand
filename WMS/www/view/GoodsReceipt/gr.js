@@ -407,20 +407,61 @@ appControllers.controller('GrListCtrl', [
             }
         };
 
+        $scope.enter = function (ev, type,value) {
+            if (is.equal(ev.keyCode, 13)) {
+                if (is.equal(type, 'AddPID_NO')) {
+                    if (blnVerifyInput('AddPID_NO',value)) {
+                    }else{ }
+                } else if(is.equal(type, 'PID_NO')){
+                  if (blnVerifyInput('PID_NO',value)) {
+                  }else{ }
+                }
+                if (!ENV.fromWeb) {
+                    $cordovaKeyboard.close();
+                }
+            }
+        };
+
         var blnVerifyInput = function (type ,value) {
             var blnPass = true;
             if (is.equal(type, 'AddPID_NO') ) {
-
-                blnPass = false;
-                PopupService.Alert(popup, 'Invalid Store No').then();
-            }
+              if (value.length > 0) {
+                  var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
+                  objUri.addSearch('strPID_NO', value);
+                  ApiService.Get(objUri, false).then(function success(result) {
+                      var results = result.data.results;
+                      if (is.not.empty(results)) {
+                        blnPass = false;
+                        $scope.Detail.Add_OH_PID_D.PID_NO = '';
+                         PopupService.Alert(null, 'Exist Pid No').then();
+                      } else {
+                      }
+                  });
+              }
+            } else if(is.equal(type, 'PID_NO') ) {
+                  if (value.length > 0) {
+                      var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
+                      objUri.addSearch('strPID_NO', value);
+                      ApiService.Get(objUri, false).then(function success(result) {
+                          var results = result.data.results;
+                          if (is.not.empty(results)) {
+                            blnPass = false;
+                            $scope.Detail.OH_PID_D.PID_NO = '';
+                             PopupService.Alert(null, 'Exist Pid No').then();
+                          } else {
+                          }
+                      });
+                  }
+                }
             return blnPass;
         };
         $scope.openCam = function (type) {
             if (!ENV.fromWeb) {
                 if (is.equal(type, 'AddPID_NO')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
-                        $scope.Detail.Add_OH_PID_D.PID_NO = imageData.text;
+                      if(blnVerifyInput('AddPID_NO',imageData.text)){
+                          $scope.Detail.Add_OH_PID_D.PID_NO = imageData.text.substr(0, 8);
+                      }
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
@@ -432,7 +473,9 @@ appControllers.controller('GrListCtrl', [
                   });
                 }else if(is.equal(type, 'PID_NO')){
                   $cordovaBarcodeScanner.scan().then(function (imageData) {
-                    $scope.Detail.OH_PID_D.PID_NO = imageData.text;
+                    if(blnVerifyInput('PID_NO',imageData.text)){
+                      $scope.Detail.OH_PID_D.PID_NO = imageData.text.substr(0, 8);
+                    }
                   }, function (error) {
                       $cordovaToast.showShortBottom(error);
                   });

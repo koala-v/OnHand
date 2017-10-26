@@ -248,7 +248,7 @@
                         <div class="col col-80" style="padding:0px;">
                             <label class="item item-input">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
-                                <input type="text" id="" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;">
+                                <input type="text" id="" maxlength="8" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;"  ng-keypress="enter($event, 'PID_NO',Detail.OH_PID_D.PID_NO)">
                             </label>
                         </div>
                         <div class="col col-10">
@@ -406,7 +406,7 @@
                             <div class="col col-80" style="padding:0px;">
                                 <label class="item item-input">
                                     <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
-                                    <input type="text" id="txt-addPID_NO" ng-model="Detail.Add_OH_PID_D.PID_NO" placeholder="Pid">
+                                    <input type="text" maxlength="8" id="txt-addPID_NO" ng-model="Detail.Add_OH_PID_D.PID_NO" placeholder="Pid" ng-keypress="enter($event, 'AddPID_NO',Detail.Add_OH_PID_D.PID_NO)">
                                 </label>
                             </div>
                             <div class="col col-10">

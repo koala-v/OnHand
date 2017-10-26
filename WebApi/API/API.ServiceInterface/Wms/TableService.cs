@@ -317,6 +317,10 @@ namespace WebApi.ServiceInterface.Wms
                     ecr.data.results = imcc_Logic.DeleteLineItem(request);
 
                 }
+                else if (uri.IndexOf("/wms/OH_PID_D/validate") > 0)
+                {
+                    ecr.data.results = imcc_Logic.ValidatePID_NO(request);
+                }
                 else if (uri.IndexOf("wms/ONHAND_D/OnhandNo") > 0)
                 {
                     ecr.data.results = imcc_Logic.Get_ONHANDNo(request);
