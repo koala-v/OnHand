@@ -75,6 +75,7 @@ new ProfiledDbConnection(x, Profiler.Current)
             container.RegisterAutoWired<WebApi.ServiceModel.Wms.Saal_Logic>();
             container.RegisterAutoWired<WebApi.ServiceModel.Wms.imcc_loigc>();
             container.RegisterAutoWired<WebApi.ServiceModel.Wms.Aeaw_Logic>();
+            container.RegisterAutoWired<WebApi.ServiceModel.Wms.rcpk_loigc>();
             //TMS
             container.RegisterAutoWired<WebApi.ServiceModel.Tms.Jmjm_Logic>();
             container.RegisterAutoWired<WebApi.ServiceModel.Tms.Sibl_Logic>();

@@ -241,6 +241,24 @@ namespace WebApi.ServiceInterface.Wms
                 ecr.meta.message = "Unauthorized";
             }
         }
+        public void TS_Rcpk(Auth auth, Rcpk request, rcpk_loigc rcpk_Logic, CommonResponse ecr, string[] token, string uri)
+        {
+            if (auth.AuthResult(token, uri))
+            {
+                if (uri.IndexOf("/wms/Rcpk") > 0)
+                {
+                    ecr.data.results = rcpk_Logic.Get_Rcpk_List(request);
+                }
+                
+                ecr.meta.code = 200;
+                ecr.meta.message = "OK";
+            }
+            else
+            {
+                ecr.meta.code = 401;
+                ecr.meta.message = "Unauthorized";
+            }
+        }
 
         public void TS_aeaw(Auth auth, aeaw request, Aeaw_Logic aeaw_Logic, CommonResponse ecr, string[] token, string uri)
         {

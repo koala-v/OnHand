@@ -5,12 +5,10 @@ using System.Text;
 
 namespace WebApi.ServiceModel.Tables
 {
-      public  class LOCATION_K
+    public class Rcpk1
     {
+        public string PackType { get; set; }
+        public string PackTypeCode { get; set; }
 
-        public string LOC_CODE {get;set;}
-        public string LocName { get; set; }
-
-        
     }
 }

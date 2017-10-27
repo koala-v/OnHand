@@ -132,6 +132,19 @@ namespace WebApi.ServiceInterface
             catch (Exception ex) { cr(ecr, ex); }
             return ecr;
         }
+        public ServiceModel.Wms.rcpk_loigc wms_Rcpk_Logic { get; set; }
+        public object Any(ServiceModel.Wms.Rcpk request)
+        {
+            CommonResponse ecr = new CommonResponse();
+            ecr.initial();
+            try
+            {
+                ServiceInterface.Wms.TableService ls = new ServiceInterface.Wms.TableService();
+                ls.TS_Rcpk(auth, request, wms_Rcpk_Logic, ecr, this.Request.Headers.GetValues("Signature"), this.Request.RawUrl);
+            }
+            catch (Exception ex) { cr(ecr, ex); }
+            return ecr;
+        }
         public ServiceModel.Wms.Rcbp_Logic wms_Rcbp_Logic { get; set; }
         public object Any(ServiceModel.Wms.Rcbp request)
         {

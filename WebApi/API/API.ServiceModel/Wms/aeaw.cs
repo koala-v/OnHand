@@ -393,7 +393,7 @@ namespace WebApi.ServiceModel.Wms
                     else
                     {
 
-                        string strSQL = "Select ISNULL(LocCode,'') AS  LOC_CODE  From LOCATION_K";
+                        string strSQL = "Select ISNULL(LocCode,'') AS  LOC_CODE,ISNULL(LocName ,'') as LocName  From LOCATION_K";
                         Result = db.Select<LOCATION_K>(strSQL);
                     }
 

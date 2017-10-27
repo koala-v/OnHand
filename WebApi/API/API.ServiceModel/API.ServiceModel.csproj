@@ -100,6 +100,7 @@
     <Compile Include="Tables\ON_PID_D.cs" />
     <Compile Include="Tables\Pid_AEMT1.cs" />
     <Compile Include="Tables\Rcdg1.cs" />
+    <Compile Include="Tables\Rcpk1.cs" />
     <Compile Include="Tables\saal1.cs" />
     <Compile Include="Tables\Imgi2_Verify.cs" />
     <Compile Include="Tables\Imgi2_Picking.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Wms\Imgi.cs" />
     <Compile Include="Wms\Impm.cs" />
     <Compile Include="Wms\Impa.cs" />
+    <Compile Include="Wms\Rcpk.cs" />
     <Compile Include="Wms\Saal.cs" />
     <Compile Include="Wms\Whwh.cs" />
     <Compile Include="Wms\Imsn.cs" />

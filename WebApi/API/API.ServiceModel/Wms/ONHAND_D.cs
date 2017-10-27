@@ -212,6 +212,7 @@ namespace WebApi.ServiceModel.Wms
                                 {
                                     string OnhandNo= ja[i]["ONHAND_NO"].ToString();
                                     string PACK_TYPE = ja[i]["PACK_TYPE"].ToString();
+                                    string PackTypeCode =getPackTypeCode(Modfunction.SQLSafeValue(ja[i]["PACK_TYPE"].ToString()));
                                     string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();
                                     string PID_NO = ja[i]["PID_NO"].ToString();
                                     string UnNo = ja[i]["UnNo"].ToString();
@@ -223,6 +224,7 @@ namespace WebApi.ServiceModel.Wms
                                                                                    
                                     strSql = " UPDATE OH_PID_D Set " +
                                               "PACK_TYPE='"+ PACK_TYPE + "'," +
+                                              "PackTypeCode='" + PackTypeCode + "'," +
                                               "TRK_BILL_NO='" + TRK_BILL_NO + "'," +
                                               "PID_NO='" + PID_NO + "'," +
                                               "UnNo='" + UnNo + "'," +
@@ -327,6 +329,9 @@ namespace WebApi.ServiceModel.Wms
                                 int WIDTH = 0;
                                 int HEIGHT = 0;
                                 int GROSS_LB = 0;
+                                double IND_VOL = 0;
+                                double VOL_LB = 0;
+                                double IND_CHG_LB = 0;
                                 string OnhandNo = ja[i]["ONHAND_NO"].ToString();
                                 int intMaxLineItemNo = 1;
                                 if (OnhandNo!="")
@@ -357,10 +362,25 @@ namespace WebApi.ServiceModel.Wms
                                     WIDTH = Modfunction.ReturnZero(ja[i]["WIDTH"].ToString());
                                     HEIGHT = Modfunction.ReturnZero(ja[i]["HEIGHT"].ToString());
                                     GROSS_LB = Modfunction.ReturnZero(ja[i]["GROSS_LB"].ToString());
+                                    IND_VOL =LENGTH * WIDTH * HEIGHT ;
+                                    IND_VOL = Math.Round(IND_VOL / 166,2);
+                                    VOL_LB = LENGTH * WIDTH * HEIGHT * GROSS_LB ;
+                                    VOL_LB= Math.Round(VOL_LB / 166, 2);
+                                    //VOL_LB = Double.Parse(VOL_LB.ToString("###,###,##0"),0);
+                                    //VOL_LB = Double.Parse( string.Format("{#.##}", VOL_LB));
+                                    if (GROSS_LB > IND_VOL)
+                                    {
+                                        IND_CHG_LB = Math.Round((GROSS_LB + 0.499999));
+                                    }
+                                    else
+                                    {
+                                        IND_CHG_LB = Math.Round((IND_VOL + 0.499999));
+                                    }
                                     strSql = "insert into OH_PID_D( " +
                                               "  onhand_no," +
                                               "  LineItemNo, " +
                                               "  PACK_TYPE," +
+                                              "  PackTypeCode, " +
                                               "  TRK_BILL_NO," +
                                               "  PID_NO," +
                                               "  UnNo," +
@@ -369,6 +389,9 @@ namespace WebApi.ServiceModel.Wms
                                               "  HEIGHT," +
                                               "  PIECES,"+
                                               "  GROSS_LB ," +
+                                              "  IND_VOL ," +
+                                              "  VOL_LB ," +
+                                              "  IND_CHG_LB ," +
                                               "  INV_NO, " +
                                               "  UnNo01, " +
                                               "  UnNo02, " +
@@ -386,6 +409,7 @@ namespace WebApi.ServiceModel.Wms
                                                   Modfunction.SQLSafeValue(OnhandNo) + " , " +
                                                   intMaxLineItemNo + "," +
                                                   Modfunction.SQLSafeValue(PACK_TYPE) + "," +
+                                                  Modfunction.SQLSafeValue(getPackTypeCode( Modfunction.SQLSafeValue(PACK_TYPE))) + "," +
                                                   Modfunction.SQLSafeValue(TRK_BILL_NO) + "," +
                                                   Modfunction.SQLSafeValue(PID_NO) + "," +
                                                   Modfunction.SQLSafeValue(UnNo) + "," +
@@ -394,6 +418,9 @@ namespace WebApi.ServiceModel.Wms
                                                   HEIGHT + "," +
                                                   "1" + "," +
                                                   GROSS_LB + "," +
+                                                  IND_VOL + "," +
+                                                  VOL_LB + "," +
+                                                  IND_CHG_LB + "," +
                                                   "''," +
                                                   Modfunction.SQLSafeValue(UnNo01) + "," +
                                                   Modfunction.SQLSafeValue(UnNo02) + "," +
@@ -451,6 +478,7 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+      
         public string ConfirmAll_ONHAND_D(ONHAND_D request)
         {
           
@@ -674,7 +702,28 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+        private string getPackTypeCode(string packType)
+        {
+            string PackTypeCode = "";
+            using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+            {
+                try
+                {
+                    string strSql = "SELECT  ISNULL(PackTypeCode,'') AS  PackTypeCode FROM Rcpk1 WHERE PackType = " + packType + "";
+                    List<Rcpk1> Rcpk1 = db.Select<Rcpk1>(strSql);
 
+                    PackTypeCode = Modfunction.CheckNull(Rcpk1[0].PackTypeCode);
+                  
+
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+
+            return PackTypeCode;
+        }
         private string generateOnhandNo()
         {
             ONHAND_D pair;

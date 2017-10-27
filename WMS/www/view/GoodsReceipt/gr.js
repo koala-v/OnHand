@@ -117,22 +117,40 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
-
+        // $scope.selectAction=function(){
+        //     $scope.Detail.ONHAND_D.LOC_CODE=$scope.Detail.ONHAND_D.LOC_CODE.split(' ')[0];
+        // };
         $scope.getLocation = function () {
-                var objUri = ApiService.Uri(true, '/api/wms/LOCATION_K/LOC_CODE');
-                objUri.addSearch('LOC_CODE', "");
-                ApiService.Get(objUri, false).then(function success(result) {
-                    // $scope.LOCATION_KS = result.data.results[0];
-                    var arrlocation_K= new Array();
-                    if (result.data.results.length>0){
-                      for (var i =0; i<result.data.results.length;i++){
-                      arrlocation_K.push(result.data.results[i].LOC_CODE);
-                      }
-                      $scope.LOCATION_KS=arrlocation_K;
+            var objUri = ApiService.Uri(true, '/api/wms/LOCATION_K/LOC_CODE');
+            objUri.addSearch('LOC_CODE', "");
+            ApiService.Get(objUri, false).then(function success(result) {
+
+                var arrlocation_K = new Array();
+                if (result.data.results.length > 0) {
+                    for (var i = 0; i < result.data.results.length; i++) {
+                        arrlocation_K.push(result.data.results[i].LOC_CODE);
+
                     }
-                });
+                    $scope.LOCATION_KS = arrlocation_K;
+                }
+            });
         };
-          $scope.getLocation();
+        $scope.getLocation();
+
+        $scope.getPackType = function () {
+            var objUri = ApiService.Uri(true, '/api/wms/Rcpk');
+            // objUri.addSearch('LOC_CODE', "");
+            ApiService.Get(objUri, false).then(function success(result) {
+                var arrRcpk = new Array();
+                if (result.data.results.length > 0) {
+                    for (var i = 0; i < result.data.results.length; i++) {
+                        arrRcpk.push(result.data.results[i].PackType);
+                    }
+                    $scope.Rcpk_S = arrRcpk;
+                }
+            });
+        };
+        $scope.getPackType();
         var CheckPush = function () {
             if ($scope.Detail.ONHAND_D.PUB_YN === 'Y') {
                 $scope.Detail.pushPublication.checked = true;
@@ -196,12 +214,12 @@ appControllers.controller('GrListCtrl', [
         //     }
         // };
         var CheckTrucker = function () {
-            if ($scope.Detail.ONHAND_D.TRK_CODE.toUpperCase().indexOf('FEDEX') >=0 ) {
+            if ($scope.Detail.ONHAND_D.TRK_CODE.toUpperCase().indexOf('FEDEX') >= 0) {
                 $scope.Detail.Trucker = 'Fedex';
             } else if ($scope.Detail.ONHAND_D.TRK_CODE === '') {
                 $scope.Detail.Trucker = 'Others';
-            // } else {
-            //     $scope.Detail.Trucker = '';
+                // } else {
+                //     $scope.Detail.Trucker = '';
             }
         };
         $scope.TruckerChange = function () {
@@ -407,14 +425,12 @@ appControllers.controller('GrListCtrl', [
             }
         };
 
-        $scope.enter = function (ev, type,value) {
+        $scope.enter = function (ev, type, value) {
             if (is.equal(ev.keyCode, 13)) {
                 if (is.equal(type, 'AddPID_NO')) {
-                    if (blnVerifyInput('AddPID_NO',value)) {
-                    }else{ }
-                } else if(is.equal(type, 'PID_NO')){
-                  if (blnVerifyInput('PID_NO',value)) {
-                  }else{ }
+                    if ($scope.blnVerifyInput('AddPID_NO', value)) {} else {}
+                } else if (is.equal(type, 'PID_NO')) {
+                    if ($scope.blnVerifyInput('PID_NO', value)) {} else {}
                 }
                 if (!ENV.fromWeb) {
                     $cordovaKeyboard.close();
@@ -422,69 +438,67 @@ appControllers.controller('GrListCtrl', [
             }
         };
 
-        var blnVerifyInput = function (type ,value) {
+        $scope.blnVerifyInput = function (type, value) {
             var blnPass = true;
-            if (is.equal(type, 'AddPID_NO') ) {
-              if (value.length > 0) {
-                  var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
-                  objUri.addSearch('strPID_NO', value);
-                  ApiService.Get(objUri, false).then(function success(result) {
-                      var results = result.data.results;
-                      if (is.not.empty(results)) {
-                        blnPass = false;
-                        $scope.Detail.Add_OH_PID_D.PID_NO = '';
-                         PopupService.Alert(null, 'Exist Pid No').then();
-                      } else {
-                      }
-                  });
-              }
-            } else if(is.equal(type, 'PID_NO') ) {
-                  if (value.length > 0) {
-                      var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
-                      objUri.addSearch('strPID_NO', value);
-                      ApiService.Get(objUri, false).then(function success(result) {
-                          var results = result.data.results;
-                          if (is.not.empty(results)) {
+            if (is.equal(type, 'AddPID_NO')) {
+                if (value.length > 0) {
+                    var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
+                    objUri.addSearch('strPID_NO', value);
+                    ApiService.Get(objUri, false).then(function success(result) {
+                        var results = result.data.results;
+                        if (is.not.empty(results)) {
+                            blnPass = false;
+                            $scope.Detail.Add_OH_PID_D.PID_NO = '';
+                            PopupService.Alert(null, 'Exist Pid No').then();
+                        } else {}
+                    });
+                }
+            } else if (is.equal(type, 'PID_NO')) {
+                if (value.length > 0) {
+                    var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
+                    objUri.addSearch('strPID_NO', value);
+                    ApiService.Get(objUri, false).then(function success(result) {
+                        var results = result.data.results;
+                        if (is.not.empty(results)) {
                             blnPass = false;
                             $scope.Detail.OH_PID_D.PID_NO = '';
-                             PopupService.Alert(null, 'Exist Pid No').then();
-                          } else {
-                          }
-                      });
-                  }
+                            PopupService.Alert(null, 'Exist Pid No').then();
+                        } else {}
+                    });
                 }
+            }
             return blnPass;
         };
         $scope.openCam = function (type) {
             if (!ENV.fromWeb) {
                 if (is.equal(type, 'AddPID_NO')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
-                      if(blnVerifyInput('AddPID_NO',imageData.text)){
-                          $scope.Detail.Add_OH_PID_D.PID_NO = imageData.text.substr(0, 8);
-                      }
+                        if ($scope.blnVerifyInput('AddPID_NO', imageData.text)) {
+                            $scope.Detail.Add_OH_PID_D.PID_NO = imageData.text.substr(0, 8);
+                        }
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
-                }else if(is.equal(type, 'TruckerBill')){
-                  $cordovaBarcodeScanner.scan().then(function (imageData) {
-                      $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = imageData.text;
-                  }, function (error) {
-                      $cordovaToast.showShortBottom(error);
-                  });
-                }else if(is.equal(type, 'PID_NO')){
-                  $cordovaBarcodeScanner.scan().then(function (imageData) {
-                    if(blnVerifyInput('PID_NO',imageData.text)){
-                      $scope.Detail.OH_PID_D.PID_NO = imageData.text.substr(0, 8);
-                    }
-                  }, function (error) {
-                      $cordovaToast.showShortBottom(error);
-                  });
-                }else if(is.equal(type, 'PID_TruckerBill')){
-                  $cordovaBarcodeScanner.scan().then(function (imageData) {
-                    $scope.Detail.OH_PID_D.TRK_BILL_NO = imageData.text;
-                  }, function (error) {
-                      $cordovaToast.showShortBottom(error);
-                  });
+                } else if (is.equal(type, 'TruckerBill')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = imageData.text;
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
+                } else if (is.equal(type, 'PID_NO')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        if ($scope.blnVerifyInput('PID_NO', imageData.text)) {
+                            $scope.Detail.OH_PID_D.PID_NO = imageData.text.substr(0, 8);
+                        }
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
+                } else if (is.equal(type, 'PID_TruckerBill')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        $scope.Detail.OH_PID_D.TRK_BILL_NO = imageData.text;
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
                 }
             }
         };
@@ -494,21 +508,21 @@ appControllers.controller('GrListCtrl', [
                     $scope.Detail.Add_OH_PID_D.PID_NO = '';
                     $('#txt-addPID_NO').focus();
                 }
-            }else if(is.equal(type, 'TruckerBill')){
-              if ($scope.Detail.Add_OH_PID_D.TRK_BILL_NO.length > 0) {
-                $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
-                  $('#txt-addTruckerBill').focus();
-              }
-            }else if(is.equal(type, 'PID_NO')){
-              if ($scope.Detail.OH_PID_D.PID_NO.length > 0) {
-                $scope.Detail.OH_PID_D.PID_NO = '';
-                  $('#txt-PID_NO').focus();
-              }
-            }else if(is.equal(type, 'PID_TruckerBill')){
-              if ($scope.Detail.OH_PID_D.TRK_BILL_NO.length > 0) {
-                $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
-                  $('#txt-TruckerBill').focus();
-              }
+            } else if (is.equal(type, 'TruckerBill')) {
+                if ($scope.Detail.Add_OH_PID_D.TRK_BILL_NO.length > 0) {
+                    $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                    $('#txt-addTruckerBill').focus();
+                }
+            } else if (is.equal(type, 'PID_NO')) {
+                if ($scope.Detail.OH_PID_D.PID_NO.length > 0) {
+                    $scope.Detail.OH_PID_D.PID_NO = '';
+                    $('#txt-PID_NO').focus();
+                }
+            } else if (is.equal(type, 'PID_TruckerBill')) {
+                if ($scope.Detail.OH_PID_D.TRK_BILL_NO.length > 0) {
+                    $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                    $('#txt-TruckerBill').focus();
+                }
             }
         };
         // start PId Page
@@ -795,60 +809,59 @@ appControllers.controller('GrListCtrl', [
         };
         $scope.addLine = function () {
 
-          if ( $scope.Detail.Add_OH_PID_D.PACK_TYPE.length>0){
-            PopupService.Confirm(null, 'Confirm', 'Are you sure to Add PID?').then(function (res) {
-                if (res) {
-                    if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
-                        var arrOH_PID_D = [];
-                        $scope.Detail.Add_OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
-                        //add UnNo start
-                        for (var i = 0; i < $scope.Detail.Rcdg1s.length; i++) {
-                            if (i === 0) {
-                                $scope.Detail.Add_OH_PID_D.UnNo01 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 1) {
-                                $scope.Detail.Add_OH_PID_D.UnNo02 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 2) {
-                                $scope.Detail.Add_OH_PID_D.UnNo03 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 3) {
-                                $scope.Detail.Add_OH_PID_D.UnNo04 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 4) {
-                                $scope.Detail.Add_OH_PID_D.UnNo05 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 5) {
-                                $scope.Detail.Add_OH_PID_D.UnNo06 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 6) {
-                                $scope.Detail.Add_OH_PID_D.UnNo07 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 7) {
-                                $scope.Detail.Add_OH_PID_D.UnNo08 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 8) {
-                                $scope.Detail.Add_OH_PID_D.UnNo09 = $scope.Detail.Rcdg1s[i].UnNo;
-                            } else if (i === 9) {
-                                $scope.Detail.Add_OH_PID_D.UnNo10 = $scope.Detail.Rcdg1s[i].UnNo;
+            if ($scope.Detail.Add_OH_PID_D.PACK_TYPE.length > 0) {
+                PopupService.Confirm(null, 'Confirm', 'Are you sure to Add PID?').then(function (res) {
+                    if (res) {
+                        if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
+                            var arrOH_PID_D = [];
+                            $scope.Detail.Add_OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                            //add UnNo start
+                            for (var i = 0; i < $scope.Detail.Rcdg1s.length; i++) {
+                                if (i === 0) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo01 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 1) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo02 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 2) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo03 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 3) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo04 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 4) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo05 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 5) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo06 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 6) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo07 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 7) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo08 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 8) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo09 = $scope.Detail.Rcdg1s[i].UnNo;
+                                } else if (i === 9) {
+                                    $scope.Detail.Add_OH_PID_D.UnNo10 = $scope.Detail.Rcdg1s[i].UnNo;
+                                }
+                                //add UnNo end
+
                             }
-                            //add UnNo end
+                            arrOH_PID_D.push($scope.Detail.Add_OH_PID_D);
 
+                            var jsonData = {
+                                "UpdateAllString": JSON.stringify(arrOH_PID_D)
+                            };
+                            var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
+                            ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                                var results = result.data.results;
+                                if (is.not.empty(results)) {
+                                    $scope.closeModalAddPID();
+                                } else {}
+                            });
+
+                        } else {
+                            PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
                         }
-                        arrOH_PID_D.push($scope.Detail.Add_OH_PID_D);
-
-                        var jsonData = {
-                            "UpdateAllString": JSON.stringify(arrOH_PID_D)
-                        };
-                        var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/create');
-                        ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                            var results = result.data.results;
-                            if (is.not.empty(results)) {
-                                $scope.closeModalAddPID();
-                            } else {}
-                        });
-
-                    } else {
-                        PopupService.Info(null, 'Please First Create Onhand', '').then(function (res) {});
-                    }
-                } else {}
-            });
-          }else{
-              PopupService.Alert(null, 'Pack Type Must be Enter', '').then(function (res) {});
-          }
-
+                    } else {}
+                });
+            } else {
+                PopupService.Alert(null, 'Pack Type Must be Enter', '').then(function (res) {});
+            }
 
         };
 
@@ -938,8 +951,8 @@ appControllers.controller('GrDetailCtrl', [
         $scope.OnhandNo = $stateParams.OnhandNo;
         $scope.Detail = {
             Address: '',
-            Address1:'',
-          Address2:'',
+            Address1: '',
+            Address2: '',
         };
         $scope.findAddress = function () {
             if (!ENV.fromWeb) {
@@ -962,7 +975,7 @@ appControllers.controller('GrDetailCtrl', [
 
             if (!ENV.fromWeb) {
                 var strDate = 'Hello Word first print';
-                  // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
+                // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
                 cordova.plugins.zbtprinter.print($scope.Detail.Address, strData,
                     function (success) {
                         PopupService.Info(null, 'Print ok').then();
@@ -974,11 +987,10 @@ appControllers.controller('GrDetailCtrl', [
             }
         };
 
-
         $scope.print1 = function () {
             if (!ENV.fromWeb) {
                 var strDate = 'Hello Word first print';
-                    // PopupService.Info(null, 'print1'  +$scope.Detail.Address1).then();
+                // PopupService.Info(null, 'print1'  +$scope.Detail.Address1).then();
                 cordova.plugins.zbtprinter.print($scope.Detail.Address1, strData,
                     function (success) {
                         PopupService.Info(null, 'Print ok').then();
@@ -990,11 +1002,10 @@ appControllers.controller('GrDetailCtrl', [
             }
         };
 
-
         $scope.print2 = function () {
             if (!ENV.fromWeb) {
                 var strDate = 'Hello Word first print';
-                    // PopupService.Info(null,'print2'  + $scope.Detail.Address2).then();
+                // PopupService.Info(null,'print2'  + $scope.Detail.Address2).then();
                 cordova.plugins.zbtprinter.print($scope.Detail.Address2, strData,
                     function (success) {
                         PopupService.Info(null, 'Print ok').then();
