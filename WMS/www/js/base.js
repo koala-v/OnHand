@@ -24,8 +24,16 @@ var checkDate = function (datetime) {
         datetime = '';
     }
     if (is.not.empty(datetime)) {
-        datetime = moment(datetime).format('YYYY-MM-DD').toString();
+      if(is.equal(moment(datetime).format('DD-MMM-YYYY'), '01-Jan-1900')){
+        datetime = '';
+    }
+      else {
+          datetime = moment(datetime).format('YYYY-MM-DD').toString();
+      }
+
   }
+
+
     return datetime;
 };
 

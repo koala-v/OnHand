@@ -55,7 +55,7 @@ appControllers.controller('GrListCtrl', [
 
                 UserID: '',
                 ONHAND_date: moment(new Date()).format('YYYY-MM-DD'),
-                PICKUP_SUP_datetime: moment(new Date()).format('YYYY-MM-DD'),
+                PICKUP_SUP_datetime: '',
             },
             OH_PID_D_S: {},
             OH_PID_D: {
@@ -137,6 +137,22 @@ appControllers.controller('GrListCtrl', [
         };
         $scope.getLocation();
 
+        $scope.getTrucker = function () {
+            var objUri = ApiService.Uri(true, '/api/wms/rcbp1/All');
+
+            ApiService.Get(objUri, false).then(function success(result) {
+                var arrRcbp1 = new Array();
+                if (result.data.results.length > 0) {
+                    for (var i = 0; i < result.data.results.length; i++) {
+                        arrRcbp1.push(result.data.results[i].BusinessPartyCode);
+
+                    }
+                    $scope.Rcbp1_S = arrRcbp1;
+                }
+            });
+        };
+        $scope.getTrucker();
+
         $scope.getPackType = function () {
             var objUri = ApiService.Uri(true, '/api/wms/Rcpk');
             // objUri.addSearch('LOC_CODE', "");
@@ -213,24 +229,24 @@ appControllers.controller('GrListCtrl', [
         //         $scope.Detail.ONHAND_D.LOC_CODE = '';
         //     }
         // };
-        var CheckTrucker = function () {
-            if ($scope.Detail.ONHAND_D.TRK_CODE.toUpperCase().indexOf('FEDEX') >= 0) {
-                $scope.Detail.Trucker = 'Fedex';
-            } else if ($scope.Detail.ONHAND_D.TRK_CODE === '') {
-                $scope.Detail.Trucker = 'Others';
-                // } else {
-                //     $scope.Detail.Trucker = '';
-            }
-        };
-        $scope.TruckerChange = function () {
-            if ($scope.Detail.Trucker === 'Fedex') {
-                $scope.Detail.ONHAND_D.TRK_CODE = 'Fedex';
-            } else if ($scope.Detail.Trucker === 'Others') {
-                $scope.Detail.ONHAND_D.TRK_CODE = '';
-            } else {
-                $scope.Detail.ONHAND_D.TRK_CODE = '';
-            }
-        };
+        // var CheckTrucker = function () {
+        //     if ($scope.Detail.ONHAND_D.TRK_CODE.toUpperCase().indexOf('FEDEX') >= 0) {
+        //         $scope.Detail.Trucker = 'Fedex';
+        //     } else if ($scope.Detail.ONHAND_D.TRK_CODE === '') {
+        //         $scope.Detail.Trucker = 'Others';
+        //         } else {
+        //             $scope.Detail.Trucker = '';
+        //     }
+        // };
+        // $scope.TruckerChange = function () {
+        //     if ($scope.Detail.Trucker === 'Fedex') {
+        //         $scope.Detail.ONHAND_D.TRK_CODE = 'Fedex';
+        //     } else if ($scope.Detail.Trucker === 'Others') {
+        //         $scope.Detail.ONHAND_D.TRK_CODE = '';
+        //     } else {
+        //         $scope.Detail.ONHAND_D.TRK_CODE = '';
+        //     }
+        // };
         var CheckChargeType = function () {
             if ($scope.Detail.ONHAND_D.TRK_CHRG_TYPE === 'PP') {
                 $scope.Detail.ChargeType.NewItem = 'PP';
@@ -259,10 +275,14 @@ appControllers.controller('GrListCtrl', [
             if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
                 $scope.Detail.ONHAND_D.NO_INV_WH = "";
             }
+            //  if ($scope.Detail.ONHAND_D.PICKUP_SUP_datetime ==='')
+            //  {
+            //    $scope.Detail.ONHAND_D.PICKUP_SUP_datetime ='NULL';
+            //  }
             $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
             $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
             // $scope.LocationChange();
-            $scope.TruckerChange();
+            // $scope.TruckerChange();
             $scope.pushChange();
             var arrONHAND_D = [];
             arrONHAND_D.push($scope.Detail.ONHAND_D);
@@ -301,7 +321,7 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
                 $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
                 // $scope.LocationChange();
-                $scope.TruckerChange();
+                // $scope.TruckerChange();
                 $scope.pushChange();
                 var arrONHAND_D = [];
                 arrONHAND_D.push($scope.Detail.ONHAND_D);
@@ -377,6 +397,7 @@ appControllers.controller('GrListCtrl', [
                     if (is.not.undefined($scope.Detail.ONHAND_D)) {
                         $scope.Detail.VisibleDetailFlag = 'Y';
                         $scope.Detail.ONHAND_D.ONHAND_date = checkDate($scope.Detail.ONHAND_D.ONHAND_date);
+
                         $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = checkDate($scope.Detail.ONHAND_D.PICKUP_SUP_datetime);
                         $scope.Rcbp1.selected = {
                             BusinessPartyCode: $scope.Detail.ONHAND_D.SHP_CODE,
@@ -388,7 +409,7 @@ appControllers.controller('GrListCtrl', [
                         };
                         CheckPush();
                         // CheckLocation();
-                        CheckTrucker();
+                        // CheckTrucker();
                         CheckChargeType();
                     } else {
                         PopupService.Info(null, 'Please Enter The Current OhandNo').then();
@@ -441,7 +462,7 @@ appControllers.controller('GrListCtrl', [
         $scope.blnVerifyInput = function (type, value) {
             var blnPass = true;
             if (is.equal(type, 'AddPID_NO')) {
-                if (value.length > 0) {
+                if (value.length > 0 && value.length === 8) {
                     var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
                     objUri.addSearch('strPID_NO', value);
                     ApiService.Get(objUri, false).then(function success(result) {
@@ -449,12 +470,15 @@ appControllers.controller('GrListCtrl', [
                         if (is.not.empty(results)) {
                             blnPass = false;
                             $scope.Detail.Add_OH_PID_D.PID_NO = '';
-                            PopupService.Alert(null, 'Exist Pid No').then();
+                            PopupService.Alert(null, 'Pid No : ' + results[0].PID_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
                         } else {}
                     });
+
+                } else {
+                    PopupService.Alert(null, 'Must be 8 digit').then();
                 }
             } else if (is.equal(type, 'PID_NO')) {
-                if (value.length > 0) {
+                if (value.length > 0 && value.length === 8) {
                     var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/validate');
                     objUri.addSearch('strPID_NO', value);
                     ApiService.Get(objUri, false).then(function success(result) {
@@ -462,7 +486,35 @@ appControllers.controller('GrListCtrl', [
                         if (is.not.empty(results)) {
                             blnPass = false;
                             $scope.Detail.OH_PID_D.PID_NO = '';
-                            PopupService.Alert(null, 'Exist Pid No').then();
+                            PopupService.Alert(null, 'Pid No : ' + results[0].PID_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
+                        } else {}
+                    });
+                } else {
+                    PopupService.Alert(null, 'Must be 8 digit').then();
+                }
+            } else if (is.equal(type, 'PID_TruckerBill')) {
+                if (value.length > 0) {
+                    var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/TruckerBillNo');
+                    objUri.addSearch('strTRK_BILL_NO', value);
+                    ApiService.Get(objUri, false).then(function success(result) {
+                        var results = result.data.results;
+                        if (is.not.empty(results)) {
+                            blnPass = false;
+                            $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                            PopupService.Alert(null, 'Trucker Bill No : ' + results[0].TRK_BILL_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
+                        } else {}
+                    });
+                }
+            } else if (is.equal(type, 'TruckerBill')) {
+                if (value.length > 0) {
+                    var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/TruckerBillNo');
+                    objUri.addSearch('strTRK_BILL_NO', value);
+                    ApiService.Get(objUri, false).then(function success(result) {
+                        var results = result.data.results;
+                        if (is.not.empty(results)) {
+                            blnPass = false;
+                            $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                            PopupService.Alert(null, 'Trucker Bill No : ' + results[0].TRK_BILL_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
                         } else {}
                     });
                 }
@@ -481,7 +533,10 @@ appControllers.controller('GrListCtrl', [
                     });
                 } else if (is.equal(type, 'TruckerBill')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
-                        $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = imageData.text;
+                        if ($scope.blnVerifyInput('TruckerBill', imageData.text)) {
+                            $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = imageData.text;
+                        }
+
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });
@@ -495,7 +550,10 @@ appControllers.controller('GrListCtrl', [
                     });
                 } else if (is.equal(type, 'PID_TruckerBill')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
-                        $scope.Detail.OH_PID_D.TRK_BILL_NO = imageData.text;
+                        if ($scope.blnVerifyInput('PID_TruckerBill', imageData.text)) {
+                            $scope.Detail.OH_PID_D.TRK_BILL_NO = imageData.text;
+                        }
+
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
                     });

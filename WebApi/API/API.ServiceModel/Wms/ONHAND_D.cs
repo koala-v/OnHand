@@ -22,6 +22,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/ONHAND_D/update", "Post")]
     [Route("/wms/OH_PID_D/updateLineItem", "Post")]
     [Route("/wms/OH_PID_D/validate", "Get")]     //OH_PID_D?PID_NO
+    [Route("/wms/OH_PID_D/TruckerBillNo", "Get")]     //OH_PID_D?PID_NO
 
     public class ONHAND_D : IReturn<CommonResponse>
     {
@@ -32,7 +33,7 @@ namespace WebApi.ServiceModel.Wms
         public string NextNo { get; set; }
         public string LineItemNo { get; set; }
         public string strPID_NO { get; set; }
-
+        public string strTRK_BILL_NO { get; set; }
     }
     public class imcc_loigc
     {
@@ -63,7 +64,7 @@ namespace WebApi.ServiceModel.Wms
                             " ISNULL(LOC_CODE,'') AS LOC_CODE, " +
                             " ISNULL(TRK_CODE,'') AS TRK_CODE, " +
                             " ISNULL(TRK_CHRG_TYPE,'') AS TRK_CHRG_TYPE, " +
-                            " PICKUP_SUP_datetime, " +
+                            " ISNULL(PICKUP_SUP_datetime,'') AS PICKUP_SUP_datetime, " +
                             " ISNULL(NO_INV_WH,0) AS  NO_INV_WH, " +              
                             " ISNULL((select  sum(PIECES) from OH_PID_D where onhand_no = ONHAND_D.onhand_no ), 0) AS TotalPCS,   " +
                             " ISNULL((select  sum(GROSS_LB) from OH_PID_D where onhand_no = ONHAND_D.onhand_no ),0 ) AS TotalWeight   " +                  
@@ -465,7 +466,7 @@ namespace WebApi.ServiceModel.Wms
 
                     if (PID_NO != "")
                     {
-                        string strSql = "Select PID_NO From OH_PID_D Where PID_NO ='"+ PID_NO + "'";
+                        string strSql = "Select  top 1 PID_NO, ONHAND_NO From OH_PID_D Where PID_NO ='" + PID_NO + "'";
 
                         Result= db.Select<ON_PID_D>(strSql);
                     }
@@ -478,7 +479,35 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
-      
+
+        public List<ON_PID_D> ValidateTRK_BILL_NO(ONHAND_D request)
+        {
+
+            List<ON_PID_D> Result = null;
+
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+
+                    string TRK_BILL_NO = request.strTRK_BILL_NO;
+
+
+                    if (TRK_BILL_NO != "")
+                    {
+                        string strSql = "Select  top 1 TRK_BILL_NO, ONHAND_NO From OH_PID_D Where TRK_BILL_NO ='" + TRK_BILL_NO + "'";
+
+                        Result = db.Select<ON_PID_D>(strSql);
+                    }
+
+
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
         public string ConfirmAll_ONHAND_D(ONHAND_D request)
         {
           
@@ -508,9 +537,14 @@ namespace WebApi.ServiceModel.Wms
                                 string CLSF_YN = ja[i]["CLSF_YN"].ToString();
                                 string ExerciseFlag = ja[i]["ExerciseFlag"].ToString();
                                 string LOC_CODE = Modfunction.CheckNull(ja[i]["LOC_CODE"]);
-                                string TRK_CODE = ja[i]["TRK_CODE"].ToString();
+                                string TRK_CODE = Modfunction.CheckNull(ja[i]["TRK_CODE"]);
                                 string TRK_CHRG_TYPE = ja[i]["TRK_CHRG_TYPE"].ToString();
-                                string PICKUP_SUP_datetime = ja[i]["PICKUP_SUP_datetime"].ToString();                                                       
+                                string PICKUP_SUP_datetime = ja[i]["PICKUP_SUP_datetime"].ToString();
+
+                                if (PICKUP_SUP_datetime == "")
+                                {
+                                    PICKUP_SUP_datetime = null;
+                                }
                                 int NO_INV_WH ;
                                 string UserID = ja[i]["UserID"].ToString();
                                 if (ja[i]["NO_INV_WH"].ToString() == "")
@@ -640,10 +674,14 @@ namespace WebApi.ServiceModel.Wms
                                 string HAZARDOUS_YN = ja[i]["HAZARDOUS_YN"].ToString();
                                 string CLSF_YN = ja[i]["CLSF_YN"].ToString();
                                 string ExerciseFlag = ja[i]["ExerciseFlag"].ToString();
-                                string LOC_CODE = ja[i]["LOC_CODE"].ToString();
-                                string TRK_CODE = ja[i]["TRK_CODE"].ToString();
+                                string LOC_CODE = Modfunction.CheckNull(ja[i]["LOC_CODE"]);
+                                string TRK_CODE = Modfunction.CheckNull(ja[i]["TRK_CODE"]);
                                 string TRK_CHRG_TYPE = ja[i]["TRK_CHRG_TYPE"].ToString();
                                 string PICKUP_SUP_datetime = ja[i]["PICKUP_SUP_datetime"].ToString();
+                                if (PICKUP_SUP_datetime == "")
+                                {
+                                    PICKUP_SUP_datetime = null;
+                                }
                                 int NO_INV_WH;
                                 string UserID = ja[i]["UserID"].ToString();
                                 if (ja[i]["NO_INV_WH"].ToString() == "")
@@ -667,7 +705,7 @@ namespace WebApi.ServiceModel.Wms
                                "   LOC_CODE  ='" + LOC_CODE + "'," +
                                "   TRK_CODE  ='" + TRK_CODE + "'," +
                                "   TRK_CHRG_TYPE  ='" + TRK_CHRG_TYPE+ "'," +
-                               "   PICKUP_SUP_datetime ='" + PICKUP_SUP_datetime+ "'," +
+                               "   PICKUP_SUP_datetime =" + Modfunction.SQLSafeValue(PICKUP_SUP_datetime) + "," +
                                "   TRK_DEL_datetime  ='" + PICKUP_SUP_datetime + "'," +
                                "   NO_INV_WH =" +NO_INV_WH + "," +
                                "    NO_DOC_INV =" + NO_INV_WH + "," +

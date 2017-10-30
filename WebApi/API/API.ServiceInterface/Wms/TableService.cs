@@ -13,7 +13,12 @@ namespace WebApi.ServiceInterface.Wms
         {
             if (auth.AuthResult(token, uri))
             {
-                if (uri.IndexOf("/wms/rcbp1") > 0)
+                
+                    if (uri.IndexOf("wms/rcbp1/All") > 0)
+                {
+                    ecr.data.results = rcbp_Logic.Get_Rcbp1_All(request);
+                }
+                else if (uri.IndexOf("/wms/rcbp1") > 0)
                 {
                     ecr.data.results = rcbp_Logic.Get_Rcbp1_List(request);
                 }
@@ -334,6 +339,10 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     ecr.data.results = imcc_Logic.DeleteLineItem(request);
 
+                }
+                else if (uri.IndexOf("/wms/OH_PID_D/TruckerBillNo") > 0)
+                {
+                    ecr.data.results = imcc_Logic.ValidateTRK_BILL_NO(request);
                 }
                 else if (uri.IndexOf("/wms/OH_PID_D/validate") > 0)
                 {

@@ -119,9 +119,15 @@
 
                                 </select>
 
-                                </body>
+                                <!-- <div class="col col-10">
+                                    <button class="button button-clear button-positive button-small" ng-click="openCam('PID_TruckerBill')"><i class="icon ion-qr-scanner"></i></button>
+                                </div>
+                                <div class="col">
+                                    <button class="button button-clear button-positive button-small" ng-click="clearInput('PID_TruckerBill')"><i class="icon ion-android-close"></i></button>
+                                </div> -->
+                                <!-- </body>
 
-                                </html>
+                                </html> -->
 
                                 <!-- </select> -->
                             </div>
@@ -133,10 +139,14 @@
                                 <div class="input-label">
                                     Trucker
                                 </div>
-                                <select ng-model="Detail.Trucker">
+                                <!-- <select ng-model="Detail.Trucker">
                                     <option value="">None</option>
                                     <option value="Fedex" style="float:left">Fedex</option>
                                     <option value="Others" style="float:left">Others</option>
+                                </select> -->
+
+                                <select ng-model="Detail.ONHAND_D.TRK_CODE" ng-options="city for city in Rcbp1_S">
+
                                 </select>
                             </div>
                         </div>
@@ -212,7 +222,7 @@
                         <div class="col col-80" style="padding:0px;">
                             <label class="item item-input">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Trucker Bill</span>
-                                <input type="text" id="txt-TruckerBill" ng-model="Detail.OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill">
+                                <input type="text" id="txt-TruckerBill" ng-model="Detail.OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill" ng-blur="blnVerifyInput('PID_TruckerBill',Detail.OH_PID_D.TRK_BILL_NO)">
                             </label>
                         </div>
                         <div class="col col-10">
@@ -252,7 +262,7 @@
                         <div class="col col-80" style="padding:0px;">
                             <label class="item item-input">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
-                                <input type="text" id="" maxlength="8" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;" ng-blur="blnVerifyInput('PID_NO',Detail.OH_PID_D.PID_NO)">
+                                <input type="text" id=""  maxlength="8" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;" ng-blur="blnVerifyInput('PID_NO',Detail.OH_PID_D.PID_NO)">
                                 <!-- <input type="text" id="" maxlength="8" ng-model="Detail.OH_PID_D.PID_NO" placeholder="Pid" style="padding-right: 14px;"  ng-keypress="enter($event, 'PID_NO',Detail.OH_PID_D.PID_NO)"> -->
                             </label>
                         </div>
@@ -374,7 +384,7 @@
                             <div class="col col-80" style="padding:0px;">
                                 <label class="item item-input">
                                     <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Trucker Bill</span>
-                                    <input type="text" id="txt-addTruckerBill" ng-model="Detail.Add_OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill">
+                                    <input type="text" id="txt-addTruckerBill" ng-model="Detail.Add_OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill" ng-blur="blnVerifyInput('TruckerBill',Detail.Add_OH_PID_D.TRK_BILL_NO)">
                                 </label>
                             </div>
                             <div class="col col-10">

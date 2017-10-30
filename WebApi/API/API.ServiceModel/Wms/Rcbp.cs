@@ -12,6 +12,7 @@ namespace WebApi.ServiceModel.Wms
 {
 				//[Route("/wms/rcbp1/sps", "Get")]				//sps?RecordCount= & BusinessPartyName=
 				[Route("/wms/rcbp1", "Get")]                                //rcbp1?BusinessPartyName= &TrxNo=			
+                [Route("/wms/rcbp1/All", "Get")]  
                 [Route("/wms/rcdg1/UnNo", "Get")]
     public class Rcbp : IReturn<CommonResponse>
     {
@@ -46,7 +47,24 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
-       
+
+        public List<Rcbp1> Get_Rcbp1_All(Rcbp request)
+        {
+            List<Rcbp1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+                    
+                        string strSQL = "Select ISNULL(BusinessPartyCode,'') AS BusinessPartyCode   From Rcbp1 Where PartyType = 'TR' And  BusinessPartyCode !=''";
+                        Result = db.Select<Rcbp1>(strSQL);                 
+
+                }
+            }
+            catch { throw; }
+            return Result;
+        }
+
         public List<Rcdg1> Get_Rcdg1UnNo_List(Rcbp request)
         {
             List<Rcdg1> Result = null;
