@@ -174,7 +174,7 @@ namespace WebApi.ServiceModel.Wms
                         " ISNULL( (Select DgDescription From Rcdg1 Where Rcdg1.UnNo=OH_PID_D.UnNo10) ,'') AS  DgDescription10 ," +
                         " ISNULL(OH_PID_D.Remark ,'') AS Remark    " +
                         " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='" + request.strONHAND_NO + "'";
-                        //   " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='ONHAND06'";
+                        //   " from OH_PID_D left join ONHAND_D on ONHAND_D.onhand_no=OH_PID_D.onhand_no  where OH_PID_D.onhand_no='ONHAND06'  ";
                         Result = db.Select<ON_PID_D>(strSQL);
 
                     }

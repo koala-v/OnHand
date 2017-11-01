@@ -35,28 +35,58 @@
             </div>
             <div ng-if="Detail.TableTitle ==='Create Onhand' || Detail.VisibleDetailFlag ==='Y'" class="item item-body" style="padding-top: 6px;padding-bottom: 6px;">
                 <div class="list">
+                  <div class="row">
+                      <div class="col col-33" style="text-align:center;">
+                          <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Shipper Code</span>
+                      </div>
+                      <div class="col" style="padding:0px;">
+                          <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="">
+                              <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyCode }} </ui-select-match>
+                              <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1('',$select.search)" refresh-delay="0" position="down">
+                                    <div ng-bind-html="Rcbp1.BusinessPartyCode | highlight: $select.search"></div>
+                              </ui-select-choices>
+                          </ui-select>
+                      </div>
+                  </div>
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Shipper</span>
+                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Shipper Name</span>
                         </div>
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="">
-                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }}</ui-select-match>
-                                <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search)" refresh-delay="0" position="down">
+                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }} </ui-select-match>
+                                <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search,'')" refresh-delay="0" position="down">
                                     <div ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"></div>
+                                      <!-- <div ng-bind-html="Rcbp1.BusinessPartyCode | highlight: $select.search"></div> -->
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col col-33" style="text-align:center;">
+                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Consignee Code</span>
+                        </div>
+                        <div class="col" style="padding:0px;">
+                            <ui-select ng-model="Rcbp1ForConsinnee.selected" theme="bootstrap" reset-search-input="true" on-select="">
+                                <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;"> {{$select.selected.BusinessPartyCode }}   </ui-select-match>
+                                <ui-select-choices repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee('',$select.search)" refresh-delay="0" position="down">
+                                      <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyCode | highlight: $select.search"></div>
+                                    <!-- <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyName | highlight: $select.search"></div> -->
                                 </ui-select-choices>
                             </ui-select>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Consignee</span>
+                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Consignee Name</span>
                         </div>
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1ForConsinnee.selected" theme="bootstrap" reset-search-input="true" on-select="">
                                 <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }}</ui-select-match>
-                                <ui-select-choices repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee($select.search)" refresh-delay="0" position="down">
+                                <ui-select-choices repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee($select.search,'')" refresh-delay="0" position="down">
                                     <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyName | highlight: $select.search"></div>
+                                      <!-- <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyCode | highlight: $select.search"></div> -->
                                 </ui-select-choices>
                             </ui-select>
                         </div>
@@ -108,13 +138,17 @@
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <div class="item item-input item-select">
-                                <div class="input-label">
+                    <div class="row">
+                          <div class="col">
+                                <div class="input-label"  style="color:blue"ng-click="openCam('Location')">
                                     Location
                                 </div>
+                              </div>
                                 <!-- <select ng-model="Detail.location"> -->
                                 <!-- <option value="">None</option>
                                     <option value="Location1" style="float:left">Location1</option>
                                    <option value="Location2" style="float:left">Location2</option> -->
+
                                 <select ng-model="Detail.ONHAND_D.LOC_CODE" ng-options="city for city in LOCATION_KS">
 
                                 </select>
@@ -131,6 +165,7 @@
 
                                 <!-- </select> -->
                             </div>
+                          </div>
                         </div>
                     </div>
                     <div class="row">

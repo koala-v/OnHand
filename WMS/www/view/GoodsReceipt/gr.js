@@ -27,7 +27,7 @@ appControllers.controller('GrListCtrl', [
         $scope.Type = $stateParams.Type;
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
-
+        $scope.ShiperCode={};
         $scope.Detail = {
             TableTitle: 'Create Onhand',
             Title: 'New',
@@ -99,19 +99,33 @@ appControllers.controller('GrListCtrl', [
             text: 'To Follow',
             value: 'TF'
         }];
-        $scope.refreshRcbp1 = function (BusinessPartyName) {
-            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
+        $scope.refreshRcbp1 = function (BusinessPartyName,BusinessPartyCode) {
+            if ((is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
+                objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Rcbp1s = result.data.results;
                 });
             }
         };
-        $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName) {
-            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) {
+
+        $scope.refreshShiperCode = function (BusinessPartyCode) {
+            if (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
+                objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
+
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.ShiperCodes = result.data.results;
+                    // $scope.select.search='1';
+                });
+            }
+        };
+        $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName,BusinessPartyCode) {
+            if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
+  objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Rcbp1ForConsinnees = result.data.results;
                 });
@@ -433,7 +447,7 @@ appControllers.controller('GrListCtrl', [
                     $scope.Detail.OH_PID_D_S = result.data.results;
                     if (Type !== 'Update') {
                         if (is.array($scope.Detail.OH_PID_D_S) && is.not.empty($scope.Detail.OH_PID_D_S)) {
-                            showPid(0, 'Delete');
+                            showPid($scope.Detail.OH_PID_D_S.length-1, 'Delete');
                         } else {
                             // PopupService.Info(null, 'This OH_PID_D has no Record Please Add').then(function (res) {
                             // });
@@ -553,6 +567,15 @@ appControllers.controller('GrListCtrl', [
                         if ($scope.blnVerifyInput('PID_TruckerBill', imageData.text)) {
                             $scope.Detail.OH_PID_D.TRK_BILL_NO = imageData.text;
                         }
+
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
+                } else if (is.equal(type, 'Location')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        // if ($scope.blnVerifyInput('PID_TruckerBill', imageData.text)) {
+                            $scope.Detail.ONHAND_D.LOC_CODE = imageData.text;
+                        // }
 
                     }, function (error) {
                         $cordovaToast.showShortBottom(error);
@@ -767,22 +790,23 @@ appControllers.controller('GrListCtrl', [
         };
 
         $scope.showPrev = function () {
-            var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
-            if ($scope.Detail.OH_PID_D_S.length > 0 && intRow > 0 && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
-                // $scope.clearInput();
-                showPid(intRow - 1, '');
-            } else {
-                PopupService.Info(null, 'Already the first one');
-            }
+          var intRow = $scope.Detail.OH_PID_D.RowNum + 1;
+          if ($scope.Detail.OH_PID_D_S.length > 0 && $scope.Detail.OH_PID_D_S.length >= intRow && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
+              // $scope.clearInput();
+              showPid(intRow - 1, '');
+          } else {
+              PopupService.Info(null, 'Already the last one');
+          }
         };
         $scope.showNext = function () {
-            var intRow = $scope.Detail.OH_PID_D.RowNum + 1;
-            if ($scope.Detail.OH_PID_D_S.length > 0 && $scope.Detail.OH_PID_D_S.length >= intRow && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
-                // $scope.clearInput();
-                showPid(intRow - 1, '');
-            } else {
-                PopupService.Info(null, 'Already the last one');
-            }
+          var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
+          if ($scope.Detail.OH_PID_D_S.length > 0 && intRow > 0 && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
+              // $scope.clearInput();
+              showPid(intRow - 1, '');
+          } else {
+              PopupService.Info(null, 'Already the first one');
+          }
+
         };
 
         // End Pid Page

@@ -18,7 +18,8 @@ namespace WebApi.ServiceModel.Wms
     {
         public string TrxNo { get; set; }
         public string BusinessPartyName { get; set; }
-	   public string RecordCount { get; set; }
+        public string BusinessPartyCode { get; set; }
+        public string RecordCount { get; set; }
         public string  UnNo { get; set; }
         public string UnNoFlag { get; set; }
     }
@@ -35,6 +36,11 @@ namespace WebApi.ServiceModel.Wms
                     if (!string.IsNullOrEmpty(request.BusinessPartyName))
                     {
                         string strSQL = "Select BusinessPartyCode, BusinessPartyName, StatusCode  From Rcbp1 Where StatusCode = 'USE' And BusinessPartyName LIKE '" + request.BusinessPartyName + "%'  Order By BusinessPartyCode Asc";
+                        Result = db.Select<Rcbp1>(strSQL);
+                    }
+                    else if (!string.IsNullOrEmpty(request.BusinessPartyCode))
+                    {
+                        string strSQL = "Select BusinessPartyCode, BusinessPartyName, StatusCode  From Rcbp1 Where StatusCode = 'USE' And BusinessPartyCode LIKE '" + request.BusinessPartyCode + "%'  Order By BusinessPartyCode Asc";
                         Result = db.Select<Rcbp1>(strSQL);
                     }
                     else {
