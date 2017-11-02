@@ -27,7 +27,7 @@ appControllers.controller('GrListCtrl', [
         $scope.Type = $stateParams.Type;
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
-        $scope.ShiperCode={};
+        $scope.ShiperCode = {};
         $scope.Detail = {
             TableTitle: 'Create Onhand',
             Title: 'New',
@@ -99,7 +99,7 @@ appControllers.controller('GrListCtrl', [
             text: 'To Follow',
             value: 'TF'
         }];
-        $scope.refreshRcbp1 = function (BusinessPartyName,BusinessPartyCode) {
+        $scope.refreshRcbp1 = function (BusinessPartyName, BusinessPartyCode) {
             if ((is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
@@ -121,11 +121,11 @@ appControllers.controller('GrListCtrl', [
                 });
             }
         };
-        $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName,BusinessPartyCode) {
+        $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName, BusinessPartyCode) {
             if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
-  objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
+                objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Rcbp1ForConsinnees = result.data.results;
                 });
@@ -271,6 +271,9 @@ appControllers.controller('GrListCtrl', [
             } else {
                 $scope.Detail.ChargeType.NewItem = '';
             }
+        };
+        $scope.ClearVenderShipDate = function () {
+            $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = '';
         };
         $scope.Create = function () {
             if (is.undefined($scope.Rcbp1.selected)) {
@@ -447,7 +450,7 @@ appControllers.controller('GrListCtrl', [
                     $scope.Detail.OH_PID_D_S = result.data.results;
                     if (Type !== 'Update') {
                         if (is.array($scope.Detail.OH_PID_D_S) && is.not.empty($scope.Detail.OH_PID_D_S)) {
-                            showPid($scope.Detail.OH_PID_D_S.length-1, 'Delete');
+                            showPid($scope.Detail.OH_PID_D_S.length - 1, 'Delete');
                         } else {
                             // PopupService.Info(null, 'This OH_PID_D has no Record Please Add').then(function (res) {
                             // });
@@ -514,8 +517,27 @@ appControllers.controller('GrListCtrl', [
                         var results = result.data.results;
                         if (is.not.empty(results)) {
                             blnPass = false;
-                            $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
-                            PopupService.Alert(null, 'Trucker Bill No : ' + results[0].TRK_BILL_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
+                            var promptPopup = $ionicPopup.show({
+                                template: '',
+                                title: 'Trucker Bill',
+                                subTitle: 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?',
+                                scope: $scope,
+                                buttons: [{
+                                    text: 'No',
+                                    onTap: function (e) {
+                                        $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                                        // $('#txt-TruckerBill').focus();
+                                    }
+                                }, {
+                                    text: '<b>Yes</b>',
+                                    type: 'button-positive',
+                                    onTap: function (e) {
+                                        // $('#txt-PID_NO').focus();
+                                    }
+                                }]
+                            });
+                            // $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                            // PopupService.Alert(null, 'Trucker Bill No : ' + results[0].TRK_BILL_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
                         } else {}
                     });
                 }
@@ -527,8 +549,37 @@ appControllers.controller('GrListCtrl', [
                         var results = result.data.results;
                         if (is.not.empty(results)) {
                             blnPass = false;
-                            $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
-                            PopupService.Alert(null, 'Trucker Bill No : ' + results[0].TRK_BILL_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
+                            var promptPopup = $ionicPopup.show({
+                                template: '',
+                                title: 'Trucker Bill',
+                                subTitle: 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?',
+                                scope: $scope,
+                                buttons: [{
+                                    text: 'No',
+                                    onTap: function (e) {
+                                        $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                                        // $('#txt-addTruckerBill').focus();
+                                    }
+                                }, {
+                                    text: '<b>Yes</b>',
+                                    type: 'button-positive',
+                                    onTap: function (e) {
+                                        // $('#txt-PID_NO').focus();
+                                    }
+                                }]
+                            });
+
+                            // PopupService.Confirm(null, 'Trucker Bill', 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?').then(function (res) {
+                            //     if (res) {
+                            //
+                            //     } else {
+                            //
+                            //         $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                            //         $('#txt-addTruckerBill').focus();
+                            //     }
+                            // });
+                            // $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                            // PopupService.Alert(null, 'Trucker Bill No : ' + results[0].TRK_BILL_NO + '  Already Exists in ' + results[0].ONHAND_NO).then();
                         } else {}
                     });
                 }
@@ -574,7 +625,7 @@ appControllers.controller('GrListCtrl', [
                 } else if (is.equal(type, 'Location')) {
                     $cordovaBarcodeScanner.scan().then(function (imageData) {
                         // if ($scope.blnVerifyInput('PID_TruckerBill', imageData.text)) {
-                            $scope.Detail.ONHAND_D.LOC_CODE = imageData.text;
+                        $scope.Detail.ONHAND_D.LOC_CODE = imageData.text;
                         // }
 
                     }, function (error) {
@@ -790,22 +841,22 @@ appControllers.controller('GrListCtrl', [
         };
 
         $scope.showPrev = function () {
-          var intRow = $scope.Detail.OH_PID_D.RowNum + 1;
-          if ($scope.Detail.OH_PID_D_S.length > 0 && $scope.Detail.OH_PID_D_S.length >= intRow && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
-              // $scope.clearInput();
-              showPid(intRow - 1, '');
-          } else {
-              PopupService.Info(null, 'Already the last one');
-          }
+            var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
+            if ($scope.Detail.OH_PID_D_S.length > 0 && intRow > 0 && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
+                // $scope.clearInput();
+                showPid(intRow - 1, '');
+            } else {
+                PopupService.Info(null, 'Already the first one');
+            }
         };
         $scope.showNext = function () {
-          var intRow = $scope.Detail.OH_PID_D.RowNum - 1;
-          if ($scope.Detail.OH_PID_D_S.length > 0 && intRow > 0 && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
-              // $scope.clearInput();
-              showPid(intRow - 1, '');
-          } else {
-              PopupService.Info(null, 'Already the first one');
-          }
+            var intRow = $scope.Detail.OH_PID_D.RowNum + 1;
+            if ($scope.Detail.OH_PID_D_S.length > 0 && $scope.Detail.OH_PID_D_S.length >= intRow && is.equal($scope.Detail.OH_PID_D_S[intRow - 1].RowNum, intRow)) {
+                // $scope.clearInput();
+                showPid(intRow - 1, '');
+            } else {
+                PopupService.Info(null, 'Already the last one');
+            }
 
         };
 
