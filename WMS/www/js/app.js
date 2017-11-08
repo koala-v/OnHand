@@ -270,7 +270,7 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                 controller: 'EnquiryListCtrl'
             } )
             .state( 'grList', {
-                url: '/gr/list/:Type',
+                url: '/gr/list/:Type/:OnhandNo',
                 cache: 'false',
                 templateUrl: 'view/GoodsReceipt/list.html',
                 controller: 'GrListCtrl'
@@ -280,6 +280,18 @@ app.config( [ '$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicCo
                 cache: 'false',
                 templateUrl: 'view/GoodsReceipt/detail.html',
                 controller: 'GrDetailCtrl'
+            } )
+            .state( 'GrPid', {
+                url: '/gr/pid/:Type/:OnhandNo',
+                cache: 'false',
+                templateUrl: 'view/GoodsReceipt/pid.html',
+                controller: 'GrPidCtrl'
+            } )
+            .state( 'GrAddPid', {
+                url: '/gr/addpid/:Type/:OnhandNo',
+                cache: 'false',
+                templateUrl: 'view/GoodsReceipt/addpid.html',
+                controller: 'GrAddPidCtrl'
             } )
             .state( 'vginList', {
                 url: '/vgin/list',
