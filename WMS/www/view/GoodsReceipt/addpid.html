@@ -59,11 +59,18 @@
                                 <th style="font-weight:600"> &nbsp;&nbsp;Un No &nbsp;</th>
                                 <th style="font-weight:600">DG Class &nbsp;</th>
                                 <th style="font-weight:600">DG Description &nbsp;</th>
+                                  <th style="font-weight:600;align:right" ></th>
                             </tr>
                             <tr class="" ng-repeat="Rcdg1 in Detail.Rcdg1s">
                                 <td> &nbsp;&nbsp;<span ng-bind="Rcdg1.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
                                 <td> <span ng-bind="Rcdg1.DGClass"></span> &nbsp;</td>
                                 <td> <span ng-bind="Rcdg1.DGDescription"></span> &nbsp;</td>
+                                  <td align="right">
+                                        <button class="button button-clear button-positive button-small" ng-click="DeleteLine(Rcdg1.UnNo)"><i class="icon ion-android-close"></i></button>
+                                    <!-- <label class="item item-input" style=""  ng-click="DeleteLine(Rcdg1.UnNo)" >
+                                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;color:Red">Del</span>
+                                    </label> -->
+                                     </td>
                             </tr>
                         </table>
                     </div>
@@ -133,7 +140,7 @@
             </div>
         </ion-footer-bar>
         <script id="popup-UnNo.html" type="text/ng-template">
-           <div class="list card">
+           <div class="list card" >
                <h5>&nbsp;&nbsp;&nbsp;UnNo :</h5>
                <div class="row">
                    <div class="col col-10" style="text-align:center;">
@@ -143,7 +150,8 @@
                        <ui-select ng-model="Rcdg1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowRcdg1(Rcdg1.selected.UnNo)">
                            <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.UnNo | limitTo:16}}</ui-select-match>
                            <ui-select-choices repeat="Rcdg1 in Rcdg1s track by $index" refresh="refreshRcdg1UnNo($select.search)" refresh-delay="0" position="down">
-                               <div ng-bind-html="Rcdg1.UnNo | highlight: $select.search"></div>
+                               <!-- <div ng-bind-html="  | highlight: $select.search"></div> -->
+                                    <div >{{Rcdg1.UnNo }} {{Rcdg1.DGClass}}  {{Rcdg1.DGDescription}}  </div>
                            </ui-select-choices>
                        </ui-select>
                    </div>

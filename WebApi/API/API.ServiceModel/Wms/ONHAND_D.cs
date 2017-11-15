@@ -21,6 +21,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/ONHAND_D/confirm", "Post")]
     [Route("/wms/ONHAND_D/update", "Post")]
     [Route("/wms/OH_PID_D/updateLineItem", "Post")]
+    [Route("/wms/OH_PID_D/UpdateUnNo", "get")]
     [Route("/wms/OH_PID_D/validate", "Get")]     //OH_PID_D?PID_NO
     [Route("/wms/OH_PID_D/TruckerBillNo", "Get")]     //OH_PID_D?PID_NO
 
@@ -34,6 +35,7 @@ namespace WebApi.ServiceModel.Wms
         public string LineItemNo { get; set; }
         public string strPID_NO { get; set; }
         public string strTRK_BILL_NO { get; set; }
+        public string UnNoIndex { get; set; }
     }
     public class imcc_loigc
     {
@@ -55,6 +57,7 @@ namespace WebApi.ServiceModel.Wms
                             " ISNULL((select BusinessPartyName from rcbp1 where BusinessPartyCode = SHP_CODE ),'')  AS  'ShipperName', " +
                             " ISNULL(CNG_CODE,'') AS CNG_CODE, " +
                             " ISNULL( (select  BusinessPartyName from rcbp1 where BusinessPartyCode = CNG_CODE),'' ) AS  'ConsigneeName', " +
+                            " ISNULL(SHP_MODE,'') AS SHP_MODE, " +
                             " ONHAND_date, " +
                             " ISNULL(CASE_NO,'') AS CASE_NO, " +
                             " ISNULL( PUB_YN,'') AS PUB_YN, " +
@@ -252,6 +255,74 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+
+        public int UpdateUnNo(ONHAND_D request)
+        {
+
+            int Result = -1;
+
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    if (request.strONHAND_NO != null && request.strONHAND_NO != "" && request.LineItemNo != null && request.LineItemNo != "" && request.UnNoIndex != null && request.UnNoIndex != "")
+                    {
+                        string strSql = "";
+                        string strUpdateUnNo = "";
+                        if (int.Parse(request.UnNoIndex) == 0)
+                        {
+                            strUpdateUnNo = "UnNo01";
+                        } else if (int.Parse(request.UnNoIndex) == 1)
+                        {
+                            strUpdateUnNo = "UnNo02";
+                        }
+                        else if (int.Parse(request.UnNoIndex) == 2)
+                        {
+                            strUpdateUnNo = "UnNo03";
+                        }
+                        else if (int.Parse(request.UnNoIndex) == 3)
+                        {
+                            strUpdateUnNo = "UnNo04";
+                        }
+                        else if (int.Parse(request.UnNoIndex) == 4)
+                        {
+                            strUpdateUnNo = "UnNo05";
+                        }
+                        else if (int.Parse(request.UnNoIndex) == 5)
+                        {
+                            strUpdateUnNo = "UnNo06";
+                        }
+                        else if (int.Parse(request.UnNoIndex) == 6)
+                        {
+                            strUpdateUnNo = "UnNo07";
+                        }
+                        else if (int.Parse(request.UnNoIndex) ==7)
+                        {
+                            strUpdateUnNo = "UnNo08";
+                        }
+                        else if (int.Parse(request.UnNoIndex) == 8)
+                        {
+                            strUpdateUnNo = "UnNo09";
+                        }
+                        else 
+                        {
+                            strUpdateUnNo = "UnNo10";
+                        }
+                        strSql = "Update OH_PID_D set "+ strUpdateUnNo + " =''"+
+                           " Where " +
+                           " ONHAND_NO ='" + request.strONHAND_NO + "'" +
+                           " And LineItemNo=" + request.LineItemNo + "";
+                        db.ExecuteSql(strSql);
+                     
+                    }
+
+                }
+                Result = 1;
+
+            }
+            catch { throw; }
+            return Result;
+        }
         public int DeleteLineItem(ONHAND_D request)
         {
 
@@ -527,7 +598,17 @@ namespace WebApi.ServiceModel.Wms
                             {
                               
                                 string strSql = "";
-                                KeyOnhandNo = generateOnhandNo();
+                                string SHP_MODE = "";
+                                string Domestic = ja[i]["DomesticFlag"].ToString();
+                                if (Domestic == "Y")
+                                {
+                                      SHP_MODE = "L2";
+                                }
+                                else
+                                {
+                                     SHP_MODE = "A2";
+                                }
+                                KeyOnhandNo = generateOnhandNo(Domestic);
                                 string SHP_CODE = ja[i]["SHP_CODE"].ToString();
                                 string CNG_CODE = ja[i]["CNG_CODE"].ToString();
                                 string ONHAND_date = ja[i]["ONHAND_date"].ToString();
@@ -560,6 +641,7 @@ namespace WebApi.ServiceModel.Wms
                                "   onhand_no,"+
                                "   SHP_CODE," +
                                "   CNG_CODE ," +
+                               "   SHP_MODE , " +
                                "   ONHAND_date," +                              
                                "   CASE_NO ," +
                                "   PUB_YN," +
@@ -576,7 +658,7 @@ namespace WebApi.ServiceModel.Wms
                                "   Prate_YN, " +
                                "   Sector, " +
                                "   CargoPickupSector, " +
-                               "   Zip_code, " +
+                               "   Zip_code, " +                                                 
                                "   Cargopickupzipcode, " +
                                "   Shippername," +
                                "   shipperaddress1," +
@@ -598,6 +680,7 @@ namespace WebApi.ServiceModel.Wms
                                    Modfunction.SQLSafeValue(KeyOnhandNo) +" , " +
                                    Modfunction.SQLSafeValue(SHP_CODE)+","+
                                    Modfunction.SQLSafeValue(CNG_CODE) + "," +
+                                   Modfunction.SQLSafeValue(SHP_MODE) + "," +
                                    Modfunction.SQLSafeValue(ONHAND_date) + "," +
                                    Modfunction.SQLSafeValue(CASE_NO) + "," +
                                    Modfunction.SQLSafeValue(PUB_YN) + "," +
@@ -762,7 +845,7 @@ namespace WebApi.ServiceModel.Wms
 
             return PackTypeCode;
         }
-        private string generateOnhandNo()
+        private string generateOnhandNo(string Domestic)
         {
             ONHAND_D pair;
             var prefixRules = "";
@@ -772,17 +855,23 @@ namespace WebApi.ServiceModel.Wms
             {
                 try
                 {
-                    List<sanm1> sanm1 = db.Select<sanm1>("SELECT Prefix, NextNo FROM sanm1 WHERE NumberType = 'OMOH'");
+                    string strWhere = "";
+                    if (Domestic == "Y")
+                    {
+                        strWhere = "And JobType ='DT'";
+                    }
+                    List<sanm1> sanm1 = db.Select<sanm1>("SELECT Prefix, NextNo FROM sanm1 WHERE NumberType = 'Onhand_D' "+ strWhere + "");
 
-                    prefixRules = Modfunction.CheckNull(sanm1[0].Prefix);
-                    runningNo = Modfunction.CheckNull(sanm1[0].NextNo);                   
-                    pair = generateTransactionNo(prefixRules, runningNo);
-                    string strSql = "";
-                    strSql = "NextNo="+ Modfunction.SQLSafeValue(pair.NextNo) + "";
-                    db.Update("sanm1",
-                                  strSql,
-                                  "numbertype='OMOH' ");
                 
+                        prefixRules = Modfunction.CheckNull(sanm1[0].Prefix);
+                        runningNo = Modfunction.CheckNull(sanm1[0].NextNo);
+                        pair = generateTransactionNo(prefixRules, runningNo);
+                        string strSql = "";
+                        strSql = "NextNo=" + Modfunction.SQLSafeValue(pair.NextNo) + "";
+                        db.Update("sanm1",
+                                      strSql,
+                                      "numbertype='Onhand_D' ");
+                   
                 }
                 catch (Exception ex)
                 {
@@ -796,33 +885,36 @@ namespace WebApi.ServiceModel.Wms
 
         private ONHAND_D generateTransactionNo(string prefixRules, string runningNo)
         {
-            var pair = new ONHAND_D();
-            var rules = prefixRules.Split(',');
-            var now = DateTime.Now;
+          
+                var pair = new ONHAND_D();
+                var rules = prefixRules.Split(',');
+                var now = DateTime.Now;
 
-            foreach (var r in rules)
-            {
-                var rule = r.Trim();
-                if (rule == "YY" || rule == "MM")
+                foreach (var r in rules)
                 {
-                    pair.TrxNo += now.ToString(rule);
+                    var rule = r.Trim();
+                    if (rule == "YY" || rule == "MM")
+                    {
+                        pair.TrxNo += now.ToString(rule);
+                    }
+                    else
+                    {
+                        //assume is Fxx, until further instruction
+                        pair.TrxNo += rule.Substring(1);
+                    }
                 }
-                else
-                {
-                    //assume is Fxx, until further instruction
-                    pair.TrxNo += rule.Substring(1);
-                }
-            }
 
-            pair.TrxNo += runningNo;
+                pair.TrxNo += runningNo;
 
-            //compute next number for storage.
-            var runningInt = 0;
-            Int32.TryParse(runningNo, out runningInt);
-            ++runningInt;
-            pair.NextNo = runningInt.ToString(new String('0', runningNo.Length));
+                //compute next number for storage.
+                var runningInt = 0;
+                Int32.TryParse(runningNo, out runningInt);
+                ++runningInt;
+                pair.NextNo = runningInt.ToString(new String('0', runningNo.Length));
 
-            return pair;
+                return pair;
+            
+         
         }
     }
    

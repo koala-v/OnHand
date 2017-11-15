@@ -34,8 +34,9 @@ appControllers.controller('GrListCtrl', [
             ONHANDNO: $stateParams.OnhandNo,
             location: '',
             Trucker: '',
-            disabled: true,
+            disabled: false,
             VisibleDetailFlag: 'N',
+
             ChargeType: {
                 NewItem: 'PP',
             },
@@ -52,7 +53,7 @@ appControllers.controller('GrListCtrl', [
                 checked: false
             },
             ONHAND_D: {
-
+                DomesticFlag: 'N',
                 UserID: '',
                 ONHAND_date: moment(new Date()).format('YYYY-MM-DD'),
                 PICKUP_SUP_datetime: '',
@@ -201,6 +202,14 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.pushExercise.checked = false;
             }
         };
+        var checkDomestic = function () {
+            if ($scope.Detail.ONHAND_D.SHP_MODE === 'L2') {
+                $scope.Detail.ONHAND_D.DomesticFlag = 'Y';
+            } else {
+                $scope.Detail.ONHAND_D.DomesticFlag = 'N';
+            }
+            $scope.Detail.disabled = true;
+        };
         $scope.pushChange = function () {
             if ($scope.Detail.pushPublication.checked === true) {
                 $scope.Detail.ONHAND_D.PUB_YN = 'Y';
@@ -255,6 +264,7 @@ appControllers.controller('GrListCtrl', [
             if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
                 $scope.Detail.ONHAND_D.NO_INV_WH = "";
             }
+            $scope.Detail.disabled = true;
             $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
             $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
             $scope.pushChange();
@@ -321,6 +331,7 @@ appControllers.controller('GrListCtrl', [
 
         $scope.OnDatePickerForVendorShipDate = function () {
             var ipObj1 = {
+                templateType: 'modal',
                 callback: function (val) { //Mandatory
                     //  console.log('Return value from the datepicker popup is : ' + val, new Date(val));
                     $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = moment(new Date(val)).format('YYYY-MM-DD');
@@ -382,8 +393,7 @@ appControllers.controller('GrListCtrl', [
                             BusinessPartyName: $scope.Detail.ONHAND_D.ConsigneeName
                         };
                         CheckPush();
-                        // CheckLocation();
-                        // CheckTrucker();
+                        checkDomestic();
                         CheckChargeType();
                     } else {
                         PopupService.Info(null, 'Please Enter The Current OhandNo').then();
@@ -860,7 +870,6 @@ appControllers.controller('GrPidCtrl', [
             }
         };
 
-
         $scope.returnList = function () {
             if ($scope.Type === 'Enquiry') {
                 $scope.Type = 'Enquiry';
@@ -876,15 +885,13 @@ appControllers.controller('GrPidCtrl', [
 
         };
 
-        var test =function(){
-        console.log('haha');
+        var test = function () {
+            console.log('haha');
         };
 
-
-
-$ionicPlatform.ready(function () {
-    test();
-});
+        $ionicPlatform.ready(function () {
+            test();
+        });
         $scope.getPackType = function () {
             var objUri = ApiService.Uri(true, '/api/wms/Rcpk');
             // objUri.addSearch('LOC_CODE', "");
@@ -1105,6 +1112,44 @@ $ionicPlatform.ready(function () {
             $scope.modal.hide();
             $scope.updateLineItem('Update');
 
+        };
+
+        var funIndexOf = function (val, Type, arr) {
+            if (Type !== 'undefined' && arr.length > 0) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (Type === 'del') {
+                        if (arr[i].UnNo == val) return i;
+                    }
+                }
+            }
+            return -1;
+        };
+
+        $scope.funRemove = function (val) {
+            var index = funIndexOf(val, 'del', arrPidUnGrid);
+            if (index > -1) {
+                arrPidUnGrid.splice(index, 1, {
+                    UnNo: "",
+                    DGClass: "",
+                    DGDescription: ""
+                });
+                $scope.UpdateUnNo(index);
+            }
+        };
+        $scope.UpdateUnNo = function (Index) {
+            var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/UpdateUnNo');
+            objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+            objUri.addSearch('LineItemNo', $scope.Detail.OH_PID_D.LineItemNo);
+            objUri.addSearch('UnNoIndex', Index);
+            ApiService.Get(objUri, false).then(function success(result) {
+                var results = result.data.results;
+                if (is.not.empty(results)) {} else {}
+            });
+
+        };
+        $scope.DeleteGridLine = function (UnNo) {
+            $scope.funRemove(UnNo);
+            $scope.Detail.PidUnGrid = arrPidUnGrid;
         };
         $scope.DeleteLine = function (LineItemNo) {
             if (LineItemNo > 0) {
@@ -1359,11 +1404,11 @@ appControllers.controller('GrAddPidCtrl', [
             blnNext: true
         };
         $scope.GoToPid = function () {
-          if ($scope.Type === 'Enquiry') {
-              $scope.Type = 'Enquiry';
-          } else {
-              $scope.Type = 'Update';
-          }
+            if ($scope.Type === 'Enquiry') {
+                $scope.Type = 'Enquiry';
+            } else {
+                $scope.Type = 'Update';
+            }
             $state.go('GrPid', {
                 'OnhandNo': $scope.Detail.ONHANDNO,
                 'Type': $scope.Type,
@@ -1702,6 +1747,27 @@ appControllers.controller('GrAddPidCtrl', [
 
         };
 
+        var funIndexOf = function (val, Type, arr) {
+            if (Type !== 'undefined' && arr.length > 0) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (Type === 'del') {
+                        if (arr[i].UnNo == val) return i;
+                    }
+                }
+            }
+            return -1;
+        };
+
+        $scope.funRemove = function (val) {
+            var index = funIndexOf(val, 'del', arrRcdg1);
+            if (index > -1) {
+                arrRcdg1.splice(index, 1);
+            }
+        };
+        $scope.DeleteLine = function (UnNo) {
+            $scope.funRemove(UnNo);
+            $scope.Detail.Rcdg1s = arrRcdg1;
+        };
         $scope.AddUnNo = function () {
             var myPopup = $ionicPopup.show({
                 templateUrl: 'popup-UnNo.html',

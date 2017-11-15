@@ -61,11 +61,18 @@
                                     <th style="font-weight:600"> &nbsp;&nbsp;Un No &nbsp;</th>
                                     <th style="font-weight:600">DG Class &nbsp;</th>
                                     <th style="font-weight:600">DG Description &nbsp;</th>
+                                        <!-- <th style="font-weight:600"> &nbsp;</th> -->
                                 </tr>
                                 <tr class="" ng-repeat="PidUnGrid in Detail.PidUnGrids">
-                                    <td> &nbsp;&nbsp;<span ng-bind="PidUnGrid.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
-                                    <td> <span ng-bind="PidUnGrid.DGClass"></span> &nbsp;</td>
-                                    <td> <span ng-bind="PidUnGrid.DGDescription"></span> &nbsp;</td>
+                                    <td ng-show="PidUnGrid.UnNo != ''" > &nbsp;&nbsp;<span ng-bind="PidUnGrid.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
+                                    <td ng-show="PidUnGrid.UnNo != ''"> <span ng-bind="PidUnGrid.DGClass"></span> &nbsp;</td>
+                                    <td ng-show="PidUnGrid.UnNo != ''"> <span ng-bind="PidUnGrid.DGDescription"></span> &nbsp;</td>
+                                    <td align="right" ng-show="PidUnGrid.UnNo != ''">
+                                        <button class="button button-clear button-positive button-small" ng-click="DeleteGridLine(PidUnGrid.UnNo)"><i class="icon ion-android-close"></i></button>
+                                      <!-- <label class="item item-input" style=""  ng-click="DeleteGridLine(PidUnGrid.UnNo)" >
+                                          <span class="input-label" style="padding-top:2px; padding-bottom: 2px;color:Red">Del</span>
+                                      </label> -->
+                                   </td>
                                 </tr>
                             </table>
                         </div>

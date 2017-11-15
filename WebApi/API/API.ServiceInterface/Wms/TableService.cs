@@ -286,6 +286,10 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     //ecr.data.results = aeaw_Logic.Insert_Aemt1(request);
                 }
+                else if (uri.IndexOf("/wms/Aemt1/selectAll") > 0)
+                {
+                    ecr.data.results = aeaw_Logic.SelectAllAemt1(request);
+                }
                 else if (uri.IndexOf ("/wms/Aemt1/select")>0)
                 {
                     ecr.data.results = aeaw_Logic.SelectAemt1(request);
@@ -330,9 +334,9 @@ namespace WebApi.ServiceInterface.Wms
 
                 }
 
-                else if (uri.IndexOf("/wms/OH_PID_D/updateLineItem") > 0)
+                else if (uri.IndexOf("/wms/OH_PID_D/UpdateUnNo") > 0)
                 {
-                    ecr.data.results = imcc_Logic.UpdateLineItem(request);
+                    ecr.data.results = imcc_Logic.UpdateUnNo(request);
 
                 }
                 else if (uri.IndexOf("/wms/OH_PID_D/DeleteLineItem") > 0)

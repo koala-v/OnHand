@@ -35,6 +35,21 @@
             </div>
             <div ng-if="Detail.TableTitle ==='Create Onhand' || Detail.VisibleDetailFlag ==='Y'" class="item item-body" style="padding-top: 6px;padding-bottom: 6px;">
                 <div class="list">
+
+                    <div class="row">
+                        <div class="col" style="padding:0px;">
+                            <div class="item item-input item-select">
+                                <div class="input-label">
+                                    Domestic
+                                </div>
+                                <select ng-model="Detail.ONHAND_D.DomesticFlag" data-ng-disabled="Detail.disabled">
+                                    <!-- <option value="">None</option> -->
+                                    <option value="Y" style="float:left">Y</option>
+                                    <option value="N" style="float:left">N</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
                             <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Shipper Code</span>
@@ -139,26 +154,12 @@
                         <div class="col" style="padding:0px;">
                             <div class="item item-input item-select">
                                 <div class="row">
-
-                                    <!-- <div class ="col col-10"> -->
                                     <div class="input-label">
                                         Location
                                     </div>
-
                                     <button style="text-align:left" class="button button-clear button-positive button-small" ng-click="openCam('Location')"><i class="icon ion-qr-scanner"></i></button>
-                                    <!-- </div> -->
-                                    <!-- <div class="col col-90"> -->
-
-                                    <!-- </div> -->
-                                    <!-- <div class="col"> -->
                                     <select ng-model="Detail.ONHAND_D.LOC_CODE" ng-options="city for city in LOCATION_KS"> </select>
-
                                 </div>
-                                <!-- <div class="col">
-                                    <button class="button button-clear button-positive button-small" ng-click="clearInput('PID_TruckerBill')"><i class="icon ion-android-close"></i></button>
-                                </div>
-                             -->
-                                <!-- </div> -->
                             </div>
                         </div>
                     </div>
@@ -168,12 +169,6 @@
                                 <div class="input-label">
                                     Trucker
                                 </div>
-                                <!-- <select ng-model="Detail.Trucker">
-                                    <option value="">None</option>
-                                    <option value="Fedex" style="float:left">Fedex</option>
-                                    <option value="Others" style="float:left">Others</option>
-                                </select> -->
-
                                 <select ng-model="Detail.ONHAND_D.TRK_CODE" ng-options="city for city in Rcbp1_S">
 
                                 </select>

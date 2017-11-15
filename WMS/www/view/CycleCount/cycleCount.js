@@ -152,8 +152,8 @@ appControllers.controller('cycleCountCtrl', [
                 objUri.addSearch('LOC_CODE', strLocation);
                 ApiService.Get(objUri, true).then(function success(result) {
                     $scope.Detail.PidS = result.data.results;
-                    if($scope.Detail.PidS.length>0){
-                         getMatch(MasterJobNo,'N');
+                    if ($scope.Detail.PidS.length > 0) {
+                        getMatch(MasterJobNo, 'N');
                     }
 
                 });
@@ -162,26 +162,23 @@ appControllers.controller('cycleCountCtrl', [
 
         };
 
-
-        var getMatch =function (MasterJobNo ,Flag){
-          objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
-          objUri.addSearch('MasterJobNo', MasterJobNo);
+        var getMatch = function (MasterJobNo, Flag) {
+            objUri = ApiService.Uri(true, '/api/wms/awaw1/Pid');
+            objUri.addSearch('MasterJobNo', MasterJobNo);
             objUri.addSearch('MAwbNo', $scope.Aeaw1.MAwbNo);
-          objUri.addSearch('FromAeawFlag',Flag);
-          if(Flag ==='K'){
-            ApiService.Get(objUri, true).then(function success(result) {
-                  $scope.Detail.PidS = result.data.results;
-            });
+            objUri.addSearch('FromAeawFlag', Flag);
+            if (Flag === 'K') {
+                ApiService.Get(objUri, true).then(function success(result) {
+                    $scope.Detail.PidS = result.data.results;
+                });
 
-          }else if(Flag ==='N')
-          {
-            ApiService.Get(objUri, true).then(function success(result) {
+            } else if (Flag === 'N') {
+                ApiService.Get(objUri, true).then(function success(result) {
                     $scope.Detail.Aemt1S = result.data.results;
-            });
-          }
+                });
+            }
 
-      };
-
+        };
 
         $scope.enter = function (ev, type) {
             if (is.equal(ev.keyCode, 13)) {
@@ -207,18 +204,17 @@ appControllers.controller('cycleCountCtrl', [
             }
         };
 
+        var UpdateAEMT1 = function () {
+            var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Update');
+            objUri.addSearch('KeyMAwbNo', $scope.Detail.PidS[0].KeyMAwbNo);
+            objUri.addSearch('PID_NO', $scope.Detail.Scan.PID_NO);
+            objUri.addSearch('strTallyById', sessionStorage.getItem('UserId').toString());
+            ApiService.Get(objUri, false).then(function success(result) {
+                getMatch($scope.Aeaw1.MasterJobNo, 'N');
+                getMatch($scope.Aeaw1.MasterJobNo, 'K');
+            });
 
- var UpdateAEMT1=function(){
-   var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Update');
-   objUri.addSearch('KeyMAwbNo', $scope.Detail.PidS[0].KeyMAwbNo);
-    objUri.addSearch('PID_NO', $scope.Detail.Scan.PID_NO);
-      objUri.addSearch('strTallyById', sessionStorage.getItem('UserId').toString());
-   ApiService.Get(objUri, false).then(function success(result) {
-        getMatch($scope.Aeaw1.MasterJobNo,'N');
-          getMatch($scope.Aeaw1.MasterJobNo,'K');
-   });
-
- };
+        };
         // var insertAEMT1 = function () {
         //     $scope.Detail.Aemt1.MAwbNo = $scope.Aeaw1.MAwbNo;
         //     $scope.Detail.Aemt1.PID_NO = $scope.Detail.Scan.PID_NO;
@@ -254,7 +250,7 @@ appControllers.controller('cycleCountCtrl', [
                 }
             }
             if (blnPass) {
-                 UpdateAEMT1();
+                UpdateAEMT1();
             } else {
                 PopupService.Alert(null, 'This PID No is not under this MAWB').then();
             }
@@ -276,20 +272,19 @@ appControllers.controller('cycleCountCtrl', [
             return moment(utc).format('DD-MMM-YYYY');
         };
         $scope.GoToDetail = function () {
-           if (is.not.undefined($scope.Ae1.selected)){
-             if ($scope.Ae1.selected.MAwbNo.length>0 ) {
-                 $state.go('cycleCountDetail', {
-                     'MAwbNo': $scope.Ae1.selected.MAwbNo
-                 }, {
-                     reload: true
-                 });
-             } else {
-               PopupService.Info(null, 'Please Enter MAwbNo').then(        );
-             }
-       } else{
-         PopupService.Info(null, 'Please Enter MAwbNo').then( );
-           }
-
+            if (is.not.undefined($scope.Ae1.selected)) {
+                if ($scope.Ae1.selected.MAwbNo.length > 0) {
+                    $state.go('cycleCountDetail', {
+                        'MAwbNo': $scope.Ae1.selected.MAwbNo
+                    }, {
+                        reload: true
+                    });
+                } else {
+                    PopupService.Info(null, 'Please Enter MAwbNo').then();
+                }
+            } else {
+                PopupService.Info(null, 'Please Enter MAwbNo').then();
+            }
 
         };
         $scope.returnMain = function () {
@@ -335,11 +330,10 @@ appControllers.controller('cycleCountDetailCtrl', [
         ApiService,
         PopupService) {
         var popup = null;
-         var  dataResults =new Array();
-        $scope.MAwbNo=$stateParams.MAwbNo;
+        var dataResults = new Array();
+        $scope.MAwbNo = $stateParams.MAwbNo;
         $scope.Detail = {
-            Aemt1S: {
-            },
+            Aemt1S: {},
         };
         $scope.returnList = function () {
             if ($ionicHistory.backView()) {
@@ -355,9 +349,23 @@ appControllers.controller('cycleCountDetailCtrl', [
             var objUri = ApiService.Uri(true, '/api/wms/Aemt1/select');
             objUri.addSearch('MAwbNo', $scope.MAwbNo);
             ApiService.Get(objUri, true).then(function success(result) {
-                  $scope.Detail.Aemt1S = result.data.results;
-                if ($scope.Detail.Aemt1S.length>0) {
-
+                var results = result.data.results;
+                // $scope.Detail.Aemt1S = result.data.results;
+                if (is.not.empty(results)) {
+                    for (var i = 0; i < results.length; i++) {
+                        var objUri = ApiService.Uri(true, '/api/wms/Aemt1/selectAll');
+                        objUri.addSearch('MAwbNo', results[i].KeyMAwbNo);
+                        ApiService.Get(objUri, true).then(function success(result) {
+                            var resultAll = result.data.results;
+                            if (is.not.empty(resultAll)) {
+                              for(var j=0;j<resultAll.length;j++)
+                                var objAemt1 = resultAll[j];
+                                var jobs = getobAemt1(objAemt1);
+                                dataResults = dataResults.concat(jobs);
+                                $scope.Detail.Aemt1S = dataResults;
+                            }
+                        });
+                    }
                 } else {
                     PopupService.Info(null, 'The MAwbNo Not Record', '').then(function (res) {
                         $scope.returnList();
@@ -367,5 +375,15 @@ appControllers.controller('cycleCountDetailCtrl', [
             });
         };
         GetAemt1($scope.MAwbNo);
+
+        var getobAemt1 = function (Aemt1) {
+            var jobs = {
+                KeyMAwbNo: Aemt1.KeyMAwbNo,
+                MAwbNo: Aemt1.MAwbNo,
+                LOC_CODE: Aemt1.LOC_CODE,
+
+            };
+            return jobs;
+        };
     }
 ]);

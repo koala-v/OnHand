@@ -12,6 +12,7 @@ namespace WebApi.ServiceModel.Tables
         public string SHP_CODE { get; set; }
         public string ShipperName { get; set; }
         public string CNG_CODE { get; set; }
+        public string SHP_MODE { get; set; }      
         public string ConsigneeName { get; set; }
         public Nullable<System.DateTime> ONHAND_date { get; set; }
         public string CASE_NO { get; set; }
@@ -26,5 +27,6 @@ namespace WebApi.ServiceModel.Tables
         public int NO_INV_WH { get; set; }
         public int TotalPCS { get; set; }
         public int TotalWeight { get; set; }
+        
     }
 }

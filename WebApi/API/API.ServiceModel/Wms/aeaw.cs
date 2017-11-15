@@ -19,6 +19,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/Aemt1/Update", "Get")]
     [Route("/wms/LOCATION_K/LOC_CODE", "Get")]
     [Route("/wms/Aemt1/select", "Get")]
+    [Route("/wms/Aemt1/selectAll", "Get")]
     public class aeaw : IReturn<CommonResponse>
     {
         public string MAwbNo { get; set; }
@@ -92,25 +93,22 @@ namespace WebApi.ServiceModel.Wms
                     if (!string.IsNullOrEmpty(strMAwbNo))
                         {
 
-
-
-
-                           string strSQL = "";
-                        strSQL = "select distinct" +
-                            "  PID_NO ," +
-                            "  KeyMAwbNo ," +
-                            "  MAwbNo , " +
-                            "  LOC_CODE " +
-                            "  From Aemt1  " +
-                            "  Where  MAwbNo = '" + strMAwbNo + "' ";
-                        Result = db.Select<Pid_AEMT1>(strSQL);
-
-
-
-
-                        //    strSQL = "Select LOC_CODE,MAwbNo,PID_NO From Aemt1 Where KeyMAwbNo in (select KeyMAwbNo From Aemt1 Where MAwbNo='"+ strMAwbNo + "' )";
-
+                       string strSQL = "";
+                        //strSQL = "select distinct" +
+                        //    "  PID_NO ," +
+                        //    "  KeyMAwbNo ," +
+                        //    "  MAwbNo , " +
+                        //    "  LOC_CODE " +
+                        //    "  From Aemt1  " +
+                        //    "  Where  MAwbNo = '" + strMAwbNo + "' ";
                         //Result = db.Select<Pid_AEMT1>(strSQL);
+
+                        //strSQL = "Select LOC_CODE,MAwbNo,PID_NO From Aemt1 Where KeyMAwbNo in (select KeyMAwbNo From Aemt1 Where MAwbNo='" + strMAwbNo + "' )";
+
+                        strSQL = " select distinct KeyMAwbNo,MAwbNo from  Aemt1 Where MAwbNo='" + strMAwbNo + "'";
+
+
+                        Result = db.Select<Pid_AEMT1>(strSQL);
 
 
 
@@ -121,6 +119,38 @@ namespace WebApi.ServiceModel.Wms
             catch { throw; }
             return Result;
         }
+
+
+        public List<Pid_AEMT1> SelectAllAemt1(aeaw request)
+        {
+            List<Pid_AEMT1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    string strMAwbNo = request.MAwbNo;
+                    if (!string.IsNullOrEmpty(strMAwbNo))
+                    {
+
+                        string strSQL = "";
+                        strSQL = "select " +
+                            "  PID_NO ," +
+                            "  KeyMAwbNo ," +
+                            "  MAwbNo , " +
+                            "  LOC_CODE " +
+                            "  From Aemt1  " +
+                            "  Where  KeyMAwbNo = '" + strMAwbNo + "' ";
+                        Result = db.Select<Pid_AEMT1>(strSQL);
+
+                    }
+                }
+            }
+            catch { throw; }
+            return Result;
+        }
+
+
         public List<Pid_AEMT1> Get_PID_List(aeaw request)
         {
             List<Pid_AEMT1> Result = null;
