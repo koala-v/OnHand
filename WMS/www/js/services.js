@@ -253,8 +253,10 @@ appService.service( 'SqlService', [
                     $cordovaSQLite.execute( db_sqlite, strSql )
                         .then( function ( results ) {
                                 deferred.resolve( results );
+
                             },
                             function ( error ) {
+
                                 deferred.reject( error );
                                 console.error( error );
                                 PopupService.Alert( null, error );
@@ -321,6 +323,7 @@ appService.service( 'SqlService', [
             }
             if ( ENV.fromWeb ) {
                 if ( db_websql ) {
+                      console.log( 'select db_websql' );
                     db_websql.transaction( function ( tx ) {
                         tx.executeSql( strSql, [], function ( tx, results ) {
                             deferred.resolve( results );
@@ -336,11 +339,14 @@ appService.service( 'SqlService', [
                     PopupService.Alert( null, 'No WebSql Instance' );
                 }
             } else {
+                console.log( 'select db_sqlite' );
                 $cordovaSQLite.execute( db_sqlite, strSql )
                     .then( function ( results ) {
+                          console.log( 'select db_sqlite select 1' );
                             deferred.resolve( results );
                         },
                         function ( error ) {
+                            console.log( 'select db_sqlite select 2' );
                             deferred.reject( error );
                             console.error( error );
                             PopupService.Alert( null, error );
@@ -376,6 +382,7 @@ appService.service( 'SqlService', [
                 strSql = strSql + '(' + fileds + ') values(' + values + ')';
                 if ( ENV.fromWeb ) {
                     if ( db_websql ) {
+                            console.log( 'select db_websql insert' );
                         db_websql.transaction( function ( tx ) {
                             tx.executeSql( strSql, [], function ( tx, results ) {
                                 deferred.resolve( results );
@@ -391,11 +398,20 @@ appService.service( 'SqlService', [
                         PopupService.Alert( null, 'No WebSql Instance' );
                     }
                 } else {
+                  // db_sqlite = $cordovaSQLite.openDB( {
+                  //     name: ENV.sqlite.name,
+                  //     location: ENV.sqlite.location
+                  // } );
+                  console.log(db_sqlite.name);
+                        console.log(strSql);
                     $cordovaSQLite.execute( db_sqlite, strSql )
+
                         .then( function ( results ) {
+                                console.error( 'insert 1' );
                                 deferred.resolve( results );
                             },
                             function ( error ) {
+                                    console.error( 'insert 2' );
                                 deferred.reject( error );
                                 console.error( error );
                                 PopupService.Alert( null, error );

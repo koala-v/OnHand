@@ -1,0 +1,63 @@
+<div class="" style="margin: 0;padding: 0;">
+    <ion-header-bar class="bar-positive" align-title="center">
+        <div class="buttons">
+
+        </div>
+        <div class="h1 title">add UnNo</div>
+        <div class="buttons">
+        </div>
+    </ion-header-bar>
+    <ion-content overflow-scroll="false">
+        <hr/>
+        <!-- <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UnNo :</h5> -->
+        <div class="row">
+            <div class="col col-20" style="text-align:center;">
+              <h5>UnNo :</h5>
+            </div>
+            <div class="col" style="padding:0px;">
+                <ui-select ng-model="Rcdg1.selected" theme="bootstrap" reset-search-input="true" on-select="ShowRcdg1(Rcdg1.selected.UnNo)">
+                    <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.UnNo | limitTo:16}}</ui-select-match>
+                    <ui-select-choices repeat="Rcdg1 in Rcdg1s track by $index" refresh="refreshRcdg1UnNo($select.search)" refresh-delay="0" position="down">
+                        <!-- <div ng-bind-html="  | highlight: $select.search"></div> -->
+                        <div>{{Rcdg1.UnNo }} {{Rcdg1.DGClass}} {{Rcdg1.DGDescription}} </div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <hr/>
+        <!-- <h5>&nbsp;&nbsp;&nbsp;DG Class :</h5> -->
+        <div class="row">
+            <div class="col col-20" style="text-align:center;">
+                <!-- <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">DGClass</span> -->
+<h5>&nbsp;&nbsp;&nbsp;DG Class :</h5>
+            </div>
+            <div class="col" style="padding:0px;">
+                <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">{{Detail.Rcdg1.DGClass}}</span>
+            </div>
+        </div>
+        <hr/>
+
+        <div class="row">
+            <div class="col col-20" style="text-align:center;">
+                <!-- <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">DGDescription</span> -->
+        <h5>&nbsp;&nbsp;&nbsp;DG Description :</h5>
+            </div>
+            <div class="col" style="padding:0px;">
+                <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">{{Detail.Rcdg1.DGDescription}}</span>
+            </div>
+        </div>
+
+    </ion-content>
+
+    <ion-footer-bar class="bar-positive">
+        <div class="button-bar">
+          <button class="button icon ion-arrow-return-right" ng-click="addLine()">
+              Add
+          </button>
+            <button class="button icon ion-android-done" ng-click="returnAdd()">
+                Cancel
+            </button>
+
+        </div>
+    </ion-footer-bar>
+</div>

@@ -21,7 +21,7 @@ appConfig.constant('ENV', {
         estimatedSize: 10 * 11024 * 1024
     },
     sqlite : {
-        name: 'AppOnhand.db',
+        name: 'AppWms1.db',
         location: 'default'
     },
     appId:        '9CBA0A78-7D1D-49D3-BA71-C72E93F9E48F',
@@ -29,7 +29,7 @@ appConfig.constant('ENV', {
     updateFile:   'update.json',
     rootPath:     'onhandPath',
     configFile:   'config.txt',
-    version:      '1.0.1.18',
+    version:      '1.0.1.20',
     parameter: {
         showSerialNo : false
     },

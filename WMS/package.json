@@ -5,6 +5,8 @@
   "dependencies": {},
   "devDependencies": {
     "bower": ">=1.7.7",
+    "node-sass": "^4.6.1",
+    "sass-loader": "^6.0.6",
     "shelljs": "^0.6.0"
   },
   "cordovaPlugins": [
@@ -13,7 +15,6 @@
     "cordova-plugin-camera",
     "cordova-plugin-console",
     "cordova-plugin-contacts",
-    "cordova-plugin-datepicker",
     "cordova-plugin-device",
     "cordova-plugin-dialogs",
     "cordova-plugin-file",
@@ -38,7 +39,11 @@
     "cordova-sqlite-storage",
     "cordova-plugin-crosswalk-webview",
     "https://github.com/EnriqueV/ZebraPrinterPlugin.git",
-    "cordova-plugin-bluetooth-serial"
+    "cordova-plugin-bluetooth-serial",
+    "cordova-plugin-datepicker",
+    "cordova-plugin-crosswalk-certificate@2.0.0",
+    "https://github.com/danjarvis/cordova-plugin-crosswalk-certificate",
+    "https://github.com/bstmedia/zbtprinter.git"
   ],
   "cordovaPlatforms": []
 }

@@ -1,3 +1,24 @@
+/*.my-custom-popup {
+.popup {
+    width:1000px;
+    height: 200px;
+//为弹出框宽度设置样式，宽度：300px;
+}
+.popup-title {
+//样式标题
+  display: none;
+}
+}*/
+
+.my-custom-popup.popup-head{
+    display: none;
+}
+/*.mycustompopup.popup {
+  width:1px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius:5px;
+}*/
 html {
   background-color: #fff;
 }

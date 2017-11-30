@@ -703,7 +703,7 @@ appControllers.controller('GrDetailCtrl', [
                         $scope.Detail.Address = mac;
                     } else {
                         PopupService.Info(null, 'Message2', result.address + ', ' + result.friendlyName).then();
-                        $scope.Detail.Address = result.address + ', ' + result.friendlyName;
+                        $scope.Detail.Address = result.address;
                     }
                 }, function (fail) {
                     PopupService.Info(null, 'Message3', 'not found address please check already open Bluetooth or IP/DNS').then();
@@ -713,9 +713,10 @@ appControllers.controller('GrDetailCtrl', [
             }
         };
         $scope.print = function () {
-
             if (!ENV.fromWeb) {
-                var strDate = 'Hello Word first print';
+                var strData = "asdfsdfsdafsda\radfdsfsdfsdf\nline_print\r\nTEXPRINT\r\n";
+                // var strData ="A";
+                PopupService.Info(null, $scope.Detail.Address).then();
                 // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
                 cordova.plugins.zbtprinter.print($scope.Detail.Address, strData,
                     function (success) {
@@ -728,31 +729,51 @@ appControllers.controller('GrDetailCtrl', [
             }
         };
 
-        $scope.print1 = function () {
+        $scope.printBatch = function () {
             if (!ENV.fromWeb) {
-                var strDate = 'Hello Word first print';
-                // PopupService.Info(null, 'print1'  +$scope.Detail.Address1).then();
-                cordova.plugins.zbtprinter.print($scope.Detail.Address1, strData,
+                var batch = [];
+                var strData = "\r\nTEXT ***Print test***\r\nPRINT\r\n";
+                var job = {
+                    typ: "data",
+                    string: strData
+                };
+                batch.push(job);
+                cordova.plugins.zbtprinter.batch($scope.Detail.Address, batch,
                     function (success) {
-                        PopupService.Info(null, 'Print ok').then();
+                        alert("Print ok");
                     },
                     function (fail) {
-                        PopupService.Info(null, fail).then();
+                        alert(fail);
                     }
                 );
             }
         };
 
-        $scope.print2 = function () {
+        $scope.printBatchTest = function () {
             if (!ENV.fromWeb) {
-                var strDate = 'Hello Word first print';
-                // PopupService.Info(null,'print2'  + $scope.Detail.Address2).then();
-                cordova.plugins.zbtprinter.print($scope.Detail.Address2, strData,
+                var batch = [];
+
+                var imgData = "data:image/png;base64,xxxxyyyyzzzz=";
+                imgData = imgData.replace("data:image/png;base64,", "");
+                var job = {
+                    typ: "image",
+                    string: imgData,
+                    x: "150",
+                    y: "0",
+                    imagewidth: "300",
+                    textwidth: "592",
+                    labelheight: "180",
+                    title: "Test Title"
+                };
+
+                batch.push(job);
+
+                cordova.plugins.zbtprinter.batch($scope.Detail.Address, batch,
                     function (success) {
-                        PopupService.Info(null, 'Print ok').then();
+                        alert("Print ok");
                     },
                     function (fail) {
-                        PopupService.Info(null, fail).then();
+                        alert(fail);
                     }
                 );
             }
@@ -1343,6 +1364,7 @@ appControllers.controller('GrAddPidCtrl', [
     'ionicDatePicker',
     'ApiService',
     'PopupService',
+    'SqlService',
     function (
         ENV,
         $scope,
@@ -1354,7 +1376,9 @@ appControllers.controller('GrAddPidCtrl', [
         $cordovaBarcodeScanner,
         ionicDatePicker,
         ApiService,
-        PopupService) {
+        PopupService,
+        SqlService
+    ) {
         var arrRcdg1 = new Array();
         var arrPidUnGrid = new Array();
         $scope.Type = $stateParams.Type;
@@ -1415,7 +1439,7 @@ appControllers.controller('GrAddPidCtrl', [
             }, {
                 reload: true
             });
-
+            DeleteRcdg1();
         };
         $scope.getPackType = function () {
             var objUri = ApiService.Uri(true, '/api/wms/Rcpk');
@@ -1689,6 +1713,10 @@ appControllers.controller('GrAddPidCtrl', [
                 $cordovaKeyboard.close();
             }
         };
+
+        var DeleteRcdg1 = function () {
+          SqlService.Delete('Imgr2_Putaway').then(function () {});
+        };
         $scope.addLine = function () {
 
             if ($scope.Detail.Add_OH_PID_D.PACK_TYPE.length > 0) {
@@ -1733,6 +1761,8 @@ appControllers.controller('GrAddPidCtrl', [
                                 var results = result.data.results;
                                 if (is.not.empty(results)) {
                                     $scope.GoToPid();
+                                    DeleteRcdg1();
+
                                 } else {}
                             });
 
@@ -1762,32 +1792,193 @@ appControllers.controller('GrAddPidCtrl', [
             var index = funIndexOf(val, 'del', arrRcdg1);
             if (index > -1) {
                 arrRcdg1.splice(index, 1);
+               SqlService.Delete('Imgr2_Putaway', 'UnNo', val).then(function () {});
             }
         };
         $scope.DeleteLine = function (UnNo) {
             $scope.funRemove(UnNo);
             $scope.Detail.Rcdg1s = arrRcdg1;
         };
-        $scope.AddUnNo = function () {
-            var myPopup = $ionicPopup.show({
-                templateUrl: 'popup-UnNo.html',
-                title: 'Add UnNo',
-                scope: $scope,
-                buttons: [{
-                    text: 'Cancel',
-                    onTap: function (e) {}
-                }, {
-                    text: 'Add',
-                    type: 'button-positive',
-                    onTap: function (e) {
-                        if ($scope.Detail.Rcdg1.UnNo !== '' && is.not.undefined($scope.Detail.Rcdg1.UnNo)) {
-                            arrRcdg1.push($scope.Detail.Rcdg1);
-                            $scope.Detail.Rcdg1s = arrRcdg1;
-                            $scope.Detail.Rcdg1 = '';
-                        }
-                    }
-                }]
+
+        $scope.getRcdg1 = function () {
+            SqlService.Select('Imgr2_Putaway', '*').then(function (results) {
+              var len = results.rows.length;
+              // var intQty = 0;
+              // var arrRcdg1 = new Array();
+              if (len > 0) {
+                  for (var i = 0; i < len; i++) {
+                      var Rcdg1 = results.rows.item(i);
+                      arrRcdg1.push(Rcdg1);
+                  }
+                  $scope.Detail.Rcdg1s = arrRcdg1;
+              }
             });
+        };
+        $scope.getRcdg1();
+        $scope.AddUnNo = function () {
+            $state.go('GrUnNo', {
+                'OnhandNo': $scope.Detail.ONHANDNO,
+                'Type': $scope.Type,
+            }, {
+                reload: true
+            });
+
+            // var myPopup = $ionicPopup.show({
+            //     templateUrl: 'popup-UnNo.html',
+            //     title: 'Add UnNo',
+            //     scope: $scope,
+            //     cssClass: 'my-custom-popup',
+            //     buttons: [{
+            //         text: 'Cancel',
+            //         onTap: function (e) {}
+            //     }, {
+            //         text: 'Add',
+            //         type: 'button-positive',
+            //         onTap: function (e) {
+            //             if ($scope.Detail.Rcdg1.UnNo !== '' && is.not.undefined($scope.Detail.Rcdg1.UnNo)) {
+            //                 arrRcdg1.push($scope.Detail.Rcdg1);
+            //                 $scope.Detail.Rcdg1s = arrRcdg1;
+            //                 $scope.Detail.Rcdg1 = '';
+            //             }
+            //         }
+            //     }]
+            // });
+
+        };
+
+    }
+]);
+
+appControllers.controller('GrUnNoCtrl', [
+    'ENV',
+    '$scope',
+    '$stateParams',
+    '$state',
+    '$cordovaKeyboard',
+    '$ionicModal',
+    '$ionicPopup',
+    '$cordovaBarcodeScanner',
+    'ionicDatePicker',
+    'ApiService',
+    'PopupService',
+    'SqlService',
+    function (
+        ENV,
+        $scope,
+        $stateParams,
+        $state,
+        $cordovaKeyboard,
+        $ionicModal,
+        $ionicPopup,
+        $cordovaBarcodeScanner,
+        ionicDatePicker,
+        ApiService,
+        PopupService,
+        SqlService) {
+        var arrRcdg1 = new Array();
+        var arrPidUnGrid = new Array();
+        $scope.Type = $stateParams.Type;
+        $scope.Rcbp1 = {};
+        $scope.Rcbp1ForConsinnee = {};
+        $scope.ShiperCode = {};
+        $scope.Detail = {
+            TableTitle: 'Create Onhand',
+            Title: 'New',
+            ONHANDNO: $stateParams.OnhandNo,
+            location: '',
+            Trucker: '',
+            disabled: true,
+            VisibleDetailFlag: 'N',
+            ONHAND_D: {
+                UserID: '',
+            },
+            OH_PID_D_S: {},
+            OH_PID_D: {
+                RowNum: 0,
+                LineItemNo: 0,
+                TRK_BILL_NO: '',
+                PACK_TYPE: '',
+                PID_NO: '',
+                UnNo: '',
+                GROSS_LB: 0,
+                LENGTH: 0,
+                WIDTH: 0,
+                HEIGHT: 0
+            },
+            Add_OH_PID_D: {
+                RowNum: 0,
+                LineItemNo: 0,
+                TRK_BILL_NO: '',
+                PACK_TYPE: '',
+                PID_NO: '',
+                UnNo: '',
+                GROSS_LB: 0,
+                LENGTH: 0,
+                WIDTH: 0,
+                HEIGHT: 0
+            },
+            Rcdg1: {},
+            Rcdg1s: {},
+            PidUnGrid: {},
+            PidUnGrids: {},
+            blnNext: true
+        };
+        $scope.addLine = function () {
+            var objRcdg1 = {
+                UnNo:$scope.Detail.Rcdg1.UnNo,
+                DGClass: $scope.Detail.Rcdg1.DGClass,
+                DGDescription: $scope.Detail.Rcdg1.DGDescription,
+
+            };
+            console.log(objRcdg1.UnNo);
+
+            SqlService.Insert('Imgr2_Putaway', objRcdg1).then(
+                function (res) {}
+            );
+
+            $state.go('GrAddPid', {
+                'OnhandNo': $scope.Detail.ONHANDNO,
+                'Type': $scope.Type,
+            }, {
+                reload: true
+            });
+
+        };
+
+        $scope.returnAdd = function () {
+
+            $state.go('GrAddPid', {
+                'OnhandNo': $scope.Detail.ONHANDNO,
+                'Type': $scope.Type,
+            }, {
+                reload: true
+            });
+
+        };
+
+        $scope.refreshRcdg1UnNo = function (UnNo) {
+            if (is.not.undefined(UnNo) && is.not.empty(UnNo)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
+                objUri.addSearch('UnNo', UnNo);
+                objUri.addSearch('UnNoFlag', 'N');
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.Rcdg1s = result.data.results;
+                });
+            }
+        };
+        $scope.ShowRcdg1 = function (UnNo) {
+            var objUri = ApiService.Uri(true, '/api/wms/rcdg1/UnNo');
+            objUri.addSearch('UnNo', UnNo);
+            objUri.addSearch('UnNoFlag', 'Y');
+            ApiService.Get(objUri, false).then(function success(result) {
+                $scope.Detail.Rcdg1 = result.data.results[0];
+            });
+            if (!ENV.fromWeb) {
+                $cordovaKeyboard.close();
+            }
+        };
+
+        $scope.AddUnNo = function () {
 
         };
 
