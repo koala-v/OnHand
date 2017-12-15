@@ -880,6 +880,7 @@ appControllers.controller('GrPidCtrl', [
 
         $scope.GoToAddPid = function () {
             if ($scope.Detail.ONHANDNO.length > 0) {
+                      $scope.updateLineItem('Update');
                 $state.go('GrAddPid', {
                     'OnhandNo': $scope.Detail.ONHANDNO,
                     'Type': $scope.Type,
@@ -892,6 +893,7 @@ appControllers.controller('GrPidCtrl', [
         };
 
         $scope.returnList = function () {
+            $scope.updateLineItem('Update');
             if ($scope.Type === 'Enquiry') {
                 $scope.Type = 'Enquiry';
             } else {
