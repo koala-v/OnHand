@@ -878,12 +878,23 @@ appControllers.controller('GrPidCtrl', [
             blnNext: true
         };
 
+        $scope.AddUnNo = function () {
+            $state.go('GrUnNo', {
+                'OnhandNo': $scope.Detail.ONHANDNO,
+                'Type': $scope.Type,
+                  'LineItemNo': $scope.Detail.OH_PID_D.LineItemNo,
+            }, {
+                reload: true
+            });
+        };
+
         $scope.GoToAddPid = function () {
             if ($scope.Detail.ONHANDNO.length > 0) {
-                      $scope.updateLineItem('Update');
+                $scope.updateLineItem('Update');
                 $state.go('GrAddPid', {
                     'OnhandNo': $scope.Detail.ONHANDNO,
                     'Type': $scope.Type,
+
                 }, {
                     reload: true
                 });
@@ -1398,6 +1409,7 @@ appControllers.controller('GrAddPidCtrl', [
             ONHAND_D: {
                 UserID: '',
             },
+
             OH_PID_D_S: {},
             OH_PID_D: {
                 RowNum: 0,
@@ -1421,7 +1433,9 @@ appControllers.controller('GrAddPidCtrl', [
                 GROSS_LB: 0,
                 LENGTH: 0,
                 WIDTH: 0,
-                HEIGHT: 0
+                HEIGHT: 0,
+                Remark: '',
+
             },
             Rcdg1: {},
             Rcdg1s: {},
@@ -1442,6 +1456,7 @@ appControllers.controller('GrAddPidCtrl', [
                 reload: true
             });
             DeleteRcdg1();
+            sessionStorage.clear();
         };
         $scope.getPackType = function () {
             var objUri = ApiService.Uri(true, '/api/wms/Rcpk');
@@ -1717,7 +1732,7 @@ appControllers.controller('GrAddPidCtrl', [
         };
 
         var DeleteRcdg1 = function () {
-          SqlService.Delete('Imgr2_Putaway').then(function () {});
+            SqlService.Delete('Imgr2_Putaway').then(function () {});
         };
         $scope.addLine = function () {
 
@@ -1794,7 +1809,7 @@ appControllers.controller('GrAddPidCtrl', [
             var index = funIndexOf(val, 'del', arrRcdg1);
             if (index > -1) {
                 arrRcdg1.splice(index, 1);
-               SqlService.Delete('Imgr2_Putaway', 'UnNo', val).then(function () {});
+                SqlService.Delete('Imgr2_Putaway', 'UnNo', val).then(function () {});
             }
         };
         $scope.DeleteLine = function (UnNo) {
@@ -1803,21 +1818,59 @@ appControllers.controller('GrAddPidCtrl', [
         };
 
         $scope.getRcdg1 = function () {
+            if (sessionStorage.getItem('UnNoFlag') === 'Flag') {
+                SqlService.Select('addPid', '*').then(function (results) {
+                    var len = results.rows.length;
+                    // var intQty = 0;
+                    // var arrRcdg1 = new Array();
+                    if (len > 0) {
+                        var Rcdg1 = results.rows.item(0);
+                        $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = Rcdg1.TRK_BILL_NO;
+                        $scope.Detail.Add_OH_PID_D.PACK_TYPE = Rcdg1.PACK_TYPE;
+                        $scope.Detail.Add_OH_PID_D.PID_NO = Rcdg1.PID_NO;
+                        $scope.Detail.Add_OH_PID_D.GROSS_LB = Rcdg1.GROSS_LB;
+                        $scope.Detail.Add_OH_PID_D.LENGTH = Rcdg1.LENGTH;
+                        $scope.Detail.Add_OH_PID_D.WIDTH = Rcdg1.WIDTH;
+                        $scope.Detail.Add_OH_PID_D.HEIGHT = Rcdg1.HEIGHT;
+                        $scope.Detail.Add_OH_PID_D.Remark = Rcdg1.Remark;
+                    }
+                });
+
+            }
             SqlService.Select('Imgr2_Putaway', '*').then(function (results) {
-              var len = results.rows.length;
-              // var intQty = 0;
-              // var arrRcdg1 = new Array();
-              if (len > 0) {
-                  for (var i = 0; i < len; i++) {
-                      var Rcdg1 = results.rows.item(i);
-                      arrRcdg1.push(Rcdg1);
-                  }
-                  $scope.Detail.Rcdg1s = arrRcdg1;
-              }
+                var len = results.rows.length;
+                // var intQty = 0;
+                // var arrRcdg1 = new Array();
+                if (len > 0) {
+                    for (var i = 0; i < len; i++) {
+                        var Rcdg1 = results.rows.item(i);
+                        arrRcdg1.push(Rcdg1);
+                    }
+                    $scope.Detail.Rcdg1s = arrRcdg1;
+                }
             });
         };
         $scope.getRcdg1();
+        var insertAddPidTolocal = function () {
+            var objaddUnNo = {
+                TRK_BILL_NO: $scope.Detail.Add_OH_PID_D.TRK_BILL_NO,
+                PACK_TYPE: $scope.Detail.Add_OH_PID_D.PACK_TYPE,
+                PID_NO: $scope.Detail.Add_OH_PID_D.PID_NO,
+                GROSS_LB: $scope.Detail.Add_OH_PID_D.GROSS_LB,
+                LENGTH: $scope.Detail.Add_OH_PID_D.LENGTH,
+                WIDTH: $scope.Detail.Add_OH_PID_D.WIDTH,
+                HEIGHT: $scope.Detail.Add_OH_PID_D.HEIGHT,
+                Remark: $scope.Detail.Add_OH_PID_D.Remark,
+            };
+            SqlService.Delete('addPid').then(function () {
+                SqlService.Insert('addPid', objaddUnNo).then(
+                    function (res) {}
+                );
+            });
+        };
+
         $scope.AddUnNo = function () {
+            insertAddPidTolocal();
             $state.go('GrUnNo', {
                 'OnhandNo': $scope.Detail.ONHANDNO,
                 'Type': $scope.Type,
@@ -1860,6 +1913,7 @@ appControllers.controller('GrUnNoCtrl', [
     '$ionicModal',
     '$ionicPopup',
     '$cordovaBarcodeScanner',
+    '$rootScope',
     'ionicDatePicker',
     'ApiService',
     'PopupService',
@@ -1873,12 +1927,15 @@ appControllers.controller('GrUnNoCtrl', [
         $ionicModal,
         $ionicPopup,
         $cordovaBarcodeScanner,
+        $rootScope,
         ionicDatePicker,
         ApiService,
         PopupService,
         SqlService) {
         var arrRcdg1 = new Array();
         var arrPidUnGrid = new Array();
+        sessionStorage.clear();
+        sessionStorage.setItem('UnNoFlag', 'Flag');
         $scope.Type = $stateParams.Type;
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
@@ -1887,6 +1944,7 @@ appControllers.controller('GrUnNoCtrl', [
             TableTitle: 'Create Onhand',
             Title: 'New',
             ONHANDNO: $stateParams.OnhandNo,
+            LineItemNo:$stateParams.LineItemNo,
             location: '',
             Trucker: '',
             disabled: true,
@@ -1926,8 +1984,18 @@ appControllers.controller('GrUnNoCtrl', [
             blnNext: true
         };
         $scope.addLine = function () {
+          if ($scope.Detail.LineItemNo.length>0){
+            var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/UpdatePidUnNo');
+            objUri.addSearch('UnNo', $scope.Detail.Rcdg1.UnNo);
+            objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+            objUri.addSearch('LineItemNo', $scope.Detail.LineItemNo);
+            ApiService.Get(objUri, false).then(function success(result) {
+  $scope.GoToPid();
+            });
+
+          }else {
             var objRcdg1 = {
-                UnNo:$scope.Detail.Rcdg1.UnNo,
+                UnNo: $scope.Detail.Rcdg1.UnNo,
                 DGClass: $scope.Detail.Rcdg1.DGClass,
                 DGDescription: $scope.Detail.Rcdg1.DGDescription,
 
@@ -1944,17 +2012,33 @@ appControllers.controller('GrUnNoCtrl', [
             }, {
                 reload: true
             });
-
+}
         };
 
-        $scope.returnAdd = function () {
+        $scope.GoToPid = function () {
+            if ($scope.Detail.ONHANDNO.length > 0) {
+                $state.go('GrPid', {
+                    'OnhandNo': $scope.Detail.ONHANDNO,
+                    'Type': $scope.Type,
+                }, {
+                    reload: true
+                });
+            } else {
 
-            $state.go('GrAddPid', {
-                'OnhandNo': $scope.Detail.ONHANDNO,
-                'Type': $scope.Type,
-            }, {
-                reload: true
-            });
+            }
+        };
+        $scope.returnAdd = function () {
+              if ($scope.Detail.LineItemNo.length>0) {
+                  $scope.GoToPid();
+              }else{
+                $state.go('GrAddPid', {
+                    'OnhandNo': $scope.Detail.ONHANDNO,
+                    'Type': $scope.Type,
+                }, {
+                    reload: true
+                });
+              }
+
 
         };
 

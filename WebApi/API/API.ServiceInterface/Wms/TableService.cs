@@ -339,6 +339,11 @@ namespace WebApi.ServiceInterface.Wms
                     ecr.data.results = imcc_Logic.UpdateUnNo(request);
 
                 }
+                else if (uri.IndexOf("/wms/OH_PID_D/UpdatePidUnNo") > 0)
+                {
+                    ecr.data.results = imcc_Logic.UpdatePidUnNo(request);
+
+                }
                 else if (uri.IndexOf("/wms/OH_PID_D/DeleteLineItem") > 0)
                 {
                     ecr.data.results = imcc_Logic.DeleteLineItem(request);

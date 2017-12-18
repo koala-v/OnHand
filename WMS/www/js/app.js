@@ -76,6 +76,12 @@ app.run([
 
                         });
                     });
+                    SqlService.Drop('addPid').then(function (res) {
+                        SqlService.Create('addPid', TABLE_DB.addPid).then(function (res) {
+                        });
+                    });
+
+
                     SqlService.Drop('Imgr2_PutawayScan').then(function (res) {
                         SqlService.Create('Imgr2_PutawayScan', TABLE_DB.Imgr2_Putaway).then(function (res) {
 
@@ -106,6 +112,7 @@ app.run([
 
                         });
                     });
+
 
             });
         });
@@ -304,7 +311,7 @@ app.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicConf
                 controller: 'GrAddPidCtrl'
             })
             .state('GrUnNo', {
-                url: '/gr/unno/:Type/:OnhandNo',
+                url: '/gr/unno/:Type/:OnhandNo/:LineItemNo',
                 cache: 'false',
                 templateUrl: 'view/GoodsReceipt/unno.html',
                 controller: 'GrUnNoCtrl'

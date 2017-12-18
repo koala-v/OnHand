@@ -24,6 +24,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/OH_PID_D/UpdateUnNo", "get")]
     [Route("/wms/OH_PID_D/validate", "Get")]     //OH_PID_D?PID_NO
     [Route("/wms/OH_PID_D/TruckerBillNo", "Get")]     //OH_PID_D?PID_NO
+    [Route("/wms/OH_PID_D/UpdatePidUnNo", "Get")]     //OH_PID_D?PID_NO
 
     public class ONHAND_D : IReturn<CommonResponse>
     {
@@ -36,6 +37,7 @@ namespace WebApi.ServiceModel.Wms
         public string strPID_NO { get; set; }
         public string strTRK_BILL_NO { get; set; }
         public string UnNoIndex { get; set; }
+        public string UnNo { get; set; }
     }
     public class imcc_loigc
     {
@@ -255,6 +257,82 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+        public List<ON_PID_D> UpdatePidUnNo(ONHAND_D request)
+        {
+        
+            List<ON_PID_D> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+                    if (request.UnNo != null && request.UnNo != "" &&  request.strONHAND_NO != null && request.strONHAND_NO != "" && request.LineItemNo != null && request.LineItemNo != "" )
+                    {
+
+                        string strSqlPid = "";
+                        string strSql = "";
+                        string strUpdateUnNo = "";
+                        strSqlPid = "Select  UnNo01,UnNo02,UnNo03,UnNo04,UnNo05,UnNo06,UnNo07,UnNo08,UnNo09,UnNo10 From  OH_PID_D Where ONHAND_NO='"+request.strONHAND_NO+"' And LineItemNo ='"+request.LineItemNo+"'";
+                        Result = db.Select<ON_PID_D>(strSqlPid);
+
+
+                        if (Modfunction.CheckNull(Result[0].UnNo01).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo01";
+                        }
+                        else if (Modfunction.CheckNull(Result[0].UnNo02).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo02";
+                        }
+
+                        else if (Modfunction.CheckNull(Result[0].UnNo03).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo03";
+                        }
+                        else if (Modfunction.CheckNull(Result[0].UnNo04).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo04";
+                        }
+                        else if (Modfunction.CheckNull(Result[0].UnNo05).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo05";
+                        }
+                       else if (Modfunction.CheckNull(Result[0].UnNo06).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo06";
+                        }
+                        else if (Modfunction.CheckNull(Result[0].UnNo07).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo07";
+                        }
+
+                        else if (Modfunction.CheckNull(Result[0].UnNo08).Length <=0)
+                        {
+                            strUpdateUnNo = "UnNo08";
+                        }
+                        else if (Modfunction.CheckNull(Result[0].UnNo09).Length <= 0)
+                        {
+                            strUpdateUnNo = "UnNo09";
+                        }
+
+                        else 
+                        {
+                            strUpdateUnNo = "UnNo10";
+                        }
+
+                        strSql = "Update OH_PID_D set " + strUpdateUnNo + " ='"+request.UnNo+"'" +
+                         " Where " +
+                         " ONHAND_NO ='" + request.strONHAND_NO + "'" +
+                         " And LineItemNo=" + request.LineItemNo + "";
+                        db.ExecuteSql(strSql);
+
+                    }
+
+                }         
+            }
+            catch { throw; }
+            return Result;
+
+        }
 
         public int UpdateUnNo(ONHAND_D request)
         {
