@@ -398,20 +398,15 @@ appService.service( 'SqlService', [
                         PopupService.Alert( null, 'No WebSql Instance' );
                     }
                 } else {
-                  // db_sqlite = $cordovaSQLite.openDB( {
-                  //     name: ENV.sqlite.name,
-                  //     location: ENV.sqlite.location
-                  // } );
-                  console.log(db_sqlite.name);
-                        console.log(strSql);
-                    $cordovaSQLite.execute( db_sqlite, strSql )
 
+                    $cordovaSQLite.execute(db_sqlite, strSql)
                         .then( function ( results ) {
-                                console.error( 'insert 1' );
+                            console.log('insert A');
                                 deferred.resolve( results );
+
                             },
                             function ( error ) {
-                                    console.error( 'insert 2' );
+                                  console.log('insert B');
                                 deferred.reject( error );
                                 console.error( error );
                                 PopupService.Alert( null, error );
