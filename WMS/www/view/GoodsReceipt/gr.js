@@ -38,7 +38,7 @@ appControllers.controller('GrListCtrl', [
             VisibleDetailFlag: 'N',
 
             ChargeType: {
-                NewItem: 'PP',
+                // NewItem: 'PP',
             },
             pushPublication: {
                 checked: false
@@ -90,7 +90,8 @@ appControllers.controller('GrListCtrl', [
             blnNext: true
         };
 
-        $scope.ChargeType = [{
+        $scope.ChargeType = [
+          {
             text: 'Prepaid',
             value: 'PP'
         }, {
@@ -99,7 +100,9 @@ appControllers.controller('GrListCtrl', [
         }, {
             text: 'To Follow',
             value: 'TF'
-        }];
+        }
+
+      ];
         $scope.refreshRcbp1 = function (BusinessPartyName, BusinessPartyCode) {
             if ((is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
@@ -248,6 +251,7 @@ appControllers.controller('GrListCtrl', [
             $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = '';
         };
         $scope.Create = function () {
+          if(is.not.undefined($scope.Detail.ChargeType.NewItem)){
             if (is.undefined($scope.Rcbp1.selected)) {
                 $scope.Detail.ONHAND_D.SHP_CODE = "";
             } else {
@@ -281,6 +285,9 @@ appControllers.controller('GrListCtrl', [
                     PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
                 }
             });
+          }else {
+            PopupService.Alert(null, 'Must tick ChargeType', '').then(function (res) {});
+          }
         };
 
         $scope.Update = function () {
@@ -714,6 +721,7 @@ appControllers.controller('GrDetailCtrl', [
         };
         $scope.print = function () {
             if (!ENV.fromWeb) {
+
                 var strData = "asdfsdfsdafsda\radfdsfsdfsdf\nline_print\r\nTEXPRINT\r\n";
                 // var strData ="A";
                 PopupService.Info(null, $scope.Detail.Address).then();
@@ -879,6 +887,7 @@ appControllers.controller('GrPidCtrl', [
         };
 
         $scope.AddUnNo = function () {
+             $scope.updateLineItem('Update');      //When Leave Text save  value
             $state.go('GrUnNo', {
                 'OnhandNo': $scope.Detail.ONHANDNO,
                 'Type': $scope.Type,
@@ -889,6 +898,7 @@ appControllers.controller('GrPidCtrl', [
         };
 
         $scope.GoToAddPid = function () {
+
             if ($scope.Detail.ONHANDNO.length > 0) {
                 $scope.updateLineItem('Update');
                 $state.go('GrAddPid', {
