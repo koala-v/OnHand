@@ -90,19 +90,18 @@ appControllers.controller('GrListCtrl', [
             blnNext: true
         };
 
-        $scope.ChargeType = [
-          {
-            text: 'Prepaid',
-            value: 'PP'
-        }, {
-            text: 'Collect',
-            value: 'CC'
-        }, {
-            text: 'To Follow',
-            value: 'TF'
-        }
+        $scope.ChargeType = [{
+                text: 'Prepaid',
+                value: 'PP'
+            }, {
+                text: 'Collect',
+                value: 'CC'
+            }, {
+                text: 'To Follow',
+                value: 'TF'
+            }
 
-      ];
+        ];
         $scope.refreshRcbp1 = function (BusinessPartyName, BusinessPartyCode) {
             if ((is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
@@ -251,43 +250,43 @@ appControllers.controller('GrListCtrl', [
             $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = '';
         };
         $scope.Create = function () {
-          if(is.not.undefined($scope.Detail.ChargeType.NewItem)){
-            if (is.undefined($scope.Rcbp1.selected)) {
-                $scope.Detail.ONHAND_D.SHP_CODE = "";
-            } else {
-                $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
-            }
-            if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
-                $scope.Detail.ONHAND_D.CNG_CODE = "";
-            } else {
-                $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
-            }
-            if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
-                $scope.Detail.ONHAND_D.CASE_NO = "";
-            }
-            if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
-                $scope.Detail.ONHAND_D.NO_INV_WH = "";
-            }
-            $scope.Detail.disabled = true;
-            $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
-            $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
-            $scope.pushChange();
-            var arrONHAND_D = [];
-            arrONHAND_D.push($scope.Detail.ONHAND_D);
-            var jsonData = {
-                "UpdateAllString": JSON.stringify(arrONHAND_D)
-            };
-            var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/confirm');
-            ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                $scope.Detail.ONHANDNO = result.data.results;
-                $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
-                if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
-                    PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+            if (is.not.undefined($scope.Detail.ChargeType.NewItem)) {
+                if (is.undefined($scope.Rcbp1.selected)) {
+                    $scope.Detail.ONHAND_D.SHP_CODE = "";
+                } else {
+                    $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
                 }
-            });
-          }else {
-            PopupService.Alert(null, 'Must tick ChargeType', '').then(function (res) {});
-          }
+                if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
+                    $scope.Detail.ONHAND_D.CNG_CODE = "";
+                } else {
+                    $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
+                }
+                if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
+                    $scope.Detail.ONHAND_D.CASE_NO = "";
+                }
+                if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
+                    $scope.Detail.ONHAND_D.NO_INV_WH = "";
+                }
+                $scope.Detail.disabled = true;
+                $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
+                $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
+                $scope.pushChange();
+                var arrONHAND_D = [];
+                arrONHAND_D.push($scope.Detail.ONHAND_D);
+                var jsonData = {
+                    "UpdateAllString": JSON.stringify(arrONHAND_D)
+                };
+                var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/confirm');
+                ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                    $scope.Detail.ONHANDNO = result.data.results;
+                    $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
+                    if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
+                        PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+                    }
+                });
+            } else {
+                PopupService.Alert(null, 'Must tick ChargeType', '').then(function (res) {});
+            }
         };
 
         $scope.Update = function () {
@@ -722,11 +721,11 @@ appControllers.controller('GrDetailCtrl', [
         $scope.print = function () {
             if (!ENV.fromWeb) {
 
-                var strData = "asdfsdfsdafsda\radfdsfsdfsdf\nline_print\r\nTEXPRINT\r\n";
-                // var strData ="A";
-                PopupService.Info(null, $scope.Detail.Address).then();
-                // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
-                cordova.plugins.zbtprinter.print($scope.Detail.Address, strData,
+                // var strData = "asdfsdfsdafsda\radfdsfsdfsdf\nline_print\r\nTEXPRINT\r\n";
+                // // var strData ="A";
+                // PopupService.Info(null, $scope.Detail.Address).then();
+                // // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
+                cordova.plugins.zbtprinter.print('AC:3F:A4:73:5C:1D', "abc",
                     function (success) {
                         PopupService.Info(null, 'Print ok').then();
                     },
@@ -739,14 +738,14 @@ appControllers.controller('GrDetailCtrl', [
 
         $scope.printBatch = function () {
             if (!ENV.fromWeb) {
-                var batch = [];
-                var strData = "\r\nTEXT ***Print test***\r\nPRINT\r\n";
-                var job = {
-                    typ: "data",
-                    string: strData
-                };
-                batch.push(job);
-                cordova.plugins.zbtprinter.batch($scope.Detail.Address, batch,
+                // var batch = [];
+                // var strData = "\r\nTEXT ***Print test***\r\nPRINT\r\n";
+                // var job = {
+                //     typ: "data",
+                //     string: strData
+                // };
+                // batch.push(job);
+                cordova.plugins.zbtprinter.print("AC:3F:A4:73:5C:1D", "abc",
                     function (success) {
                         alert("Print ok");
                     },
@@ -887,11 +886,11 @@ appControllers.controller('GrPidCtrl', [
         };
 
         $scope.AddUnNo = function () {
-             $scope.updateLineItem('Update');      //When Leave Text save  value
+            $scope.updateLineItem('Update'); //When Leave Text save  value
             $state.go('GrUnNo', {
                 'OnhandNo': $scope.Detail.ONHANDNO,
                 'Type': $scope.Type,
-                  'LineItemNo': $scope.Detail.OH_PID_D.LineItemNo,
+                'LineItemNo': $scope.Detail.OH_PID_D.LineItemNo,
             }, {
                 reload: true
             });
@@ -1231,6 +1230,14 @@ appControllers.controller('GrPidCtrl', [
 
             }
         };
+        var ReturnEmpty = function (Value) {
+            if (Value === 0) {
+                return '';
+            } else {
+                return Value;
+            }
+
+        };
         var showPid = function (row, Type) {
             if (Type !== 'Delete') {
                 $scope.updateLineItem('Update');
@@ -1243,10 +1250,10 @@ appControllers.controller('GrPidCtrl', [
                     PACK_TYPE: $scope.Detail.OH_PID_D_S[row].PACK_TYPE,
                     PID_NO: $scope.Detail.OH_PID_D_S[row].PID_NO,
                     UnNo: $scope.Detail.OH_PID_D_S[row].UnNo,
-                    GROSS_LB: $scope.Detail.OH_PID_D_S[row].GROSS_LB,
-                    LENGTH: $scope.Detail.OH_PID_D_S[row].LENGTH,
-                    WIDTH: $scope.Detail.OH_PID_D_S[row].WIDTH,
-                    HEIGHT: $scope.Detail.OH_PID_D_S[row].HEIGHT,
+                    GROSS_LB: ReturnEmpty($scope.Detail.OH_PID_D_S[row].GROSS_LB),
+                    LENGTH: ReturnEmpty($scope.Detail.OH_PID_D_S[row].LENGTH),
+                    WIDTH: ReturnEmpty($scope.Detail.OH_PID_D_S[row].WIDTH),
+                    HEIGHT: ReturnEmpty($scope.Detail.OH_PID_D_S[row].HEIGHT),
                     UnNo02: $scope.Detail.OH_PID_D_S[row].UnNo02,
                     UnNo03: $scope.Detail.OH_PID_D_S[row].UnNo03,
                     UnNo04: $scope.Detail.OH_PID_D_S[row].UnNo04,
@@ -1699,10 +1706,10 @@ appControllers.controller('GrAddPidCtrl', [
                 $scope.Detail.Add_OH_PID_D.PACK_TYPE = '';
                 $scope.Detail.Add_OH_PID_D.PID_NO = '';
                 $scope.Detail.Add_OH_PID_D.UnNo = '';
-                $scope.Detail.Add_OH_PID_D.GROSS_LB = 0;
-                $scope.Detail.Add_OH_PID_D.LENGTH = 0;
-                $scope.Detail.Add_OH_PID_D.WIDTH = 0;
-                $scope.Detail.Add_OH_PID_D.HEIGHT = 0;
+                $scope.Detail.Add_OH_PID_D.GROSS_LB = '';
+                $scope.Detail.Add_OH_PID_D.LENGTH = '';
+                $scope.Detail.Add_OH_PID_D.WIDTH ='';
+                $scope.Detail.Add_OH_PID_D.HEIGHT = '';
                 $scope.Detail.Add_OH_PID_D.Remark = '';
                 $scope.Detail.Rcdg1s = '';
                 $scope.Detail.Add_OH_PID_D.UnNo01 = '';
@@ -1954,7 +1961,7 @@ appControllers.controller('GrUnNoCtrl', [
             TableTitle: 'Create Onhand',
             Title: 'New',
             ONHANDNO: $stateParams.OnhandNo,
-            LineItemNo:$stateParams.LineItemNo,
+            LineItemNo: $stateParams.LineItemNo,
             location: '',
             Trucker: '',
             disabled: true,
@@ -1994,35 +2001,35 @@ appControllers.controller('GrUnNoCtrl', [
             blnNext: true
         };
         $scope.addLine = function () {
-          if ($scope.Detail.LineItemNo.length>0){
-            var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/UpdatePidUnNo');
-            objUri.addSearch('UnNo', $scope.Detail.Rcdg1.UnNo);
-            objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
-            objUri.addSearch('LineItemNo', $scope.Detail.LineItemNo);
-            ApiService.Get(objUri, false).then(function success(result) {
-  $scope.GoToPid();
-            });
+            if ($scope.Detail.LineItemNo.length > 0) {
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/UpdatePidUnNo');
+                objUri.addSearch('UnNo', $scope.Detail.Rcdg1.UnNo);
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                objUri.addSearch('LineItemNo', $scope.Detail.LineItemNo);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    $scope.GoToPid();
+                });
 
-          }else {
-            var objRcdg1 = {
-                UnNo: $scope.Detail.Rcdg1.UnNo,
-                DGClass: $scope.Detail.Rcdg1.DGClass,
-                DGDescription: $scope.Detail.Rcdg1.DGDescription,
+            } else {
+                var objRcdg1 = {
+                    UnNo: $scope.Detail.Rcdg1.UnNo,
+                    DGClass: $scope.Detail.Rcdg1.DGClass,
+                    DGDescription: $scope.Detail.Rcdg1.DGDescription,
 
-            };
-            console.log(objRcdg1.UnNo);
+                };
+                console.log(objRcdg1.UnNo);
 
-            SqlService.Insert('Imgr2_Putaway', objRcdg1).then(
-                function (res) {}
-            );
+                SqlService.Insert('Imgr2_Putaway', objRcdg1).then(
+                    function (res) {}
+                );
 
-            $state.go('GrAddPid', {
-                'OnhandNo': $scope.Detail.ONHANDNO,
-                'Type': $scope.Type,
-            }, {
-                reload: true
-            });
-}
+                $state.go('GrAddPid', {
+                    'OnhandNo': $scope.Detail.ONHANDNO,
+                    'Type': $scope.Type,
+                }, {
+                    reload: true
+                });
+            }
         };
 
         $scope.GoToPid = function () {
@@ -2038,17 +2045,16 @@ appControllers.controller('GrUnNoCtrl', [
             }
         };
         $scope.returnAdd = function () {
-              if ($scope.Detail.LineItemNo.length>0) {
-                  $scope.GoToPid();
-              }else{
+            if ($scope.Detail.LineItemNo.length > 0) {
+                $scope.GoToPid();
+            } else {
                 $state.go('GrAddPid', {
                     'OnhandNo': $scope.Detail.ONHANDNO,
                     'Type': $scope.Type,
                 }, {
                     reload: true
                 });
-              }
-
+            }
 
         };
 
