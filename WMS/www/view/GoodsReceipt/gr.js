@@ -701,98 +701,33 @@ appControllers.controller('GrDetailCtrl', [
             Address1: '',
             Address2: '',
         };
-        $scope.findAddress = function () {
-            if (!ENV.fromWeb) {
-                cordova.plugins.zbtprinter.find(function (result) {
-                    if (typeof result == 'string') {
-                        PopupService.Info(null, 'Message1', mac).then();
-                        $scope.Detail.Address = mac;
-                    } else {
-                        PopupService.Info(null, 'Message2', result.address + ', ' + result.friendlyName).then();
-                        $scope.Detail.Address = result.address;
-                    }
-                }, function (fail) {
-                    PopupService.Info(null, 'Message3', 'not found address please check already open Bluetooth or IP/DNS').then();
-                    // $scope.Detail.Address = fail;
 
-                });
-            }
-        };
         $scope.print = function () {
+
             if (!ENV.fromWeb) {
+              // PopupService.Info(null,   $scope.OnhandNo).then();　
+                       var sApp = startApp.set({ /* params */
+                       	// "action":"ACTION_MAIN",
+                       	// "category":"CATEGORY_DEFAULT",
+                       	// "type":"text/css",
+                       	"package":"com.zebra.kdu",
+                       	// "uri":"file://data/index.html",
+                       	// "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
+                       	// "component": ["com.app.name","com.app.name.Activity"],
+                           "intentstart":"aa",
+                       }, { /* extras */
+                       	"msg":$scope.OnhandNo,
+                       	//"extraKey2":"extraValue2"
+                       });
 
-                // var strData = "asdfsdfsdafsda\radfdsfsdfsdf\nline_print\r\nTEXPRINT\r\n";
-                // // var strData ="A";
-                // PopupService.Info(null, $scope.Detail.Address).then();
-                // // PopupService.Info(null,'print'  +$scope.Detail.Address).then();
-                cordova.plugins.zbtprinter.print('AC:3F:A4:73:5C:1D', "abc",
-                    function (success) {
-                        PopupService.Info(null, 'Print ok').then();
-                    },
-                    function (fail) {
-                        PopupService.Info(null, fail).then();
-                    }
-                );
-            }
-        };
 
-        $scope.printBatch = function () {
-            if (!ENV.fromWeb) {
-                // var batch = [];
-                // var strData = "\r\nTEXT ***Print test***\r\nPRINT\r\n";
-                // var job = {
-                //     typ: "data",
-                //     string: strData
-                // };
-                // batch.push(job);
-                cordova.plugins.zbtprinter.print("AC:3F:A4:73:5C:1D", "abc",
-                    function (success) {
-                        alert("Print ok");
-                    },
-                    function (fail) {
-                        alert(fail);
-                    }
-                );
-            }
-        };
+                       sApp.start(function() { /* success */
+                       	// alert("OK");
+                       }, function(error) { /* fail */
+                       	alert(error);
+                       });
 
-        $scope.printBatchTest = function () {
-            if (!ENV.fromWeb) {
-                var batch = [];
 
-                var imgData = "data:image/png;base64,xxxxyyyyzzzz=";
-                imgData = imgData.replace("data:image/png;base64,", "");
-                var job = {
-                    typ: "image",
-                    string: imgData,
-                    x: "150",
-                    y: "0",
-                    imagewidth: "300",
-                    textwidth: "592",
-                    labelheight: "180",
-                    title: "Test Title"
-                };
-
-                batch.push(job);
-
-                cordova.plugins.zbtprinter.batch($scope.Detail.Address, batch,
-                    function (success) {
-                        alert("Print ok");
-                    },
-                    function (fail) {
-                        alert(fail);
-                    }
-                );
-            }
-        };
-
-        $scope.openBluetooth = function () {
-            if (!ENV.fromWeb) {
-                bluetoothle.enable(function () {
-                    PopupService.Info(null, "Bluetooth is enabled").then();　　　　　
-                }, 　　function () {
-                    PopupService.Info(null, "The user did *not* enable Bluetooth").then();　　　　　　　
-                });
             }
         };
 

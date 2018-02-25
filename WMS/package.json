@@ -43,7 +43,10 @@
     "cordova-plugin-datepicker",
     "cordova-plugin-crosswalk-certificate@2.0.0",
     "https://github.com/danjarvis/cordova-plugin-crosswalk-certificate",
-    "https://github.com/bstmedia/zbtprinter.git"
+    "https://github.com/bstmedia/zbtprinter.git",
+    "https://github.com/ChiefPeep/cordova-plugin-zebra-printer.git",
+    "C:\\Users\\Administrator\\Desktop\\testOnhand1\\WMS\\plugins\\com.lby.plugin",
+    "https://github.com/lampaa/com.lampa.startapp.git"
   ],
   "cordovaPlatforms": []
 }
