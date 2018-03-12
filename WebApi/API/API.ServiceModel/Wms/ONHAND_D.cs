@@ -87,7 +87,7 @@ namespace WebApi.ServiceModel.Wms
         public List<ONHAND_D_Table> Get_ONHANDNo(ONHAND_D request)
         {
 
-            List<ONHAND_D_Table> Result = null;
+           List<ONHAND_D_Table> Result = null;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
@@ -96,7 +96,7 @@ namespace WebApi.ServiceModel.Wms
                     if (!string.IsNullOrEmpty(request.strONHAND_NO))
                     {
 
-                        string strSQL = "Select onhand_no  From ONHAND_D Where  ( OH_STAT = 'ES' or OH_STAT='EA' )    And onhand_no LIKE '" + request.strONHAND_NO + "%'  Order By onhand_no Asc";
+                        string strSQL = "Select onhand_no  From ONHAND_D Where  ( OH_STAT = 'RC' or OH_STAT='RI' or  OH_STAT='OP' )    And onhand_no LIKE '" + request.strONHAND_NO + "%'  Order By onhand_no Asc";
                         Result = db.Select<ONHAND_D_Table>(strSQL);                 
                     }
                 }
