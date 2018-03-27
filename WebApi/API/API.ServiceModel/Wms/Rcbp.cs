@@ -35,12 +35,12 @@ namespace WebApi.ServiceModel.Wms
                 {
                     if (!string.IsNullOrEmpty(request.BusinessPartyName))
                     {
-                        string strSQL = "Select BusinessPartyCode, BusinessPartyName, StatusCode  From Rcbp1 Where StatusCode = 'USE' And BusinessPartyName LIKE '" + request.BusinessPartyName + "%'  Order By BusinessPartyCode Asc";
+                        string strSQL = "Select   Address1 , Address2,Address3 ,Address4 ,BusinessPartyCode, BusinessPartyName, StatusCode  From Rcbp1 Where StatusCode = 'USE' And BusinessPartyName LIKE '" + request.BusinessPartyName + "%'  Order By BusinessPartyCode Asc";
                         Result = db.Select<Rcbp1>(strSQL);
                     }
                     else if (!string.IsNullOrEmpty(request.BusinessPartyCode))
                     {
-                        string strSQL = "Select BusinessPartyCode, BusinessPartyName, StatusCode  From Rcbp1 Where StatusCode = 'USE' And BusinessPartyCode LIKE '" + request.BusinessPartyCode + "%'  Order By BusinessPartyCode Asc";
+                        string strSQL = "Select  Address1 , Address2,Address3 ,Address4 , BusinessPartyCode, BusinessPartyName, StatusCode  From Rcbp1 Where StatusCode = 'USE' And BusinessPartyCode LIKE '" + request.BusinessPartyCode + "%'  Order By BusinessPartyCode Asc";
                         Result = db.Select<Rcbp1>(strSQL);
                     }
                     else {

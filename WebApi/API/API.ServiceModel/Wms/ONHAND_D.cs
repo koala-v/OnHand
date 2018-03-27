@@ -57,8 +57,16 @@ namespace WebApi.ServiceModel.Wms
                             strSQL=" select  "  +
                             " ISNULL(SHP_CODE, '') AS SHP_CODE, " +
                             " ISNULL((select BusinessPartyName from rcbp1 where BusinessPartyCode = SHP_CODE ),'')  AS  'ShipperName', " +
+                            " ISNULL(shipperaddress1,'') AS shipperaddress1, " +
+                            " ISNULL(ShipperAddress2,'') AS ShipperAddress2, " +
+                            " ISNULL(ShipperAddress3,'') AS ShipperAddress3, " +
+                            " ISNULL(ShipperAddress4,'') AS ShipperAddress4, " +
                             " ISNULL(CNG_CODE,'') AS CNG_CODE, " +
                             " ISNULL( (select  BusinessPartyName from rcbp1 where BusinessPartyCode = CNG_CODE),'' ) AS  'ConsigneeName', " +
+                            " ISNULL(ConsigneeAddress1,'') AS ConsigneeAddress1, " +
+                            " ISNULL(ConsigneeAddress2,'') AS ConsigneeAddress2, " +
+                            " ISNULL(ConsigneeAddress3,'') AS ConsigneeAddress3, " +
+                            " ISNULL(ConsigneeAddress4,'') AS ConsigneeAddress4, " +
                             " ISNULL(SHP_MODE,'') AS SHP_MODE, " +
                             " ONHAND_date, " +
                             " ISNULL(CASE_NO,'') AS CASE_NO, " +
@@ -96,7 +104,7 @@ namespace WebApi.ServiceModel.Wms
                     if (!string.IsNullOrEmpty(request.strONHAND_NO))
                     {
 
-                        string strSQL = "Select onhand_no  From ONHAND_D Where  ( OH_STAT = 'RC' or OH_STAT='RI' or  OH_STAT='OP' )    And onhand_no LIKE '" + request.strONHAND_NO + "%'  Order By onhand_no Asc";
+                        string strSQL = "Select onhand_no  From ONHAND_D Where  (  OH_STAT='RI' or  OH_STAT='OP'  or  OH_STAT='DT' )    And onhand_no LIKE '" + request.strONHAND_NO + "%'  Order By onhand_no Asc";
                         Result = db.Select<ONHAND_D_Table>(strSQL);                 
                     }
                 }
@@ -677,16 +685,37 @@ namespace WebApi.ServiceModel.Wms
                               
                                 string strSql = "";
                                 string SHP_MODE = "";
+                                string OH_STAT = "";
                                 string Domestic = ja[i]["DomesticFlag"].ToString();
+                                string  strAog = ja[i]["AOG"].ToString();
                                 if (Domestic == "Y")
-                                {
-                                      SHP_MODE = "L2";
+                                {      
+                                    if (strAog == "Y")
+                                    {
+                                        SHP_MODE = "L1";
+                                    }
+                                    else
+                                    {
+
+                                        SHP_MODE = "L2";
+                                    }
+                                    OH_STAT = "DT";
                                 }
                                 else
                                 {
-                                     SHP_MODE = "A2";
+                                    if (strAog == "Y")
+                                    {
+                                        SHP_MODE = "A1";
+                                    }
+                                    else
+                                    {
+
+                                        SHP_MODE = "A2";
+                                    }
+                                    OH_STAT = "RI";
+
                                 }
-                                KeyOnhandNo = generateOnhandNo(Domestic);
+                                KeyOnhandNo = generateOnhandNo(Domestic);                  
                                 string SHP_CODE = ja[i]["SHP_CODE"].ToString();
                                 string CNG_CODE = ja[i]["CNG_CODE"].ToString();
                                 string ONHAND_date = ja[i]["ONHAND_date"].ToString();
@@ -728,6 +757,7 @@ namespace WebApi.ServiceModel.Wms
                                "   ExerciseFlag ," +
                                "   LOC_CODE ," +
                                "   TRK_CODE ," +
+                               "   OH_STAT  ," +
                                "   TRK_CHRG_TYPE ," +
                                "   PICKUP_SUP_datetime," +
                                "   TRK_DEL_datetime," +
@@ -767,6 +797,7 @@ namespace WebApi.ServiceModel.Wms
                                    Modfunction.SQLSafeValue(ExerciseFlag) + "," +
                                    Modfunction.SQLSafeValue(LOC_CODE) + "," +
                                    Modfunction.SQLSafeValue(TRK_CODE) + "," +
+                                   Modfunction.SQLSafeValue(OH_STAT) + "," +                              
                                    Modfunction.SQLSafeValue(TRK_CHRG_TYPE) + "," +
                                    Modfunction.SQLSafeValue(PICKUP_SUP_datetime) + "," +
                                    Modfunction.SQLSafeValue(PICKUP_SUP_datetime) + "," +
@@ -826,9 +857,12 @@ namespace WebApi.ServiceModel.Wms
                             {
 
                                 string strSql = "";
-                               string ONHAND_NO = ja[i]["ONHAND_NO"].ToString();
+                                string SHP_MODE = "";
+                                string ONHAND_NO = ja[i]["ONHAND_NO"].ToString();
                                 string SHP_CODE = ja[i]["SHP_CODE"].ToString();
                                 string CNG_CODE = ja[i]["CNG_CODE"].ToString();
+                                string Domestic = ja[i]["DomesticFlag"].ToString();
+                                string strAog = ja[i]["AOG"].ToString(); 
                                 string ONHAND_date = ja[i]["ONHAND_date"].ToString();
                                 string CASE_NO = ja[i]["CASE_NO"].ToString();
                                 string PUB_YN = ja[i]["PUB_YN"].ToString();
@@ -854,9 +888,40 @@ namespace WebApi.ServiceModel.Wms
                                     NO_INV_WH = int.Parse(ja[i]["NO_INV_WH"].ToString());
                                 }
 
+
+                                if (Domestic == "Y")
+                                {
+                                    if (strAog == "Y")
+                                    {
+                                        SHP_MODE = "L1";
+                                    }
+                                    else
+                                    {
+
+                                        SHP_MODE = "L2";
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (strAog == "Y")
+                                    {
+                                        SHP_MODE = "A1";
+                                    }
+                                    else
+                                    {
+
+                                        SHP_MODE = "A2";
+                                    }
+
+
+                                }
+
+
                                 strSql = "Update  ONHAND_D   Set" +
                                "   SHP_CODE ='" +SHP_CODE+ "'," +
                                "   CNG_CODE ='" + CNG_CODE + "'," +
+                                 "   SHP_MODE ='" + SHP_MODE + "'," +
                                "   ONHAND_date ='" + ONHAND_date + "'," +
                                "   CASE_NO ='" + CASE_NO + "'," +
                                "   PUB_YN ='" + PUB_YN + "'," +

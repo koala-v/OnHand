@@ -184,6 +184,7 @@ namespace WebApi.ServiceModel.Wms
 
                             string strSQL = "";
                             strSQL = "select " +
+                               "  ONHAND_NO  ," +
                                 "  PID_NO  ," +
                                 "  (Select top 1 MAwbNo From Aeaw1 Where MasterJobNo='" + request.MasterJobNo + "' )  AS  MAwbNo ," +
                                 "  (Select ISNULL(LOC_CODE,'') From ONHAND_D Where ONHAND_D.Onhand_No = OH_PID_D.Onhand_No ) as LOC_CODE " +
@@ -237,7 +238,8 @@ namespace WebApi.ServiceModel.Wms
                                " MAwbNo ," +
                                " PID_NO ," +
                                " KeyMAwbNo ," +
-                               " LOC_CODE " +
+                               " LOC_CODE ," +
+                               " (Select TOP 1 ONHAND_NO From Onhand_D where MasterJobNo IN  (Select top 1  Aeaw1.MasterJobNo From Aeaw1 where Aeaw1.MawbNo = aemt1.MAwbNo) ) as ONHAND_NO " +
                                " From  AEMT1 " +
                                " Where   KeyMAwbNo =  '"+ strMAwbNo + "'+cast((select max(cast(right(KeyMawbNo,len(KeyMawbNo) -len('"+ strMAwbNo + "')) AS int)) from aemt1 where left(KeyMawbNo,len('" + strMAwbNo + "'))='" + strMAwbNo + "')as varchar ) " + strWhere;
 

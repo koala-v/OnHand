@@ -27,6 +27,17 @@ namespace WebApi.ServiceModel.Tables
         public int NO_INV_WH { get; set; }
         public int TotalPCS { get; set; }
         public int TotalWeight { get; set; }
-        
+
+
+        public string shipperaddress1 { get; set; }
+        public string ShipperAddress2 { get; set; }
+        public string ShipperAddress3 { get; set; }
+        public string ShipperAddress4 { get; set; }
+        public string ConsigneeAddress1 { get; set; }
+        public string ConsigneeAddress2 { get; set; }
+        public string ConsigneeAddress3 { get; set; }
+        public string ConsigneeAddress4 { get; set; }
+
+
     }
 }

@@ -18,7 +18,7 @@
                     </ui-select>
                 </div>
                 <div class="col">
-                    <button class="button icon ion-ios-more button-positive button-small"   style="WIDTH:32px;HEIGHT:20px" data-ng-disabled="Detail.disabled" ng-click="GoToDetail()"></button>
+                    <button class="button icon ion-ios-more button-positive button-small" style="WIDTH:32px;HEIGHT:20px" data-ng-disabled="Detail.disabled" ng-click="GoToDetail()"></button>
                 </div>
             </div>
             <div class="row row-center" id="div-list-rcbp">
@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="col">
-                    <button class="button  button-positive button-small"  data-ng-disabled="Detail.disabled" ng-click="addLocaiton()">Add</button>
+                    <button class="button  button-positive button-small" data-ng-disabled="Detail.disabled" ng-click="addLocaiton()">Add</button>
                 </div>
             </div>
 
@@ -86,27 +86,30 @@
 
         <div class="list card">
             <div class="row">
-
-              <div class="col col-60">
-                  <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
-                  <div class="" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
-                      <div class="item item-input">
-
-                          <div class="col-57">
-                              <div class="item-text-wrap">
-                                  <p>
-                                      <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
-                                  </p>
-                              </div>
-                          </div>
-                          <div class="col-43">
-                              <p>
-                                  &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
-                              </p>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+                <div class="col col-60">
+                    <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
+                    <div class="" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
+                        <div class="item item-input">
+                            <div class="col-57">
+                                <div class="item-text-wrap">
+                                    <p>
+                                        <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-30">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
+                                </p>
+                            </div>
+                            <div class="col">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Pid.ONHAND_NO"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col">
                     <h5> PID No&nbsp;:</h5>
@@ -119,16 +122,19 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="col-43">
+                            <div class="col-30">
                                 <p>
                                     &nbsp;&nbsp;<span ng-bind="Aemt1.LOC_CODE"></span>
                                 </p>
                             </div>
-
+                            <div class="col">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Aemt1.ONHAND_NO"></span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
 
             </div>
         </div>

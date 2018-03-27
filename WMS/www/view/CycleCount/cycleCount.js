@@ -358,8 +358,8 @@ appControllers.controller('cycleCountDetailCtrl', [
                         ApiService.Get(objUri, true).then(function success(result) {
                             var resultAll = result.data.results;
                             if (is.not.empty(resultAll)) {
-                              for(var j=0;j<resultAll.length;j++)
-                                var objAemt1 = resultAll[j];
+                                for (var j = 0; j < resultAll.length; j++)
+                                    var objAemt1 = resultAll[j];
                                 var jobs = getobAemt1(objAemt1);
                                 dataResults = dataResults.concat(jobs);
                                 $scope.Detail.Aemt1S = dataResults;

@@ -26,69 +26,84 @@ appControllers.controller('GrListCtrl', [
         var arrPidUnGrid = new Array();
         $scope.Type = $stateParams.Type;
         $scope.Rcbp1 = {};
+        $scope.ShipperAddress = {};
+        $scope.ConsigneeAddress = {};
         $scope.Rcbp1ForConsinnee = {};
         $scope.ShiperCode = {};
-        $scope.Detail = {
-            TableTitle: 'Create Onhand',
-            Title: 'New',
-            ONHANDNO: $stateParams.OnhandNo,
-            location: '',
-            Trucker: '',
-            disabled: false,
-            VisibleDetailFlag: 'N',
+        $scope.Percent = {
+                PercentValue: '',
+                percentFlag: false,
+            },
+            $scope.PercentConSignee = {
+                ConSigneePercentValue: '',
+                ConSigneepercentFlag: false,
+            },
+            $scope.Detail = {
+                TableTitle: 'Create Onhand',
+                Title: 'New',
+                ONHANDNO: $stateParams.OnhandNo,
+                location: '',
+                Trucker: '',
+                disabled: false,
+                VisibleDetailFlag: 'N',
 
-            ChargeType: {
-                // NewItem: 'PP',
-            },
-            pushPublication: {
-                checked: false
-            },
-            pushHazardous: {
-                checked: false
-            },
-            pushClassified: {
-                checked: false
-            },
-            pushExercise: {
-                checked: false
-            },
-            ONHAND_D: {
-                DomesticFlag: 'N',
-                UserID: '',
-                ONHAND_date: moment(new Date()).format('YYYY-MM-DD'),
-                PICKUP_SUP_datetime: '',
-            },
-            OH_PID_D_S: {},
-            OH_PID_D: {
-                RowNum: 0,
-                LineItemNo: 0,
-                TRK_BILL_NO: '',
-                PACK_TYPE: '',
-                PID_NO: '',
-                UnNo: '',
-                GROSS_LB: 0,
-                LENGTH: 0,
-                WIDTH: 0,
-                HEIGHT: 0
-            },
-            Add_OH_PID_D: {
-                RowNum: 0,
-                LineItemNo: 0,
-                TRK_BILL_NO: '',
-                PACK_TYPE: '',
-                PID_NO: '',
-                UnNo: '',
-                GROSS_LB: 0,
-                LENGTH: 0,
-                WIDTH: 0,
-                HEIGHT: 0
-            },
-            Rcdg1: {},
-            Rcdg1s: {},
-            PidUnGrid: {},
-            PidUnGrids: {},
-            blnNext: true
-        };
+                ChargeType: {
+                    // NewItem: 'PP',
+                },
+                chkSHP_MODE: {
+                    checked: false
+                },
+                pushPublication: {
+                    checked: false
+                },
+                pushHazardous: {
+                    checked: false
+                },
+                pushClassified: {
+                    checked: false
+                },
+                pushExercise: {
+                    checked: false
+                },
+                ONHAND_D: {
+                    DomesticFlag: 'N',
+                    AOG: '',
+                    UserID: '',
+                    ONHAND_date: moment(new Date()).format('YYYY-MM-DD'),
+                    PICKUP_SUP_datetime: '',
+
+                },
+                OH_PID_D_S: {},
+                OH_PID_D: {
+                    RowNum: 0,
+                    LineItemNo: 0,
+                    TRK_BILL_NO: '',
+                    PACK_TYPE: '',
+                    PID_NO: '',
+                    UnNo: '',
+                    GROSS_LB: 0,
+                    LENGTH: 0,
+                    WIDTH: 0,
+                    HEIGHT: 0
+                },
+                Add_OH_PID_D: {
+                    RowNum: 0,
+                    LineItemNo: 0,
+                    TRK_BILL_NO: '',
+                    PACK_TYPE: '',
+                    PID_NO: '',
+                    UnNo: '',
+                    GROSS_LB: 0,
+                    LENGTH: 0,
+                    WIDTH: 0,
+                    HEIGHT: 0
+                },
+                Rcdg1: {},
+                Rcdg1s: {},
+                PidUnGrid: {},
+                PidUnGrids: {},
+                blnNext: true
+            };
 
         $scope.ChargeType = [{
                 text: 'Prepaid',
@@ -104,6 +119,9 @@ appControllers.controller('GrListCtrl', [
         ];
         $scope.refreshRcbp1 = function (BusinessPartyName, BusinessPartyCode) {
             if ((is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName)) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
+                if ($scope.Percent.PercentValue.length > 0) {
+                    BusinessPartyName = $scope.Percent.PercentValue + BusinessPartyName;
+                }
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
                 objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
@@ -117,7 +135,6 @@ appControllers.controller('GrListCtrl', [
             if (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode)) {
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
-
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.ShiperCodes = result.data.results;
                     // $scope.select.search='1';
@@ -126,12 +143,69 @@ appControllers.controller('GrListCtrl', [
         };
         $scope.refreshRcbp1ForConsinnee = function (BusinessPartyName, BusinessPartyCode) {
             if (is.not.undefined(BusinessPartyName) && is.not.empty(BusinessPartyName) || (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode))) {
+                if ($scope.PercentConSignee.ConSigneePercentValue.length > 0) {
+                    BusinessPartyName = $scope.PercentConSignee.ConSigneePercentValue + BusinessPartyName;
+                }
                 var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
                 objUri.addSearch('BusinessPartyName', BusinessPartyName);
                 objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
                 ApiService.Get(objUri, false).then(function success(result) {
                     $scope.Rcbp1ForConsinnees = result.data.results;
                 });
+            }
+        };
+
+        $scope.ShowShipperAddress = function (BusinessPartyCode) {
+            if (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
+                objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    if (result.data.results.length > 0) {
+                        $scope.Detail.ONHAND_D.shipperaddress1 = result.data.results[0].Address1;
+                        $scope.Detail.ONHAND_D.ShipperAddress2 = result.data.results[0].Address2;
+                        $scope.Detail.ONHAND_D.ShipperAddress3 = result.data.results[0].Address3;
+                        $scope.Detail.ONHAND_D.ShipperAddress4 = result.data.results[0].Address4;
+                    }
+                    // $scope.Detail.ONHAND_D.ShipperAddress
+                });
+            }
+
+        };
+
+        $scope.ShowConsigneeAddress = function (BusinessPartyCode) {
+            if (is.not.undefined(BusinessPartyCode) && is.not.empty(BusinessPartyCode)) {
+                var objUri = ApiService.Uri(true, '/api/wms/rcbp1');
+                objUri.addSearch('BusinessPartyCode', BusinessPartyCode);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    if (result.data.results.length > 0) {
+                        $scope.Detail.ONHAND_D.ConsigneeAddress1 = result.data.results[0].Address1;
+                        $scope.Detail.ONHAND_D.ConsigneeAddress2 = result.data.results[0].Address2;
+                        $scope.Detail.ONHAND_D.ConsigneeAddress3 = result.data.results[0].Address3;
+                        $scope.Detail.ONHAND_D.ConsigneeAddress4 = result.data.results[0].Address4;
+                    }
+                    // $scope.Detail.ONHAND_D.ShipperAddress
+                });
+            }
+
+        };
+
+        $scope.InsertPercent = function () {
+            if ($scope.Percent.percentFlag === false) {
+                $scope.Percent.PercentValue = '%';
+                $scope.Percent.percentFlag = true;
+            } else {
+                $scope.Percent.PercentValue = '';
+                $scope.Percent.percentFlag = false;
+            }
+        };
+
+        $scope.InsertPercentConSignee = function () {
+            if ($scope.PercentConSignee.ConSigneepercentFlag === false) {
+                $scope.PercentConSignee.ConSigneePercentValue = '%';
+                $scope.PercentConSignee.ConSigneepercentFlag = true;
+            } else {
+                $scope.PercentConSignee.ConSigneePercentValue = '';
+                $scope.PercentConSignee.ConSigneepercentFlag = false;
             }
         };
 
@@ -182,6 +256,7 @@ appControllers.controller('GrListCtrl', [
             });
         };
         $scope.getPackType();
+
         var CheckPush = function () {
             if ($scope.Detail.ONHAND_D.PUB_YN === 'Y') {
                 $scope.Detail.pushPublication.checked = true;
@@ -205,13 +280,40 @@ appControllers.controller('GrListCtrl', [
             }
         };
         var checkDomestic = function () {
-            if ($scope.Detail.ONHAND_D.SHP_MODE === 'L2') {
+            if ($scope.Detail.ONHAND_D.SHP_MODE === 'L2' || $scope.Detail.ONHAND_D.SHP_MODE === 'L1') {
                 $scope.Detail.ONHAND_D.DomesticFlag = 'Y';
             } else {
                 $scope.Detail.ONHAND_D.DomesticFlag = 'N';
             }
             $scope.Detail.disabled = true;
         };
+
+        var CheckAOG = function () {
+
+            if ($scope.Detail.ONHAND_D.DomesticFlag === 'Y') {
+                if ($scope.Detail.ONHAND_D.SHP_MODE === 'L1') {
+                    $scope.Detail.chkSHP_MODE.checked = true;
+                } else {
+                    $scope.Detail.chkSHP_MODE.checked = false;
+                }
+            } else {
+                if ($scope.Detail.ONHAND_D.SHP_MODE === 'A1') {
+                    $scope.Detail.chkSHP_MODE.checked = true;
+                } else {
+                    $scope.Detail.chkSHP_MODE.checked = false;
+                }
+            }
+
+        };
+        $scope.AOGChange = function () {
+            if ($scope.Detail.chkSHP_MODE.checked === true) {
+                $scope.Detail.ONHAND_D.AOG = 'Y';
+            } else {
+                $scope.Detail.ONHAND_D.AOG = 'N';
+            }
+
+        };
+
         $scope.pushChange = function () {
             if ($scope.Detail.pushPublication.checked === true) {
                 $scope.Detail.ONHAND_D.PUB_YN = 'Y';
@@ -271,6 +373,7 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
                 $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
                 $scope.pushChange();
+                $scope.AOGChange();
                 var arrONHAND_D = [];
                 arrONHAND_D.push($scope.Detail.ONHAND_D);
                 var jsonData = {
@@ -312,6 +415,7 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
 
                 $scope.pushChange();
+                $scope.AOGChange();
                 var arrONHAND_D = [];
                 arrONHAND_D.push($scope.Detail.ONHAND_D);
                 var jsonData = {
@@ -401,6 +505,8 @@ appControllers.controller('GrListCtrl', [
                         CheckPush();
                         checkDomestic();
                         CheckChargeType();
+                        CheckAOG();
+                        // checkAOG();
                     } else {
                         PopupService.Info(null, 'Please Enter The Current OhandNo').then();
                     }
@@ -705,28 +811,26 @@ appControllers.controller('GrDetailCtrl', [
         $scope.print = function () {
 
             if (!ENV.fromWeb) {
-              // PopupService.Info(null,   $scope.OnhandNo).then();　
-                       var sApp = startApp.set({ /* params */
-                       	// "action":"ACTION_MAIN",
-                       	// "category":"CATEGORY_DEFAULT",
-                       	// "type":"text/css",
-                       	"package":"com.zebra.kdu",
-                       	// "uri":"file://data/index.html",
-                       	// "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
-                       	// "component": ["com.app.name","com.app.name.Activity"],
-                           "intentstart":"aa",
-                       }, { /* extras */
-                       	"msg":$scope.OnhandNo,
-                       	//"extraKey2":"extraValue2"
-                       });
+                // PopupService.Info(null,   $scope.OnhandNo).then();　
+                var sApp = startApp.set({ /* params */
+                    // "action":"ACTION_MAIN",
+                    // "category":"CATEGORY_DEFAULT",
+                    // "type":"text/css",
+                    "package": "com.zebra.kdu",
+                    // "uri":"file://data/index.html",
+                    // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
+                    // "component": ["com.app.name","com.app.name.Activity"],
+                    "intentstart": "aa",
+                }, { /* extras */
+                    "msg": $scope.OnhandNo,
+                    //"extraKey2":"extraValue2"
+                });
 
-
-                       sApp.start(function() { /* success */
-                       	// alert("OK");
-                       }, function(error) { /* fail */
-                       	alert(error);
-                       });
-
+                sApp.start(function () { /* success */
+                    // alert("OK");
+                }, function (error) { /* fail */
+                    alert(error);
+                });
 
             }
         };
@@ -1420,6 +1524,12 @@ appControllers.controller('GrAddPidCtrl', [
                         arrRcpk.push(result.data.results[i].PackType);
                     }
                     $scope.Rcpk_S = arrRcpk;
+                    if ($scope.Rcpk_S.length > 0) {
+                        if ($scope.Rcpk_S.includes("Carton Box") === true) {
+                            $scope.Detail.Add_OH_PID_D.PACK_TYPE = 'Carton Box';
+                        }
+                    }
+
                 }
             });
         };
@@ -1643,7 +1753,7 @@ appControllers.controller('GrAddPidCtrl', [
                 $scope.Detail.Add_OH_PID_D.UnNo = '';
                 $scope.Detail.Add_OH_PID_D.GROSS_LB = '';
                 $scope.Detail.Add_OH_PID_D.LENGTH = '';
-                $scope.Detail.Add_OH_PID_D.WIDTH ='';
+                $scope.Detail.Add_OH_PID_D.WIDTH = '';
                 $scope.Detail.Add_OH_PID_D.HEIGHT = '';
                 $scope.Detail.Add_OH_PID_D.Remark = '';
                 $scope.Detail.Rcdg1s = '';

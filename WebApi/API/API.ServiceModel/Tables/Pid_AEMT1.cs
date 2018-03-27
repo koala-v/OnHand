@@ -11,6 +11,8 @@ namespace WebApi.ServiceModel.Tables
               public string PID_NO { get; set; }
               public string LOC_CODE { get; set; }
               public string KeyMAwbNo { get; set; }
+             public string ONHAND_NO { get; set; }
 
-    } 
+
+    }
 }
