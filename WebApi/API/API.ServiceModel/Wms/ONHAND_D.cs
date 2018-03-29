@@ -202,7 +202,7 @@ namespace WebApi.ServiceModel.Wms
         public int UpdateLineItem(ONHAND_D request) {
 
             int  Result =-1;
-         
+            string Result_SP_Ind_YN = "";
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
@@ -217,6 +217,7 @@ namespace WebApi.ServiceModel.Wms
                             {
 
                                 string strSql = "";
+                                string strSP_Ind_YN = "";
                                 int LENGTH = 0;
                                 int WIDTH = 0;
                                 int HEIGHT = 0;
@@ -225,7 +226,11 @@ namespace WebApi.ServiceModel.Wms
                                 if (lineItemNo > 0)
                                 {
                                     string OnhandNo= ja[i]["ONHAND_NO"].ToString();
+                                    string strUserId = ja[i]["UserID"].ToString();
                                     string PACK_TYPE = ja[i]["PACK_TYPE"].ToString();
+                                   
+                                    Result_SP_Ind_YN = db.SqlScalar<string>(" select  dbo.Set_SP_Ind_YN (@TypeDesc)", new {  TypeDesc = PACK_TYPE });
+                                    strSP_Ind_YN = Result_SP_Ind_YN;
                                     string PackTypeCode =getPackTypeCode(Modfunction.SQLSafeValue(ja[i]["PACK_TYPE"].ToString()));
                                     string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();
                                     string PID_NO = ja[i]["PID_NO"].ToString();
@@ -237,7 +242,10 @@ namespace WebApi.ServiceModel.Wms
                                     GROSS_LB = Modfunction.ReturnZero(ja[i]["GROSS_LB"].ToString());
                                                                                    
                                     strSql = " UPDATE OH_PID_D Set " +
-                                              "PACK_TYPE='"+ PACK_TYPE + "'," +
+                                              "ISSUER_CHANGED='" + strUserId + "'," +
+                                              "Date_CHANGED=getdate()," +
+                                              "PACK_TYPE='" + PACK_TYPE + "'," +
+                                               "SP_IND='" + strSP_Ind_YN + "'," +                           
                                               "PackTypeCode='" + PackTypeCode + "'," +
                                               "TRK_BILL_NO='" + TRK_BILL_NO + "'," +
                                               "PID_NO='" + PID_NO + "'," +
@@ -483,6 +491,8 @@ namespace WebApi.ServiceModel.Wms
                             {
 
                                 string strSql = "";
+                                string Result_SP_Ind_YN = "";
+                                string strSP_Ind_YN = "";
                                 int LENGTH = 0;
                                 int WIDTH = 0;
                                 int HEIGHT = 0;
@@ -502,8 +512,11 @@ namespace WebApi.ServiceModel.Wms
                                     }
 
                                     string PACK_TYPE = ja[i]["PACK_TYPE"].ToString();
-                                    string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();
+                                    string TRK_BILL_NO = ja[i]["TRK_BILL_NO"].ToString();                          
+                                    string strUserId = ja[i]["UserID"].ToString();
                                     string PID_NO = ja[i]["PID_NO"].ToString();
+                                    Result_SP_Ind_YN = db.SqlScalar<string>(" select  dbo.Set_SP_Ind_YN (@TypeDesc)", new { TypeDesc = PACK_TYPE });
+                                    strSP_Ind_YN = Result_SP_Ind_YN;
                                     string UnNo = ja[i]["UnNo"].ToString();
                                     string UnNo01 = Modfunction.CheckNull(ja[i]["UnNo01"]);
                                     string UnNo02 = Modfunction.CheckNull(ja[i]["UnNo02"]);
@@ -539,6 +552,9 @@ namespace WebApi.ServiceModel.Wms
                                               "  LineItemNo, " +
                                               "  PACK_TYPE," +
                                               "  PackTypeCode, " +
+                                              "  ISSUER_CODE," +
+                                              "  Date_ADDED, " +
+                                              "  SP_IND, " +
                                               "  TRK_BILL_NO," +
                                               "  PID_NO," +
                                               "  UnNo," +
@@ -568,6 +584,9 @@ namespace WebApi.ServiceModel.Wms
                                                   intMaxLineItemNo + "," +
                                                   Modfunction.SQLSafeValue(PACK_TYPE) + "," +
                                                   Modfunction.SQLSafeValue(getPackTypeCode( Modfunction.SQLSafeValue(PACK_TYPE))) + "," +
+                                                  Modfunction.SQLSafeValue(strUserId) + "," +
+                                                   " getdate() ," +
+                                                  Modfunction.SQLSafeValue(strSP_Ind_YN) + "," +
                                                   Modfunction.SQLSafeValue(TRK_BILL_NO) + "," +
                                                   Modfunction.SQLSafeValue(PID_NO) + "," +
                                                   Modfunction.SQLSafeValue(UnNo) + "," +

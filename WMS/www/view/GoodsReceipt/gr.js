@@ -1254,6 +1254,7 @@ appControllers.controller('GrPidCtrl', [
             if (Type === 'Update') {
                 if ($scope.Detail.OH_PID_D_S.length > 0) {
                     $scope.Detail.OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                    $scope.Detail.OH_PID_D.UserID = sessionStorage.getItem('UserId').toString();
                     arrOH_PID_D.push($scope.Detail.OH_PID_D);
                     jsonData = {
                         "UpdateAllString": JSON.stringify(arrOH_PID_D)
@@ -1512,7 +1513,7 @@ appControllers.controller('GrAddPidCtrl', [
                 reload: true
             });
             DeleteRcdg1();
-            sessionStorage.clear();
+            DeleteAddPid();
         };
         $scope.getPackType = function () {
             var objUri = ApiService.Uri(true, '/api/wms/Rcpk');
@@ -1796,6 +1797,9 @@ appControllers.controller('GrAddPidCtrl', [
         var DeleteRcdg1 = function () {
             SqlService.Delete('Imgr2_Putaway').then(function () {});
         };
+        var DeleteAddPid = function () {
+            SqlService.Delete('addPid').then(function () {});
+        };
         $scope.addLine = function () {
 
             if ($scope.Detail.Add_OH_PID_D.PACK_TYPE.length > 0) {
@@ -1804,6 +1808,7 @@ appControllers.controller('GrAddPidCtrl', [
                         if (is.not.undefined($scope.Detail.ONHANDNO) && is.not.empty($scope.Detail.ONHANDNO)) {
                             var arrOH_PID_D = [];
                             $scope.Detail.Add_OH_PID_D.ONHAND_NO = $scope.Detail.ONHANDNO;
+                            $scope.Detail.Add_OH_PID_D.UserID = sessionStorage.getItem('UserId').toString();
                             //add UnNo start
                             for (var i = 0; i < $scope.Detail.Rcdg1s.length; i++) {
                                 if (i === 0) {
@@ -1880,29 +1885,23 @@ appControllers.controller('GrAddPidCtrl', [
         };
 
         $scope.getRcdg1 = function () {
-            if (sessionStorage.getItem('UnNoFlag') === 'Flag') {
-                SqlService.Select('addPid', '*').then(function (results) {
-                    var len = results.rows.length;
-                    // var intQty = 0;
-                    // var arrRcdg1 = new Array();
-                    if (len > 0) {
-                        var Rcdg1 = results.rows.item(0);
-                        $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = Rcdg1.TRK_BILL_NO;
-                        $scope.Detail.Add_OH_PID_D.PACK_TYPE = Rcdg1.PACK_TYPE;
-                        $scope.Detail.Add_OH_PID_D.PID_NO = Rcdg1.PID_NO;
-                        $scope.Detail.Add_OH_PID_D.GROSS_LB = Rcdg1.GROSS_LB;
-                        $scope.Detail.Add_OH_PID_D.LENGTH = Rcdg1.LENGTH;
-                        $scope.Detail.Add_OH_PID_D.WIDTH = Rcdg1.WIDTH;
-                        $scope.Detail.Add_OH_PID_D.HEIGHT = Rcdg1.HEIGHT;
-                        $scope.Detail.Add_OH_PID_D.Remark = Rcdg1.Remark;
-                    }
-                });
+            SqlService.Select('addPid', '*').then(function (results) {
+                var len = results.rows.length;
+                if (len > 0) {
+                    var Rcdg1 = results.rows.item(0);
+                    $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = Rcdg1.TRK_BILL_NO;
+                    $scope.Detail.Add_OH_PID_D.PACK_TYPE = Rcdg1.PACK_TYPE;
+                    $scope.Detail.Add_OH_PID_D.PID_NO = Rcdg1.PID_NO;
+                    $scope.Detail.Add_OH_PID_D.GROSS_LB = Rcdg1.GROSS_LB;
+                    $scope.Detail.Add_OH_PID_D.LENGTH = Rcdg1.LENGTH;
+                    $scope.Detail.Add_OH_PID_D.WIDTH = Rcdg1.WIDTH;
+                    $scope.Detail.Add_OH_PID_D.HEIGHT = Rcdg1.HEIGHT;
+                    $scope.Detail.Add_OH_PID_D.Remark = Rcdg1.Remark;
+                }
+            });
 
-            }
             SqlService.Select('Imgr2_Putaway', '*').then(function (results) {
                 var len = results.rows.length;
-                // var intQty = 0;
-                // var arrRcdg1 = new Array();
                 if (len > 0) {
                     for (var i = 0; i < len; i++) {
                         var Rcdg1 = results.rows.item(i);
@@ -1996,8 +1995,6 @@ appControllers.controller('GrUnNoCtrl', [
         SqlService) {
         var arrRcdg1 = new Array();
         var arrPidUnGrid = new Array();
-        sessionStorage.clear();
-        sessionStorage.setItem('UnNoFlag', 'Flag');
         $scope.Type = $stateParams.Type;
         $scope.Rcbp1 = {};
         $scope.Rcbp1ForConsinnee = {};
