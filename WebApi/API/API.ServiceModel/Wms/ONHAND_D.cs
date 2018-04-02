@@ -24,6 +24,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/OH_PID_D/UpdateUnNo", "get")]
     [Route("/wms/OH_PID_D/validate", "Get")]     //OH_PID_D?PID_NO
     [Route("/wms/OH_PID_D/TruckerBillNo", "Get")]     //OH_PID_D?PID_NO
+    [Route("/wms/OH_PID_D/verifyTruckerBillNoBarCode", "Get")]     //OH_PID_D?PID_NO
     [Route("/wms/OH_PID_D/UpdatePidUnNo", "Get")]     //OH_PID_D?PID_NO
 
     public class ONHAND_D : IReturn<CommonResponse>
@@ -38,6 +39,7 @@ namespace WebApi.ServiceModel.Wms
         public string strTRK_BILL_NO { get; set; }
         public string UnNoIndex { get; set; }
         public string UnNo { get; set; }
+        public string TruckerBillNo { get; set; }
     }
     public class imcc_loigc
     {
@@ -197,6 +199,32 @@ namespace WebApi.ServiceModel.Wms
             catch { throw; }
             return Result;
         }
+
+
+
+        public List<ON_PID_D> verifyTruckerBillNoBarCode(ONHAND_D request)
+        {
+
+            List<ON_PID_D> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    if (!string.IsNullOrEmpty(request.strONHAND_NO) && string.IsNullOrEmpty(request.TruckerBillNo) )
+                    {
+
+                        string strSQL = "";              
+                        Result = db.Select<ON_PID_D>(strSQL);
+
+                    }
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
 
 
         public int UpdateLineItem(ONHAND_D request) {
@@ -656,24 +684,102 @@ namespace WebApi.ServiceModel.Wms
         }
 
 
-        public List<ON_PID_D> ValidateTRK_BILL_NO(ONHAND_D request)
+
+        public List<ONHAND_D_Table> getTrk_Code( string onhandNo)
         {
 
-            List<ON_PID_D> Result = null;
+            List<ONHAND_D_Table> Result = null;
 
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
                 {
 
+                    string ONHAND_NO = onhandNo;
+
+                    if (ONHAND_NO != "")
+                    {
+                        string strSql = "Select  TRK_CODE  From ONHAND_D Where ONHAND_NO ='" + ONHAND_NO + "'";
+
+                        Result = db.Select<ONHAND_D_Table>(strSql);
+                   
+                    }
+
+
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
+
+
+
+        public List<ON_PID_D> ValidateTRK_BILL_NO(ONHAND_D request)
+        {
+
+            List<ON_PID_D> Result = null;
+            List<ONHAND_D_Table> Result_Onhand_D = null;
+            string ResultTruckerBillNo = "";
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+
                     string TRK_BILL_NO = request.strTRK_BILL_NO;
-
-
+                    string OnhandNo = request.strONHAND_NO;
+                    string strTRK_BILL_NO ="";
+                    string Trk_Code = "";
                     if (TRK_BILL_NO != "")
                     {
                         string strSql = "Select  top 1 TRK_BILL_NO, ONHAND_NO From OH_PID_D Where TRK_BILL_NO ='" + TRK_BILL_NO + "'";
-
                         Result = db.Select<ON_PID_D>(strSql);
+
+                        Result_Onhand_D = getTrk_Code(OnhandNo);
+                        if (Result_Onhand_D.Count > 0)
+                        {
+                            Trk_Code =  Modfunction .CheckNull (Result_Onhand_D[0].TRK_CODE) ;
+                            if (Trk_Code.Length >=3)
+                            Trk_Code= Trk_Code.Substring(0,3);
+                        }
+
+                        if ( (Result.Count < 1) && (Trk_Code.ToUpper() =="FED")  && TRK_BILL_NO.Length >12 )
+                        {
+                            if (TRK_BILL_NO.Length > 15)
+                            {
+                                strTRK_BILL_NO = TRK_BILL_NO.Substring(TRK_BILL_NO.Length - 15, 15);
+                                ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });
+                                if (ResultTruckerBillNo == "Y")
+                                {
+
+                                }
+                                else
+                                {
+                                    strTRK_BILL_NO = TRK_BILL_NO.Substring(TRK_BILL_NO.Length - 12, 12);
+                                    ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });
+
+                                }
+
+                            }
+                            else if (TRK_BILL_NO.Length > 12 && TRK_BILL_NO.Length < 15)
+                            {
+                                strTRK_BILL_NO = TRK_BILL_NO.Substring(TRK_BILL_NO.Length - 12, 12);
+                                ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });
+                            }
+                            else if (TRK_BILL_NO.Length == 12 || TRK_BILL_NO.Length == 15)
+                            {
+                                ResultTruckerBillNo = "Y";
+                            }
+                            else
+                            {
+
+                            }
+                            ON_PID_D pid;
+                            pid = new ON_PID_D();
+                            pid.ResultTruckerBillNo = ResultTruckerBillNo;
+                            Result.Add(pid);
+
+                        }
                     }
 
 

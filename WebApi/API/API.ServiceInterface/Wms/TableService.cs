@@ -354,9 +354,14 @@ namespace WebApi.ServiceInterface.Wms
                     ecr.data.results = imcc_Logic.UpdateLineItem(request);
 
                 }
+                
                 else if (uri.IndexOf("/wms/OH_PID_D/TruckerBillNo") > 0)
                 {
                     ecr.data.results = imcc_Logic.ValidateTRK_BILL_NO(request);
+                }
+                else if (uri.IndexOf("/wms/OH_PID_D/verifyTruckerBillNoBarCode") > 0)
+                {
+                    ecr.data.results = imcc_Logic.verifyTruckerBillNoBarCode(request);
                 }
                 else if (uri.IndexOf("/wms/OH_PID_D/validate") > 0)
                 {

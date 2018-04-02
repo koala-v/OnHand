@@ -1062,27 +1062,37 @@ appControllers.controller('GrPidCtrl', [
                 if (value.length > 0) {
                     var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/TruckerBillNo');
                     objUri.addSearch('strTRK_BILL_NO', value);
+                    objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
                     ApiService.Get(objUri, false).then(function success(result) {
                         var results = result.data.results;
                         if (is.not.empty(results)) {
-                            blnPass = false;
-                            var promptPopup = $ionicPopup.show({
-                                template: '',
-                                title: 'Trucker Bill',
-                                subTitle: 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?',
-                                scope: $scope,
-                                buttons: [{
-                                    text: 'No',
-                                    onTap: function (e) {
-                                        $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
-                                    }
-                                }, {
-                                    text: '<b>Yes</b>',
-                                    type: 'button-positive',
-                                    onTap: function (e) {}
-                                }]
-                            });
-                        } else {}
+                            if (results[0].ResultTruckerBillNo !== "" && is.not.undefined(results[0].ResultTruckerBillNo)) {
+                                if (results[0].ResultTruckerBillNo === "N") {
+                                    PopupService.Info(null, 'Invalid Trucker Bill No ');
+                                    $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                                }
+                            } else {
+                                blnPass = false;
+                                var promptPopup = $ionicPopup.show({
+                                    template: '',
+                                    title: 'Trucker Bill',
+                                    subTitle: 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?',
+                                    scope: $scope,
+                                    buttons: [{
+                                        text: 'No',
+                                        onTap: function (e) {
+                                            $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                                        }
+                                    }, {
+                                        text: '<b>Yes</b>',
+                                        type: 'button-positive',
+                                        onTap: function (e) {}
+                                    }]
+                                });
+                            }
+                        } else {
+
+                        }
                     });
                 }
             } else if (is.equal(type, 'TruckerBill')) {
@@ -1618,26 +1628,36 @@ appControllers.controller('GrAddPidCtrl', [
                 if (value.length > 0) {
                     var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/TruckerBillNo');
                     objUri.addSearch('strTRK_BILL_NO', value);
+                      objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
                     ApiService.Get(objUri, false).then(function success(result) {
                         var results = result.data.results;
                         if (is.not.empty(results)) {
-                            blnPass = false;
-                            var promptPopup = $ionicPopup.show({
-                                template: '',
-                                title: 'Trucker Bill',
-                                subTitle: 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?',
-                                scope: $scope,
-                                buttons: [{
-                                    text: 'No',
-                                    onTap: function (e) {
-                                        $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
-                                    }
-                                }, {
-                                    text: '<b>Yes</b>',
-                                    type: 'button-positive',
-                                    onTap: function (e) {}
-                                }]
-                            });
+
+                            if (results[0].ResultTruckerBillNo !== "" && is.not.undefined(results[0].ResultTruckerBillNo)) {
+                                if (results[0].ResultTruckerBillNo === "N") {
+                                    PopupService.Info(null, 'Invalid Trucker Bill No ');
+                                    $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                                }
+                            } else {
+                                blnPass = false;
+                                var promptPopup = $ionicPopup.show({
+                                    template: '',
+                                    title: 'Trucker Bill',
+                                    subTitle: 'This Trucker Bill No ' + results[0].TRK_BILL_NO + ' is already under the ' + results[0].ONHAND_NO + ', do you want to continue to add to this Onhand?',
+                                    scope: $scope,
+                                    buttons: [{
+                                        text: 'No',
+                                        onTap: function (e) {
+                                            $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                                        }
+                                    }, {
+                                        text: '<b>Yes</b>',
+                                        type: 'button-positive',
+                                        onTap: function (e) {}
+                                    }]
+                                });
+                            }
+
                         } else {}
                     });
                 }
