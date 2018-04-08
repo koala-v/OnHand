@@ -29,7 +29,7 @@ appConfig.constant('ENV', {
     updateFile:   'update.json',
     rootPath:     'onhandPath',
     configFile:   'config.txt',
-    version:      '1.0.1.32',
+    version:      '1.0.1.34',
     parameter: {
         showSerialNo : false
     },

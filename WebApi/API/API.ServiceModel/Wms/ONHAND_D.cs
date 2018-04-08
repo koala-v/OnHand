@@ -721,6 +721,7 @@ namespace WebApi.ServiceModel.Wms
             List<ON_PID_D> Result = null;
             List<ONHAND_D_Table> Result_Onhand_D = null;
             string ResultTruckerBillNo = "";
+            int ReturnTruckerBillNo = 0;
             try
             {
                 using (var db = DbConnectionFactory.OpenDbConnection())
@@ -743,7 +744,7 @@ namespace WebApi.ServiceModel.Wms
                             Trk_Code= Trk_Code.Substring(0,3);
                         }
 
-                        if ( (Result.Count < 1) && (Trk_Code.ToUpper() =="FED")  && TRK_BILL_NO.Length >12 )
+                        if ( (Result.Count < 1) && (Trk_Code.ToUpper() =="FED")  && TRK_BILL_NO.Length >=12 )
                         {
                             if (TRK_BILL_NO.Length > 15)
                             {
@@ -751,13 +752,13 @@ namespace WebApi.ServiceModel.Wms
                                 ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });
                                 if (ResultTruckerBillNo == "Y")
                                 {
-
+                                    ReturnTruckerBillNo = 15;
                                 }
                                 else
                                 {
                                     strTRK_BILL_NO = TRK_BILL_NO.Substring(TRK_BILL_NO.Length - 12, 12);
-                                    ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });
-
+                                    ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });                            
+                                    ReturnTruckerBillNo = 12;
                                 }
 
                             }
@@ -765,6 +766,8 @@ namespace WebApi.ServiceModel.Wms
                             {
                                 strTRK_BILL_NO = TRK_BILL_NO.Substring(TRK_BILL_NO.Length - 12, 12);
                                 ResultTruckerBillNo = db.SqlScalar<string>("EXEC verify_TruckerBillNo @TruckerBillNo", new { TruckerBillNo = strTRK_BILL_NO });
+                                ReturnTruckerBillNo =12;
+                           
                             }
                             else if (TRK_BILL_NO.Length == 12 || TRK_BILL_NO.Length == 15)
                             {
@@ -777,6 +780,7 @@ namespace WebApi.ServiceModel.Wms
                             ON_PID_D pid;
                             pid = new ON_PID_D();
                             pid.ResultTruckerBillNo = ResultTruckerBillNo;
+                            pid.ReturnTruckerBillNo = ReturnTruckerBillNo;
                             Result.Add(pid);
 
                         }

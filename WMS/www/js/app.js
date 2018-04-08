@@ -66,6 +66,14 @@ app.run([
 
                         });
                     });
+
+                    SqlService.Drop('PrintValue').then(function (res) {
+                        SqlService.Create('PrintValue', TABLE_DB.PrintValue).then(function (res) {
+
+                        });
+                    });
+
+
                     SqlService.Drop('Imgr2_Receipt').then(function (res) {
                         SqlService.Create('Imgr2_Receipt', TABLE_DB.Imgr2_Receipt).then(function (res) {
 

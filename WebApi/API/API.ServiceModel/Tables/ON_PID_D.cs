@@ -51,6 +51,7 @@ namespace WebApi.ServiceModel.Tables
         public string DgDescription10 { get; set; }
         public string Remark { get; set; }
         public string ResultTruckerBillNo { get; set; }
+        public int ReturnTruckerBillNo { get; set; }
         
 
 

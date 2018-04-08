@@ -53,6 +53,10 @@ appFactory.factory('TABLE_DB', function () {
             HEIGHT: 'INT',
             Remark: 'TEXT',
         },
+        PrintValue: {
+            OnhandNo: 'TEXT',
+            Location: 'TEXT',
+        },
         Imsn1_Putaway: {
             ReceiptNoteNo: 'TEXT',
             ReceiptLineItemNo: 'INT',

@@ -9,6 +9,7 @@ appControllers.controller('GrListCtrl', [
     '$cordovaBarcodeScanner',
     'ionicDatePicker',
     'ApiService',
+    'SqlService',
     'PopupService',
     function (
         ENV,
@@ -21,6 +22,7 @@ appControllers.controller('GrListCtrl', [
         $cordovaBarcodeScanner,
         ionicDatePicker,
         ApiService,
+        SqlService,
         PopupService) {
         var arrRcdg1 = new Array();
         var arrPidUnGrid = new Array();
@@ -737,7 +739,18 @@ appControllers.controller('GrListCtrl', [
                 $scope.Detail.ONHAND_D.TotalPCS = TotalPCS;
             }
         };
+        var insertPrintValue = function () {
+            var objPrint = {
+                OnhandNo: $scope.Detail.ONHANDNO,
+                Location: $scope.Detail.ONHAND_D.LOC_CODE,
 
+            };
+            SqlService.Delete('PrintValue').then(function () {
+                SqlService.Insert('PrintValue', objPrint).then(
+                    function (res) {}
+                );
+            });
+        };
         $scope.GoToDetail = function (OnhandNo) {
             if (OnhandNo !== null && OnhandNo.length > 0) {
                 $state.go('grDetail', {
@@ -745,6 +758,7 @@ appControllers.controller('GrListCtrl', [
                 }, {
                     reload: true
                 });
+                insertPrintValue();
             } else {
                 PopupService.Info(null, 'Please First Enter Onhand', '').then(function (res) {});
             }
@@ -803,36 +817,49 @@ appControllers.controller('GrDetailCtrl', [
         var popup = null;
         $scope.OnhandNo = $stateParams.OnhandNo;
         $scope.Detail = {
-            Address: '',
-            Address1: '',
-            Address2: '',
+            OnhandNo: '',
+            Location: ''
+
         };
 
         $scope.print = function () {
 
-            if (!ENV.fromWeb) {
-                // PopupService.Info(null,   $scope.OnhandNo).then();　
-                var sApp = startApp.set({ /* params */
-                    // "action":"ACTION_MAIN",
-                    // "category":"CATEGORY_DEFAULT",
-                    // "type":"text/css",
-                    "package": "com.zebra.kdu",
-                    // "uri":"file://data/index.html",
-                    // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
-                    // "component": ["com.app.name","com.app.name.Activity"],
-                    "intentstart": "aa",
-                }, { /* extras */
-                    "msg": $scope.OnhandNo,
-                    //"extraKey2":"extraValue2"
-                });
+            SqlService.Select('PrintValue', '*').then(function (results) {
+                var len = results.rows.length;
+                if (len > 0) {
+                    var PrintValue = results.rows.item(0);
+                    $scope.Detail.OnhandNo = PrintValue.OnhandNo;
+                    $scope.Detail.Location = PrintValue.Location;
+                    if ($scope.Detail.OnhandNo.length > 0) {
+                        if (!ENV.fromWeb) {
+                            // PopupService.Info(null,   $scope.OnhandNo).then();　
+                            var sApp = startApp.set({ /* params */
+                                // "action":"ACTION_MAIN",
+                                // "category":"CATEGORY_DEFAULT",
+                                // "type":"text/css",
+                                "package": "com.zebra.kdu",
+                                // "uri":"file://data/index.html",
+                                // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
+                                // "component": ["com.app.name","com.app.name.Activity"],
+                                "intentstart": "aa",
+                            }, { /* extras */
+                                "msg": $scope.OnhandNo,
+                                "Location": $scope.Detail.Location,
 
-                sApp.start(function () { /* success */
-                    // alert("OK");
-                }, function (error) { /* fail */
-                    alert(error);
-                });
+                                //"extraKey2":"extraValue2"
+                            });
 
-            }
+                            sApp.start(function () { /* success */
+                                // alert("OK");
+                            }, function (error) { /* fail */
+                                alert(error);
+                            });
+
+                        }
+                    }
+                }
+            });
+
         };
 
         $scope.returnList = function () {
@@ -1070,6 +1097,13 @@ appControllers.controller('GrPidCtrl', [
                                 if (results[0].ResultTruckerBillNo === "N") {
                                     PopupService.Info(null, 'Invalid Trucker Bill No ');
                                     $scope.Detail.OH_PID_D.TRK_BILL_NO = '';
+                                } else {
+                                    if (results[0].ReturnTruckerBillNo === 12) {
+                                        $scope.Detail.OH_PID_D.TRK_BILL_NO = $scope.Detail.OH_PID_D.TRK_BILL_NO.substring($scope.Detail.OH_PID_D.TRK_BILL_NO.length - 12, $scope.Detail.OH_PID_D.TRK_BILL_NO.length);
+                                    } else if (results[0].ReturnTruckerBillNo === 15) {
+                                        $scope.Detail.OH_PID_D.TRK_BILL_NO = $scope.Detail.OH_PID_D.TRK_BILL_NO.substring($scope.Detail.OH_PID_D.TRK_BILL_NO.length - 15, $scope.Detail.OH_PID_D.TRK_BILL_NO.length);
+                                    }
+
                                 }
                             } else {
                                 blnPass = false;
@@ -1628,7 +1662,7 @@ appControllers.controller('GrAddPidCtrl', [
                 if (value.length > 0) {
                     var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/TruckerBillNo');
                     objUri.addSearch('strTRK_BILL_NO', value);
-                      objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                    objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
                     ApiService.Get(objUri, false).then(function success(result) {
                         var results = result.data.results;
                         if (is.not.empty(results)) {
@@ -1637,7 +1671,10 @@ appControllers.controller('GrAddPidCtrl', [
                                 if (results[0].ResultTruckerBillNo === "N") {
                                     PopupService.Info(null, 'Invalid Trucker Bill No ');
                                     $scope.Detail.Add_OH_PID_D.TRK_BILL_NO = '';
+                                } else {
+
                                 }
+
                             } else {
                                 blnPass = false;
                                 var promptPopup = $ionicPopup.show({

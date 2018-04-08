@@ -35,23 +35,22 @@
             </div>
             <div ng-if="Detail.TableTitle ==='Create Onhand' || Detail.VisibleDetailFlag ==='Y'" class="item item-body" style="padding-top: 6px;padding-bottom: 6px;">
                 <div class="list">
-                  <div class="row">
-                      <div class="col col-33"" style="padding:0px;">
-                              <div class="input-label">
-                              &nbsp;&nbsp;   OnhandNo
-                              </div>
-                      </div>
-                      <div class="col col-60" style="padding:0px;">
-                              <div class="">
-                              </div>
-                      </div>
-                      <div class="col" style="padding:0px;">
-                              <div class="">
-                                  {{Detail.ONHANDNO}}
-                              </div>
-
-                      </div>
-                  </div>
+                    <div class="row">
+                        <div class="col col-33" style="padding:0px;">
+                            <div class="input-label">
+                                &nbsp;&nbsp; OnhandNo
+                            </div>
+                        </div>
+                        <div class="col col" style="text-align:center;">
+                            <div class="">
+                                {{Detail.ONHANDNO}}
+                            </div>
+                        </div>
+                        <div class="col col" style="padding:0px;">
+                            <div class="">
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <div class="item item-input item-select">
@@ -66,7 +65,6 @@
                             </div>
                         </div>
                     </div>
-
 
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
@@ -97,11 +95,11 @@
                             <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="">
                                 <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }} </ui-select-match>
                                 <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search,'')" refresh-delay="0" position="down">
-                           <i ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"> </i>
-</br>
-                      &nbsp;&nbsp;<i ng-bind-html="Rcbp1.Address1"> </i>
-                        &nbsp;&nbsp;<i ng-bind-html="Rcbp1.Address2"> </i>
-                        &nbsp;&nbsp;<i ng-bind-html="Rcbp1.Address3"> </i>
+                                    <i ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"> </i>
+                                    </br>
+                                    &nbsp;&nbsp;<i ng-bind-html="Rcbp1.Address1"> </i> &nbsp;&nbsp;
+                                    <i ng-bind-html="Rcbp1.Address2"> </i> &nbsp;&nbsp;
+                                    <i ng-bind-html="Rcbp1.Address3"> </i>
                                 </ui-select-choices>
                             </ui-select>
                         </div>
@@ -142,10 +140,10 @@
                                     <div ng-bind-html="Rcbp1ForConsinnee.Address2 | highlight: $select.search"></div>
                                     <div ng-bind-html="Rcbp1ForConsinnee.Address3 | highlight: $select.search"></div> -->
                                     <i ng-bind-html="Rcbp1ForConsinnee.BusinessPartyName | highlight: $select.search"> </i>
-</br>
-                                 &nbsp;&nbsp;<i ng-bind-html="Rcbp1ForConsinnee.Address1 | highlight: $select.search"> </i>
-                                 &nbsp;&nbsp;<i ng-bind-html="Rcbp1ForConsinnee.Address2 | highlight: $select.search"> </i>
-                                 &nbsp;&nbsp;<i ng-bind-html="Rcbp1ForConsinnee.Address3 | highlight: $select.search"> </i>
+                                    </br>
+                                    &nbsp;&nbsp;<i ng-bind-html="Rcbp1ForConsinnee.Address1 | highlight: $select.search"> </i> &nbsp;&nbsp;
+                                    <i ng-bind-html="Rcbp1ForConsinnee.Address2 | highlight: $select.search"> </i> &nbsp;&nbsp;
+                                    <i ng-bind-html="Rcbp1ForConsinnee.Address3 | highlight: $select.search"> </i>
                                 </ui-select-choices>
                             </ui-select>
                         </div>
@@ -168,7 +166,7 @@
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">FMS Case</span>
-                                <input type="text"  maxlength="4"   id="" ng-model="Detail.ONHAND_D.CASE_NO" placeholder="Case No" style="padding-right: 14px;">
+                                <input type="text" maxlength="4" id="" ng-model="Detail.ONHAND_D.CASE_NO" placeholder="Case No" style="padding-right: 14px;">
                             </label>
                         </div>
                     </div>
@@ -197,9 +195,9 @@
                             </ion-checkbox>
                         </div>
                         <div class="col" style="padding:0px;">
-                          <ion-checkbox ng-model="Detail.chkSHP_MODE.checked" ng-change="AOGChange()">
-                            AOG
-                          </ion-checkbox>
+                            <ion-checkbox ng-model="Detail.chkSHP_MODE.checked" ng-change="AOGChange()">
+                                AOG
+                            </ion-checkbox>
                         </div>
                     </div>
                     <div class="row">
