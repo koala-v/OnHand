@@ -381,6 +381,12 @@ app.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicConf
                 cache: 'false',
                 templateUrl: 'view/CycleCount/detail.html',
                 controller: 'cycleCountDetailCtrl'
+            })
+            .state('ManifestDetail', {
+                url: '/CycleCount/detail/:MAwbNo',
+                cache: 'false',
+                templateUrl: 'view/CycleCount/Manifest.html',
+                controller: 'ManifestDetailCtrl'
             });
         $urlRouterProvider.otherwise('/login');
     }

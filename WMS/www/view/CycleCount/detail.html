@@ -7,17 +7,17 @@
 	<ion-content>
 		<div class="list card">
 			<ion-list can-swipe="true" tabindex="-1" id="div-list">
-				<ion-item nav-clear menu-close class="item item-icon-right" ng-repeat="Aemt1 in Detail.Aemt1S" ng-click="">
+				<ion-item nav-clear menu-close class="item item-icon-right" ng-repeat="Aemt1 in Detail.Aemt1S" ng-click="goManifestDetail(Aemt1.KeyMAwbNo)">
 					<div class="row">
 						<div class="col" style="max-width: 35%;">
 							<h2>Pid No&nbsp;:</h2>
 							<h2>location&nbsp;:</h2>
-							<h2>KeyMAwbNo&nbsp;:</h2>
+							<h2>MAwbNo&nbsp;:</h2>
 						</div>
 						<div class="col">
 							<h2><span ng-bind="Aemt1.PID_NO"></span></h2>
 							<h2><span ng-bind="Aemt1.LOC_CODE"></span></h2>
-							<h2><span ng-bind="Aemt1.KeyMAwbNo"></span></h2>
+							<h2><span ng-bind="Aemt1.MAwbNo"></span></h2>
 						</div>
 					</div>
 				</ion-item>

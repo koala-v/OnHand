@@ -766,11 +766,26 @@ appControllers.controller('GrListCtrl', [
 
         $scope.GoToPid = function () {
             if ($scope.Detail.ONHANDNO.length > 0) {
-                $state.go('GrPid', {
-                    'OnhandNo': $scope.Detail.ONHANDNO,
-                    'Type': $scope.Type,
-                }, {
-                    reload: true
+                var objUri = ApiService.Uri(true, '/api/wms/OH_PID_D/CheckAlreadyPid');
+                objUri.addSearch('strONHAND_NO', $scope.Detail.ONHANDNO);
+                ApiService.Get(objUri, false).then(function success(result) {
+                    var ResultPid = result.data.results;
+                    if (ResultPid.length > 0) {
+                        $state.go('GrPid', {
+                            'OnhandNo': $scope.Detail.ONHANDNO,
+                            'Type': $scope.Type,
+                        }, {
+                            reload: true
+                        });
+                    } else {
+                        $state.go('GrAddPid', {
+                            'OnhandNo': $scope.Detail.ONHANDNO,
+                            'Type': $scope.Type,
+
+                        }, {
+                            reload: true
+                        });
+                    }
                 });
             } else {
                 PopupService.Info(null, 'Please First Enter Onhand', '').then(function (res) {});
@@ -824,41 +839,66 @@ appControllers.controller('GrDetailCtrl', [
 
         $scope.print = function () {
 
-            SqlService.Select('PrintValue', '*').then(function (results) {
-                var len = results.rows.length;
-                if (len > 0) {
-                    var PrintValue = results.rows.item(0);
-                    $scope.Detail.OnhandNo = PrintValue.OnhandNo;
-                    $scope.Detail.Location = PrintValue.Location;
-                    if ($scope.Detail.OnhandNo.length > 0) {
-                        if (!ENV.fromWeb) {
-                            // PopupService.Info(null,   $scope.OnhandNo).then();　
-                            var sApp = startApp.set({ /* params */
-                                // "action":"ACTION_MAIN",
-                                // "category":"CATEGORY_DEFAULT",
-                                // "type":"text/css",
-                                "package": "com.zebra.kdu",
-                                // "uri":"file://data/index.html",
-                                // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
-                                // "component": ["com.app.name","com.app.name.Activity"],
-                                "intentstart": "aa",
-                            }, { /* extras */
-                                "msg": $scope.OnhandNo,
-                                "Location": $scope.Detail.Location,
+            if (!ENV.fromWeb) {
+                // PopupService.Info(null,   $scope.OnhandNo).then();　
+                var sApp = startApp.set({ /* params */
+                    // "action":"ACTION_MAIN",
+                    // "category":"CATEGORY_DEFAULT",
+                    // "type":"text/css",
+                    "package": "com.zebra.kdu",
+                    // "uri":"file://data/index.html",
+                    // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
+                    // "component": ["com.app.name","com.app.name.Activity"],
+                    "intentstart": "aa",
+                }, { /* extras */
+                    "msg": $scope.OnhandNo,
 
-                                //"extraKey2":"extraValue2"
-                            });
+                    //"extraKey2":"extraValue2"
+                });
 
-                            sApp.start(function () { /* success */
-                                // alert("OK");
-                            }, function (error) { /* fail */
-                                alert(error);
-                            });
+                sApp.start(function () { /* success */
+                    // alert("OK");
+                }, function (error) { /* fail */
+                    alert(error);
+                });
 
-                        }
-                    }
-                }
-            });
+            }
+
+            // SqlService.Select('PrintValue', '*').then(function (results) {
+            //     var len = results.rows.length;
+            //     if (len > 0) {
+            //         var PrintValue = results.rows.item(0);
+            //         $scope.Detail.OnhandNo = PrintValue.OnhandNo;
+            //         $scope.Detail.Location = PrintValue.Location;
+            //         if ($scope.Detail.OnhandNo.length > 0) {
+            //             if (!ENV.fromWeb) {
+            //                 // PopupService.Info(null,   $scope.OnhandNo).then();　
+            //                 var sApp = startApp.set({ /* params */
+            //                     // "action":"ACTION_MAIN",
+            //                     // "category":"CATEGORY_DEFAULT",
+            //                     // "type":"text/css",
+            //                     "package": "com.zebra.kdu",
+            //                     // "uri":"file://data/index.html",
+            //                     // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
+            //                     // "component": ["com.app.name","com.app.name.Activity"],
+            //                     "intentstart": "aa",
+            //                 }, { /* extras */
+            //                     "msg": $scope.OnhandNo,
+            //                     "Location": $scope.Detail.Location,
+            //
+            //                     //"extraKey2":"extraValue2"
+            //                 });
+            //
+            //                 sApp.start(function () { /* success */
+            //                     // alert("OK");
+            //                 }, function (error) { /* fail */
+            //                     alert(error);
+            //                 });
+            //
+            //             }
+            //         }
+            //     }
+            // });
 
         };
 

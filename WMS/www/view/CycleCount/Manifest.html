@@ -1,0 +1,93 @@
+<ion-view title="GRT-List">
+    <ion-header-bar class="bar-positive" align-title="center">
+        <button class="button button-icon icon ion-android-arrow-back" ng-click="returnList()"></button>
+        <div class="h1 title">Manifest Tally Detail </div>
+    </ion-header-bar>
+    <ion-content style=" height:70px; overflow:visible;">
+        <div class="list card" style="overflow:visible;">
+            <div class="row row-center" id="div-list-rcbp">
+                <div class="col col-33" style="text-align:center;">
+                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAWB No</label>
+                </div>
+                <div class="col col-50">
+    {{Detail.MAwbNo}}
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+
+            <div class="row row-center" id="div-list-rcbp">
+                <div class="col col-80">
+                    <label class="item item-input" style="margin-left:5px;">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">PID No&nbsp;</span>
+                        <input type="text" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
+                    </label>
+                </div>
+                <div class="col col-10">
+                    <button class="button button-clear button-positive button-small" ng-click="openCam('PID_NO')"><i class="icon ion-qr-scanner"></i></button>
+                </div>
+                <div class="col">
+                    <button class="button button-clear button-positive button-small" ng-click="clearInput('PID_NO')"><i class="icon ion-android-close"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="list card">
+            <div class="row">
+                <div class="col col-60">
+                    <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
+                    <div class="" ng-repeat="Pid in Detail.Aemt1N" id="" ng-click="">
+                        <div class="item item-input">
+                            <div class="col-57">
+                                <div class="item-text-wrap">
+                                    <p>
+                                        <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-30">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
+                                </p>
+                            </div>
+                            <div class="col">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Pid.ONHAND_NO"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <h5> PID No&nbsp;:</h5>
+                    <div class="" ng-repeat="Aemt1 in Detail.Aemt1Y" id="" ng-click="">
+                        <div class="item item-input">
+                            <div class="col-57">
+                                <div class="item-text-wrap">
+                                    <p>
+                                        <span class="pull-right" ng-bind="Aemt1.PID_NO"></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-30">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Aemt1.LOC_CODE"></span>
+                                </p>
+                            </div>
+                            <div class="col">
+                                <p>
+                                    &nbsp;&nbsp;<span ng-bind="Aemt1.ONHAND_NO"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </ion-content>
+
+</ion-view>

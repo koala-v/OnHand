@@ -344,8 +344,15 @@ appControllers.controller('cycleCountDetailCtrl', [
                 });
             }
         };
-        var GetAemt1 = function (TrxNo) {
+        $scope.goManifestDetail = function (KeyMAwbNo) {
+            $state.go('ManifestDetail', {
+                'MAwbNo': KeyMAwbNo
+            }, {
+                reload: true
+            });
+        };
 
+        var GetAemt1 = function (TrxNo) {
             var objUri = ApiService.Uri(true, '/api/wms/Aemt1/select');
             objUri.addSearch('MAwbNo', $scope.MAwbNo);
             ApiService.Get(objUri, true).then(function success(result) {
@@ -357,7 +364,8 @@ appControllers.controller('cycleCountDetailCtrl', [
                         objUri.addSearch('MAwbNo', results[i].KeyMAwbNo);
                         ApiService.Get(objUri, true).then(function success(result) {
                             var resultAll = result.data.results;
-                            if (is.not.empty(resultAll)) {
+                            if (is.not.empty(resultAll) && is.not.undefined(resultAll)) {
+
                                 for (var j = 0; j < resultAll.length; j++)
                                     var objAemt1 = resultAll[j];
                                 var jobs = getobAemt1(objAemt1);
@@ -378,6 +386,7 @@ appControllers.controller('cycleCountDetailCtrl', [
 
         var getobAemt1 = function (Aemt1) {
             var jobs = {
+                PID_NO: Aemt1.PID_NO,
                 KeyMAwbNo: Aemt1.KeyMAwbNo,
                 MAwbNo: Aemt1.MAwbNo,
                 LOC_CODE: Aemt1.LOC_CODE,
@@ -385,5 +394,182 @@ appControllers.controller('cycleCountDetailCtrl', [
             };
             return jobs;
         };
+    }
+]);
+
+appControllers.controller('ManifestDetailCtrl', [
+    'ENV',
+    '$scope',
+    '$stateParams',
+    '$state',
+    '$http',
+    '$timeout',
+    '$ionicHistory',
+    '$ionicLoading',
+    '$ionicPopup',
+    '$ionicModal',
+    '$cordovaKeyboard',
+    '$cordovaToast',
+    '$cordovaBarcodeScanner',
+    'SqlService',
+    'ApiService',
+    'PopupService',
+    function (
+        ENV,
+        $scope,
+        $stateParams,
+        $state,
+        $http,
+        $timeout,
+        $ionicHistory,
+        $ionicLoading,
+        $ionicPopup,
+        $ionicModal,
+        $cordovaKeyboard,
+        $cordovaToast,
+        $cordovaBarcodeScanner,
+        SqlService,
+        ApiService,
+        PopupService) {
+        var popup = null;
+        var dataResults = new Array();
+        var dataResults1 = new Array();
+        $scope.MAwbNo = $stateParams.MAwbNo;
+        $scope.Detail = {
+            Aemt1Y: {},
+            Aemt1N: {},
+            MAwbNo: '',
+            Scan: {
+                PID_NO: ''
+            }
+        };
+
+        $scope.Detail.MAwbNo = $scope.MAwbNo.split('_')[0];
+        $scope.returnList = function () {
+            if ($ionicHistory.backView()) {
+                $ionicHistory.goBack();
+            } else {
+                $state.go('cycleCountList', {}, {
+                    reload: false
+                });
+            }
+        };
+
+        var getAemt1 = function (MatchFlag) {
+            var objUri = ApiService.Uri(true, '/api/wms/Aemt1/getAemt');
+            objUri.addSearch('MAwbNo', $scope.MAwbNo);
+            objUri.addSearch('matchFlag', MatchFlag);
+            ApiService.Get(objUri, true).then(function success(result) {
+                var results = result.data.results;
+                // $scope.Detail.Aemt1S = result.data.results;
+
+                if (MatchFlag === 'Y') {
+                    var resultAll = result.data.results;
+                    dataResults1 = new Array();
+                    if (is.not.empty(resultAll) && is.not.undefined(resultAll)) {
+                        for (var j = 0; j < resultAll.length; j++) {
+                            var objAemt1 = resultAll[j];
+                            var jobs = getobAemt1(objAemt1);
+                            dataResults1 = dataResults1.concat(jobs);
+                        }
+                    }
+                    $scope.Detail.Aemt1Y = dataResults1;
+                } else {
+                    var resultAll = result.data.results;
+                    dataResults = new Array();
+                    if (is.not.empty(resultAll) && is.not.undefined(resultAll)) {
+                        for (var j = 0; j < resultAll.length; j++) {
+                            var objAemt1 = resultAll[j];
+                            var jobs = getobAemt1(objAemt1);
+                            dataResults = dataResults.concat(jobs);
+
+                        }
+                    }
+                    $scope.Detail.Aemt1N = dataResults;
+                }
+
+            });
+        };
+        var getobAemt1 = function (Aemt1) {
+            var jobs = {
+                PID_NO: Aemt1.PID_NO,
+                LOC_CODE: Aemt1.LOC_CODE,
+                ONHAND_NO: Aemt1.ONHAND_NO,
+                MAwbNo:Aemt1.MAwbNo
+            };
+            return jobs;
+        };
+        var blnVerifyInput = function (type) {
+            var blnPass = true;
+            if (is.equal(type, 'PID_NO')) {
+                if ($scope.Detail.Aemt1N.length > 0) {
+                    for (var i = 0; i < $scope.Detail.Aemt1N.length; i++) {
+                        if ($scope.Detail.Scan.PID_NO !== $scope.Detail.Aemt1N[i].PID_NO) {
+                            blnPass = false;
+                        } else {
+                            blnPass = true;
+                            break;
+                        }
+                    }
+                } else {
+                    blnPass = false;
+                }
+            }
+            if (blnPass) {
+                UpdateAEMT1();
+            } else {
+                PopupService.Alert(null, 'This PID No is not under this MAWB').then();
+            }
+            $scope.Detail.Scan.PID_NO = '';
+            return blnPass;
+
+        };
+
+        $scope.clearInput = function (type) {
+            if (is.equal(type, 'PID_NO')) {
+                if ($scope.Detail.Scan.PID_NO.length > 0) {
+                    $scope.Detail.Scan.PID_NO = '';
+                    $('#txt-PID_NO').focus();
+                }
+            }
+        };
+
+        $scope.enter = function (ev, type) {
+            if (is.equal(ev.keyCode, 13)) {
+                if (is.equal(type, 'PID_NO') && is.not.empty($scope.Detail.Scan.PID_NO)) {
+                    if (blnVerifyInput('PID_NO')) {}
+                }
+                if (!ENV.fromWeb) {
+                    $cordovaKeyboard.close();
+                }
+            }
+        };
+
+        $scope.openCam = function (type) {
+            if (!ENV.fromWeb) {
+                if (is.equal(type, 'PID_NO')) {
+                    $cordovaBarcodeScanner.scan().then(function (imageData) {
+                        $scope.Detail.Scan.PID_NO = imageData.text;
+                        if (blnVerifyInput('PID_NO')) {}
+                    }, function (error) {
+                        $cordovaToast.showShortBottom(error);
+                    });
+                }
+            }
+        };
+
+        var UpdateAEMT1 = function () {
+            var objUri = ApiService.Uri(true, '/api/wms/Aemt1/Update');
+            objUri.addSearch('KeyMAwbNo', $scope.MAwbNo);
+            objUri.addSearch('PID_NO', $scope.Detail.Scan.PID_NO);
+            objUri.addSearch('strTallyById', sessionStorage.getItem('UserId').toString());
+            ApiService.Get(objUri, false).then(function success(result) {
+                getAemt1('Y');
+                getAemt1('N');
+            });
+
+        };
+        getAemt1('Y');
+        getAemt1('N');
     }
 ]);

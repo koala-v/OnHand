@@ -1,33 +1,34 @@
-
- <div class="" style="margin: 0;padding: 0;" >
-        <ion-header-bar class="bar-positive" align-title="center">
-            <div class="buttons">
-                <button class="button button-icon icon ion-android-arrow-back" ng-click="returnList()"></button>
-            </div>
-            <div class="h1 title">PID</div>
-            <div class="buttons">
-                <button class="button button-icon icon ion-android-print" ng-click=""></button>
-                <button class="button button-icon icon ion-plus-round" ng-click="GoToAddPid()"></button>
-            </div>
-        </ion-header-bar>
-        <ion-content overflow-scroll="true">
-            <div class="list card" ng-if="Detail.OH_PID_D.LineItemNo>0">
-              <div class="row">
-                  <div class="col col-33" style="padding:0px;">
-                      <div class="input-label">
-                          &nbsp;&nbsp; OnhandNo
-                      </div>
-                  </div>
-                  <div class="col col" style="text-align:center;">
-                      <div class="">
-                          {{Detail.ONHANDNO}}
-                      </div>
-                  </div>
-                  <div class="col col" style="padding:0px;">
-                      <div class="">
-                      </div>
-                  </div>
-              </div>
+<!-- <div class="" style="margin: 0;padding: 0;" > -->
+<ion-view title="GRT-List">
+    <ion-header-bar class="bar-positive" align-title="center">
+        <div class="buttons">
+            <button class="button button-icon icon ion-android-arrow-back" ng-click="returnList()"></button>
+        </div>
+        <div class="h1 title">PID</div>
+        <div class="buttons">
+            <button class="button button-icon icon ion-android-print" ng-click=""></button>
+            <button class="button button-icon icon ion-plus-round" ng-click="GoToAddPid()"></button>
+        </div>
+    </ion-header-bar>
+    <ion-content overflow-scroll="true">
+        <div class="card" ng-if="Detail.OH_PID_D.LineItemNo>0">
+            <div class="item">
+                <div class="row">
+                    <div class="col col-33" style="padding:0px;">
+                        <div class="input-label">
+                            &nbsp;&nbsp; OnhandNo
+                        </div>
+                    </div>
+                    <div class="col col" style="text-align:center;">
+                        <div class="">
+                            {{Detail.ONHANDNO}}
+                        </div>
+                    </div>
+                    <div class="col col" style="padding:0px;">
+                        <div class="">
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col col-80" style="padding:0px;">
                         <label class="item item-input">
@@ -68,104 +69,107 @@
                         <button class="button button-clear button-positive button-small" ng-click="clearInput('PID_NO')"><i class="icon ion-android-close"></i></button>
                     </div>
                 </div>
-                <div class="button-bar">
-                    <button class="button icon ion-plus-round button-positive" ng-click="AddUnNo()">
-                        Add UnNo
-                    </button>
-                </div>
-                <!-- 要去APP.CSS 写样式  Class="imc-scroll"-->
-                <div class="item">
-                    <div class="imc-scroll">
-                        <div>
-                            <table border="1px">
-                                <tr>
-                                    <th style="font-weight:600"> &nbsp;&nbsp;Un No &nbsp;</th>
-                                    <th style="font-weight:600">DG Class &nbsp;</th>
-                                    <th style="font-weight:600">DG Description &nbsp;</th>
-                                        <!-- <th style="font-weight:600"> &nbsp;</th> -->
-                                </tr>
-                                <tr class="" ng-repeat="PidUnGrid in Detail.PidUnGrids">
-                                    <td ng-show="PidUnGrid.UnNo != ''" > &nbsp;&nbsp;<span ng-bind="PidUnGrid.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
-                                    <td ng-show="PidUnGrid.UnNo != ''"> <span ng-bind="PidUnGrid.DGClass"></span> &nbsp;</td>
-                                    <td ng-show="PidUnGrid.UnNo != ''"> <span ng-bind="PidUnGrid.DGDescription"></span> &nbsp;</td>
-                                    <td align="right" ng-show="PidUnGrid.UnNo != ''">
-                                        <button class="button button-clear button-positive button-small" ng-click="DeleteGridLine(PidUnGrid.UnNo)"><i class="icon ion-android-close"></i></button>
-                                      <!-- <label class="item item-input" style=""  ng-click="DeleteGridLine(PidUnGrid.UnNo)" >
+            </div>
+            <div class="button-bar">
+                <button class="button icon ion-plus-round button-positive" ng-click="AddUnNo()">
+                    Add UnNo
+                </button>
+            </div>
+
+            <!-- 要去APP.CSS 写样式  Class="imc-scroll"-->
+            <div class="item">
+                <div class="imc-scroll">
+                    <div>
+                        <table border="1px">
+                            <tr>
+                                <th style="font-weight:600"> &nbsp;&nbsp;Un No &nbsp;</th>
+                                <th style="font-weight:600">DG Class &nbsp;</th>
+                                <th style="font-weight:600">DG Description &nbsp;</th>
+                                <!-- <th style="font-weight:600"> &nbsp;</th> -->
+                            </tr>
+                            <tr class="" ng-repeat="PidUnGrid in Detail.PidUnGrids">
+                                <td ng-show="PidUnGrid.UnNo != ''"> &nbsp;&nbsp;<span ng-bind="PidUnGrid.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
+                                <td ng-show="PidUnGrid.UnNo != ''"> <span ng-bind="PidUnGrid.DGClass"></span> &nbsp;</td>
+                                <td ng-show="PidUnGrid.UnNo != ''"> <span ng-bind="PidUnGrid.DGDescription"></span> &nbsp;</td>
+                                <td align="right" ng-show="PidUnGrid.UnNo != ''">
+                                    <button class="button button-clear button-positive button-small" ng-click="DeleteGridLine(PidUnGrid.UnNo)"><i class="icon ion-android-close"></i></button>
+                                    <!-- <label class="item item-input" style=""  ng-click="DeleteGridLine(PidUnGrid.UnNo)" >
                                           <span class="input-label" style="padding-top:2px; padding-bottom: 2px;color:Red">Del</span>
                                       </label> -->
-                                   </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Weight</span>
-                            <input type="number" id="" ng-model="Detail.OH_PID_D.GROSS_LB" placeholder="Weight" style="padding-right: 14px;">
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Length</span>
-                        </label>
-                    </div>
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Width</span>
-                        </label>
-                    </div>
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">height</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <input type="number" id=""  value="" ng-model="Detail.OH_PID_D.LENGTH" placeholder="Length" style="padding-right: 14px;">
-                        </label>
-                    </div>
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <input type="number" id="" value="" ng-model="Detail.OH_PID_D.WIDTH" placeholder="Width" style="padding-right: 14px;">
-                        </label>
-                    </div>
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <input type="number" value=""  id="" ng-model="Detail.OH_PID_D.HEIGHT" placeholder="Height" style="padding-right: 14px;">
-                        </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col" style="padding:0px;">
-                        <label class="item item-input">
-                            <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Remark</span>
-                            <input type="text" id="" ng-model="Detail.OH_PID_D.Remark" placeholder=Remark>
-                        </label>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
-        </ion-content>
-        <ion-footer-bar class="bar-positive">
-            <div class="button-bar">
-                <button class="button" ng-click="showPrev()">
-                    Prev
-                </button>
-                <button class="button" ng-show="Detail.blnNext" ng-click="showNext()">
-                    Next
-                </button>
-                <button class="button" ng-click="DeleteLine(Detail.OH_PID_D.LineItemNo)">
-                    Del
-                </button>
-                <button class="button" ng-click="returnList()">
-                    Cancel
-                </button>
+            <div class="row">
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Weight</span>
+                        <input type="number" id="" ng-model="Detail.OH_PID_D.GROSS_LB" placeholder="Weight" style="padding-right: 14px;">
+                    </label>
+                </div>
             </div>
-        </ion-footer-bar>
+            <div class="row">
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Length</span>
+                    </label>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Width</span>
+                    </label>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">height</span>
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <input type="number" id="" value="" ng-model="Detail.OH_PID_D.LENGTH" placeholder="Length" style="padding-right: 14px;">
+                    </label>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <input type="number" id="" value="" ng-model="Detail.OH_PID_D.WIDTH" placeholder="Width" style="padding-right: 14px;">
+                    </label>
+                </div>
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <input type="number" value="" id="" ng-model="Detail.OH_PID_D.HEIGHT" placeholder="Height" style="padding-right: 14px;">
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col" style="padding:0px;">
+                    <label class="item item-input">
+                        <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Remark</span>
+                        <input type="text" id="" ng-model="Detail.OH_PID_D.Remark" placeholder=Remark>
+                    </label>
+                </div>
+            </div>
         </div>
-    <!-- </div> -->
+    </ion-content>
+    <ion-footer-bar class="bar-positive">
+        <div class="button-bar">
+            <button class="button" ng-click="showPrev()">
+                Prev
+            </button>
+            <button class="button" ng-show="Detail.blnNext" ng-click="showNext()">
+                Next
+            </button>
+            <button class="button" ng-click="DeleteLine(Detail.OH_PID_D.LineItemNo)">
+                Del
+            </button>
+            <button class="button" ng-click="returnList()">
+                Cancel
+            </button>
+        </div>
+    </ion-footer-bar>
+</ion-view>
+<!-- </div> -->
+<!-- </div> -->

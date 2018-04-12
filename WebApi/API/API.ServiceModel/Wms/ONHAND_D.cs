@@ -26,7 +26,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/OH_PID_D/TruckerBillNo", "Get")]     //OH_PID_D?PID_NO
     [Route("/wms/OH_PID_D/verifyTruckerBillNoBarCode", "Get")]     //OH_PID_D?PID_NO
     [Route("/wms/OH_PID_D/UpdatePidUnNo", "Get")]     //OH_PID_D?PID_NO
-
+    [Route("/wms/OH_PID_D/CheckAlreadyPid", "Get")]     //OH_PID_D?PID_NO
     public class ONHAND_D : IReturn<CommonResponse>
     {
         public string strONHAND_NO { get; set; }
@@ -275,14 +275,14 @@ namespace WebApi.ServiceModel.Wms
                                               "PACK_TYPE='" + PACK_TYPE + "'," +
                                                "SP_IND='" + strSP_Ind_YN + "'," +                           
                                               "PackTypeCode='" + PackTypeCode + "'," +
-                                              "TRK_BILL_NO='" + TRK_BILL_NO + "'," +
-                                              "PID_NO='" + PID_NO + "'," +
+                                              "TRK_BILL_NO="  +Modfunction.SQLSafeValue(TRK_BILL_NO) + "," +
+                                              "PID_NO="+Modfunction.SQLSafeValue(PID_NO) + "," +
                                               "UnNo='" + UnNo + "'," +
                                               "LENGTH=" + LENGTH + "," +
                                               "WIDTH=" + WIDTH + "," +
                                               "HEIGHT=" + HEIGHT + "," +
                                               "GROSS_LB=" + GROSS_LB + ","+
-                                              "Remark='" + Remark + "' " +
+                                              "Remark=" +Modfunction.SQLSafeValue (Remark)  + " " +
                                               "WHERE ONHAND_NO ='" + OnhandNo + "' And LineItemNo="+ lineItemNo + "  " +
                                               "";                               
                                     db.ExecuteSql(strSql);
@@ -670,7 +670,7 @@ namespace WebApi.ServiceModel.Wms
 
                     if (PID_NO != "")
                     {
-                        string strSql = "Select  top 1 PID_NO, ONHAND_NO From OH_PID_D Where PID_NO ='" + PID_NO + "'";
+                        string strSql = "Select  top 1 PID_NO, ONHAND_NO From OH_PID_D Where PID_NO =" + Modfunction .SQLSafeValue(PID_NO) + "";
 
                         Result= db.Select<ON_PID_D>(strSql);
                     }
@@ -683,6 +683,33 @@ namespace WebApi.ServiceModel.Wms
             return Result;
         }
 
+
+        public List<ON_PID_D> CheckAlreadyPID(ONHAND_D request)
+        {
+
+            List<ON_PID_D> Result = null;
+
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection())
+                {
+
+                    string strONHAND_NO = request.strONHAND_NO;
+
+                    if (strONHAND_NO != "")
+                    {
+                        string strSql = "Select   Onhand_No  From OH_PID_D Where Onhand_No ='" + strONHAND_NO + "'";
+
+                        Result = db.Select<ON_PID_D>(strSql);
+                    }
+
+
+                }
+
+            }
+            catch { throw; }
+            return Result;
+        }
 
 
         public List<ONHAND_D_Table> getTrk_Code( string onhandNo)
@@ -733,7 +760,7 @@ namespace WebApi.ServiceModel.Wms
                     string Trk_Code = "";
                     if (TRK_BILL_NO != "")
                     {
-                        string strSql = "Select  top 1 TRK_BILL_NO, ONHAND_NO From OH_PID_D Where TRK_BILL_NO ='" + TRK_BILL_NO + "'";
+                        string strSql = "Select  top 1 TRK_BILL_NO, ONHAND_NO From OH_PID_D Where TRK_BILL_NO =" +     Modfunction.SQLSafeValue (TRK_BILL_NO) + "";
                         Result = db.Select<ON_PID_D>(strSql);
 
                         Result_Onhand_D = getTrk_Code(OnhandNo);
@@ -1052,7 +1079,7 @@ namespace WebApi.ServiceModel.Wms
                                "   CNG_CODE ='" + CNG_CODE + "'," +
                                  "   SHP_MODE ='" + SHP_MODE + "'," +
                                "   ONHAND_date ='" + ONHAND_date + "'," +
-                               "   CASE_NO ='" + CASE_NO + "'," +
+                               "   CASE_NO =" +   Modfunction.SQLSafeValue(CASE_NO)  + "," +
                                "   PUB_YN ='" + PUB_YN + "'," +
                                "   HAZARDOUS_YN  ='" + HAZARDOUS_YN + "'," +
                                "   CLSF_YN  ='" + CLSF_YN + "'," +

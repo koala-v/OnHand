@@ -20,6 +20,7 @@ namespace WebApi.ServiceModel.Wms
     [Route("/wms/LOCATION_K/LOC_CODE", "Get")]
     [Route("/wms/Aemt1/select", "Get")]
     [Route("/wms/Aemt1/selectAll", "Get")]
+    [Route("/wms/Aemt1/getAemt", "Get")]
     public class aeaw : IReturn<CommonResponse>
     {
         public string MAwbNo { get; set; }
@@ -141,6 +142,48 @@ namespace WebApi.ServiceModel.Wms
                             "  LOC_CODE " +
                             "  From Aemt1  " +
                             "  Where  KeyMAwbNo = '" + strMAwbNo + "' ";
+                        Result = db.Select<Pid_AEMT1>(strSQL);
+
+                    }
+                }
+            }
+            catch { throw; }
+            return Result;
+        }
+
+
+        public List<Pid_AEMT1> getKeyAemt1(aeaw request)
+        { 
+
+            List<Pid_AEMT1> Result = null;
+            try
+            {
+                using (var db = DbConnectionFactory.OpenDbConnection("WMS"))
+                {
+
+                    string strMAwbNo = request.MAwbNo;
+                    string strMatchFlag = request.matchFlag;
+                    if (request.matchFlag =="Y")
+                    {
+                        strMatchFlag = "matchFlag = 'Y' ";
+                    } else
+                    {
+                        strMatchFlag = "( matchFlag ='N'or MatchFlag is null or  MatchFlag ='' ) ";
+                    }
+
+                    if (!string.IsNullOrEmpty(strMAwbNo))
+                    {
+
+
+                        string strSQL = "";
+                        strSQL = "select " +
+                            "  PID_NO ," +
+                            "  KeyMAwbNo ," +
+                            "  MAwbNo , " +
+                            "  LOC_CODE ," +
+                            " (Select TOP 1 ONHAND_NO From Onhand_D where MasterJobNo IN  (Select top 1  Aeaw1.MasterJobNo From Aeaw1 where Aeaw1.MawbNo = aemt1.MAwbNo) ) as ONHAND_NO " +
+                            "  From Aemt1  " +
+                            "  Where  KeyMAwbNo = '" + strMAwbNo + "' And  "+ strMatchFlag + "";
                         Result = db.Select<Pid_AEMT1>(strSQL);
 
                     }

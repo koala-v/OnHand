@@ -290,6 +290,11 @@ namespace WebApi.ServiceInterface.Wms
                 {
                     ecr.data.results = aeaw_Logic.SelectAllAemt1(request);
                 }
+
+                else if (uri.IndexOf("/wms/Aemt1/getAemt") > 0)
+                {
+                    ecr.data.results = aeaw_Logic.getKeyAemt1(request);
+                }
                 else if (uri.IndexOf ("/wms/Aemt1/select")>0)
                 {
                     ecr.data.results = aeaw_Logic.SelectAemt1(request);
@@ -333,7 +338,11 @@ namespace WebApi.ServiceInterface.Wms
                     ecr.data.results = imcc_Logic.Create_OH_PID_D(request);
 
                 }
+                else if (uri.IndexOf("/wms/OH_PID_D/CheckAlreadyPid") > 0)
+                {
+                    ecr.data.results = imcc_Logic.CheckAlreadyPID(request);
 
+                }
                 else if (uri.IndexOf("/wms/OH_PID_D/UpdateUnNo") > 0)
                 {
                     ecr.data.results = imcc_Logic.UpdateUnNo(request);
