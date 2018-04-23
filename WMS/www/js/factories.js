@@ -56,6 +56,7 @@ appFactory.factory('TABLE_DB', function () {
         PrintValue: {
             OnhandNo: 'TEXT',
             Location: 'TEXT',
+            TOT_PCS:'TEXT'
         },
         Imsn1_Putaway: {
             ReceiptNoteNo: 'TEXT',

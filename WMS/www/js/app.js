@@ -301,7 +301,7 @@ app.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$ionicConf
                 controller: 'GrListCtrl'
             })
             .state('grDetail', {
-                url: '/gr/detail/:OnhandNo',
+                url: '/gr/detail/:Type/:OnhandNo',
                 cache: 'false',
                 templateUrl: 'view/GoodsReceipt/detail.html',
                 controller: 'GrDetailCtrl'

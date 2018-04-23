@@ -246,3 +246,7 @@ html {
   overflow-scrolling: touch;
   -webkit-overflow-scrolling: touch /*iOS 滚动弹簧效果 */
 }
+.done{
+    font-size:18px;
+    font-weight:bold;
+}

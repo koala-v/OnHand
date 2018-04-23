@@ -17,16 +17,17 @@
                 <button class="button button-block button-positive" ng-show="Detail.Title !=='New'" ng-click="Update()">Update</button>
             </div>
 
-            <div ng-show="Detail.TableTitle ==='Enquiry'">
+            <div  class ="done" ng-show="Detail.TableTitle ==='Enquiry'">
                 <div class="row">
                     <div class="col col-33" style="text-align:center;">
                         <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">&nbsp;&nbsp;&nbsp;OnhandNo</span>
                     </div>
                     <div class="col" style="padding:0px;">
+
                         <ui-select ng-model="Onhand_DForOnhandNo.selected" theme="bootstrap" reset-search-input="true" on-select="findOnhand(Onhand_DForOnhandNo.selected.onhand_no)">
                             <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.onhand_no | limitTo:16}}</ui-select-match>
-                            <ui-select-choices repeat="Onhand_DForOnhandNo in Onhand_DForOnhandNos track by $index" refresh="refreshOnhand_D($select.search)" refresh-delay="0" position="down">
-                                <div ng-bind-html="Onhand_DForOnhandNo.onhand_no | highlight: $select.search"></div>
+                            <ui-select-choices  style="font-size:18px;font-weight:bold;" repeat="Onhand_DForOnhandNo in Onhand_DForOnhandNos track by $index" refresh="refreshOnhand_D($select.search)" refresh-delay="0" position="down">
+                                <div  ng-bind-html="Onhand_DForOnhandNo.onhand_no | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
                     </div>
@@ -38,12 +39,13 @@
                     <div class="row">
                         <div class="col col-33" style="padding:0px;">
                             <div class="input-label">
-                                &nbsp;&nbsp; OnhandNo
+                                <!-- <strong> &nbsp;&nbsp; OnhandNo</strong> -->
+                                <span class="done">&nbsp;&nbsp; OnhandNo</span>
                             </div>
                         </div>
                         <div class="col col" style="text-align:center;">
                             <div class="">
-                                {{Detail.ONHANDNO}}
+                                <span class="done">{{Detail.ONHANDNO}}</span>
                             </div>
                         </div>
                         <div class="col col" style="padding:0px;">

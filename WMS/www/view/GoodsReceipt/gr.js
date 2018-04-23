@@ -354,44 +354,62 @@ appControllers.controller('GrListCtrl', [
             $scope.Detail.ONHAND_D.PICKUP_SUP_datetime = '';
         };
         $scope.Create = function () {
-            if (is.not.undefined($scope.Detail.ChargeType.NewItem)) {
-                if (is.undefined($scope.Rcbp1.selected)) {
-                    $scope.Detail.ONHAND_D.SHP_CODE = "";
-                } else {
-                    $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
-                }
-                if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
-                    $scope.Detail.ONHAND_D.CNG_CODE = "";
-                } else {
-                    $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
-                }
-                if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
-                    $scope.Detail.ONHAND_D.CASE_NO = "";
-                }
-                if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
-                    $scope.Detail.ONHAND_D.NO_INV_WH = "";
-                }
-                $scope.Detail.disabled = true;
-                $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
-                $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
-                $scope.pushChange();
-                $scope.AOGChange();
-                var arrONHAND_D = [];
-                arrONHAND_D.push($scope.Detail.ONHAND_D);
-                var jsonData = {
-                    "UpdateAllString": JSON.stringify(arrONHAND_D)
-                };
-                var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/confirm');
-                ApiService.Post(objUri, jsonData, true).then(function success(result) {
-                    $scope.Detail.ONHANDNO = result.data.results;
-                    $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
-                    if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
-                        PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+          var promptPopup = $ionicPopup.show({
+              template: '',
+              title: 'Create Onhand',
+              subTitle: 'Are you sure to Create Onhand?',
+              scope: $scope,
+              buttons: [{
+                  text: 'Cancel'
+              }, {
+                  text: '<b>Save</b>',
+                  type: 'button-positive',
+                  onTap: function (e) {
+
+                    if (is.not.undefined($scope.Detail.ChargeType.NewItem)) {
+                        if (is.undefined($scope.Rcbp1.selected)) {
+                            $scope.Detail.ONHAND_D.SHP_CODE = "";
+                        } else {
+                            $scope.Detail.ONHAND_D.SHP_CODE = $scope.Rcbp1.selected.BusinessPartyCode;
+                        }
+                        if (is.undefined($scope.Rcbp1ForConsinnee.selected)) {
+                            $scope.Detail.ONHAND_D.CNG_CODE = "";
+                        } else {
+                            $scope.Detail.ONHAND_D.CNG_CODE = $scope.Rcbp1ForConsinnee.selected.BusinessPartyCode;
+                        }
+                        if (is.undefined($scope.Detail.ONHAND_D.CASE_NO)) {
+                            $scope.Detail.ONHAND_D.CASE_NO = "";
+                        }
+                        if (is.undefined($scope.Detail.ONHAND_D.NO_INV_WH)) {
+                            $scope.Detail.ONHAND_D.NO_INV_WH = "";
+                        }
+                        $scope.Detail.disabled = true;
+                        $scope.Detail.ONHAND_D.UserID = sessionStorage.getItem('UserId').toString();
+                        $scope.Detail.ONHAND_D.TRK_CHRG_TYPE = $scope.Detail.ChargeType.NewItem;
+                        $scope.pushChange();
+                        $scope.AOGChange();
+                        var arrONHAND_D = [];
+                        arrONHAND_D.push($scope.Detail.ONHAND_D);
+                        var jsonData = {
+                            "UpdateAllString": JSON.stringify(arrONHAND_D)
+                        };
+                        var objUri = ApiService.Uri(true, '/api/wms/ONHAND_D/confirm');
+                        ApiService.Post(objUri, jsonData, true).then(function success(result) {
+                            $scope.Detail.ONHANDNO = result.data.results;
+                            $scope.Detail.Title = 'OnhandNo : ' + $scope.Detail.ONHANDNO;
+                            if (is.not.undefined($scope.Detail.ONHANDNO)) {} else {
+                                PopupService.Info(null, 'Confirm Error', '').then(function (res) {});
+                            }
+                        });
+                    } else {
+                        PopupService.Alert(null, 'Must tick ChargeType', '').then(function (res) {});
                     }
-                });
-            } else {
-                PopupService.Alert(null, 'Must tick ChargeType', '').then(function (res) {});
-            }
+
+                  }
+              }]
+          });
+
+
         };
 
         $scope.Update = function () {
@@ -743,7 +761,7 @@ appControllers.controller('GrListCtrl', [
             var objPrint = {
                 OnhandNo: $scope.Detail.ONHANDNO,
                 Location: $scope.Detail.ONHAND_D.LOC_CODE,
-
+                TOT_PCS: $scope.Detail.ONHAND_D.TotalPCS,
             };
             SqlService.Delete('PrintValue').then(function () {
                 SqlService.Insert('PrintValue', objPrint).then(
@@ -755,6 +773,7 @@ appControllers.controller('GrListCtrl', [
             if (OnhandNo !== null && OnhandNo.length > 0) {
                 $state.go('grDetail', {
                     'OnhandNo': OnhandNo,
+                    'Type': $scope.Type,
                 }, {
                     reload: true
                 });
@@ -831,85 +850,81 @@ appControllers.controller('GrDetailCtrl', [
         PopupService) {
         var popup = null;
         $scope.OnhandNo = $stateParams.OnhandNo;
+        $scope.Type = $stateParams.Type;
         $scope.Detail = {
             OnhandNo: '',
-            Location: ''
-
+            Location: '',
+            TotalPCS: ''
         };
 
         $scope.print = function () {
-
-            if (!ENV.fromWeb) {
-                // PopupService.Info(null,   $scope.OnhandNo).then();　
-                var sApp = startApp.set({ /* params */
-                    // "action":"ACTION_MAIN",
-                    // "category":"CATEGORY_DEFAULT",
-                    // "type":"text/css",
-                    "package": "com.zebra.kdu",
-                    // "uri":"file://data/index.html",
-                    // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
-                    // "component": ["com.app.name","com.app.name.Activity"],
-                    "intentstart": "aa",
-                }, { /* extras */
-                    "msg": $scope.OnhandNo,
-
-                    //"extraKey2":"extraValue2"
-                });
-
-                sApp.start(function () { /* success */
-                    // alert("OK");
-                }, function (error) { /* fail */
-                    alert(error);
-                });
-
-            }
-
-            // SqlService.Select('PrintValue', '*').then(function (results) {
-            //     var len = results.rows.length;
-            //     if (len > 0) {
-            //         var PrintValue = results.rows.item(0);
-            //         $scope.Detail.OnhandNo = PrintValue.OnhandNo;
-            //         $scope.Detail.Location = PrintValue.Location;
-            //         if ($scope.Detail.OnhandNo.length > 0) {
-            //             if (!ENV.fromWeb) {
-            //                 // PopupService.Info(null,   $scope.OnhandNo).then();　
-            //                 var sApp = startApp.set({ /* params */
-            //                     // "action":"ACTION_MAIN",
-            //                     // "category":"CATEGORY_DEFAULT",
-            //                     // "type":"text/css",
-            //                     "package": "com.zebra.kdu",
-            //                     // "uri":"file://data/index.html",
-            //                     // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
-            //                     // "component": ["com.app.name","com.app.name.Activity"],
-            //                     "intentstart": "aa",
-            //                 }, { /* extras */
-            //                     "msg": $scope.OnhandNo,
-            //                     "Location": $scope.Detail.Location,
+            // if (!ENV.fromWeb) {
+            //     // PopupService.Info(null,   $scope.OnhandNo).then();　
+            //     var sApp = startApp.set({ /* params */
+            //         // "action":"ACTION_MAIN",
+            //         // "category":"CATEGORY_DEFAULT",
+            //         // "type":"text/css",
+            //         "package": "com.sysmagic.onhandlabel",
+            //         // "uri":"file://data/index.html",
+            //         // "flags":["FLAG_ACTIVITY_CLEAR_TOP","FLAG_ACTIVITY_CLEAR_TASK"],
+            //         // "component": ["com.app.name","com.app.name.Activity"],
+            //         "intentstart": "MainActivity",
+            //     }, { /* extras */
+            //         "msg": "1,2,3",
             //
-            //                     //"extraKey2":"extraValue2"
-            //                 });
+            //         //"extraKey2":"extraValue2"
+            //     });
             //
-            //                 sApp.start(function () { /* success */
-            //                     // alert("OK");
-            //                 }, function (error) { /* fail */
-            //                     alert(error);
-            //                 });
+            //     sApp.start(function () { /* success */
+            //         // alert("OK");
+            //     }, function (error) { /* fail */
+            //         alert(error);
+            //     });
             //
-            //             }
-            //         }
-            //     }
-            // });
+            // }
+
+            SqlService.Select('PrintValue', '*').then(function (results) {
+                var len = results.rows.length;
+                if (len > 0) {
+                    var PrintValue = results.rows.item(0);
+                    $scope.Detail.OnhandNo = PrintValue.OnhandNo;
+                    $scope.Detail.Location = PrintValue.Location;
+                    $scope.Detail.TotalPCS = PrintValue.TOT_PCS;
+                    if ($scope.Detail.OnhandNo.length > 0) {
+                        if (!ENV.fromWeb) {　
+                            var sApp = startApp.set({ /* params */
+                                "package":"com.zebra.kdu",
+                                "intentstart": "aa",
+                            }, { /* extras */
+                                "msg": $scope.OnhandNo + ',' + $scope.Detail.Location + ',' + $scope.Detail.TotalPCS
+                            });
+
+                            sApp.start(function () { /* success */
+                                // alert("OK");
+                            }, function (error) { /* fail */
+                                alert(error);
+                            });
+
+                        }
+                    }
+                }
+            });
 
         };
 
         $scope.returnList = function () {
-            if ($ionicHistory.backView()) {
-                $ionicHistory.goBack();
+            if ($scope.Type === 'Enquiry') {
+                $scope.Type = 'Enquiry';
             } else {
-                $state.go('grList', {}, {
-                    reload: true
-                });
+                $scope.Type = 'Update';
             }
+            $state.go('grList', {
+                'OnhandNo': $scope.OnhandNo,
+                'Type': $scope.Type,
+            }, {
+                reload: true
+            });
+
         };
     }
 ]);
