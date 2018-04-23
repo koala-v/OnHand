@@ -10,14 +10,16 @@
 				<ion-item nav-clear menu-close class="item item-icon-right" ng-repeat="Aemt1 in Detail.Aemt1S" ng-click="goManifestDetail(Aemt1.KeyMAwbNo)">
 					<div class="row">
 						<div class="col" style="max-width: 35%;">
-							<h2>Pid No&nbsp;:</h2>
-							<h2>location&nbsp;:</h2>
-							<h2>MAwbNo&nbsp;:</h2>
+							<span class="done">
+							<h2><span class="done">Pid No&nbsp;: </span></h2>
+							<h2><span class="done">location&nbsp;:</span></h2>
+							<h2><span class="done">MAwbNo&nbsp;:</span></h2>
+						</span>
 						</div>
 						<div class="col">
-							<h2><span ng-bind="Aemt1.PID_NO"></span></h2>
-							<h2><span ng-bind="Aemt1.LOC_CODE"></span></h2>
-							<h2><span ng-bind="Aemt1.MAwbNo"></span></h2>
+							<h2><span  class="done" ng-bind="Aemt1.PID_NO" ></span></h2>
+							<h2><span class="done" ng-bind="Aemt1.LOC_CODE"></span></h2>
+							<h2><span class="done" ng-bind="Aemt1.MAwbNo"></span></h2>
 						</div>
 					</div>
 				</ion-item>

@@ -9,12 +9,12 @@
                   <div class="row">
                       <div class="col col-33" style="padding:0px;">
                           <div class="input-label">
-                              &nbsp;&nbsp; OnhandNo
+                          <sapn class ="done">    &nbsp;&nbsp; OnhandNo</span>
                           </div>
                       </div>
                       <div class="col col" style="text-align:center;">
                           <div class="">
-                              {{Detail.ONHANDNO}}
+                              <span class="done">{{Detail.ONHANDNO}} </span>
                           </div>
                       </div>
                       <div class="col col" style="padding:0px;">
@@ -25,8 +25,10 @@
                     <div class="row">
                         <div class="col col-80" style="padding:0px;">
                             <label class="item item-input">
+                              <sapn class ="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Trucker Bill</span>
-                                <input type="text" id="txt-addTruckerBill" ng-model="Detail.Add_OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill" ng-blur="blnVerifyInput('TruckerBill',Detail.Add_OH_PID_D.TRK_BILL_NO)">
+</sapn >
+                                <input type="text" style="font-size:18px;font-weight:bold;" id="txt-addTruckerBill" ng-model="Detail.Add_OH_PID_D.TRK_BILL_NO" placeholder="Trucker Bill" ng-blur="blnVerifyInput('TruckerBill',Detail.Add_OH_PID_D.TRK_BILL_NO)">
                             </label>
                         </div>
                         <div class="col col-10">
@@ -40,9 +42,11 @@
                         <div class="col" style="padding:0px;">
                             <div class="item item-input item-select">
                                 <div class="input-label">
+                                    <span class ="done">
                                     Pack Type
+                                      <span>
                                 </div>
-                                <select ng-model="Detail.Add_OH_PID_D.PACK_TYPE" ng-options="city for city in Rcpk_S">
+                                <select  style="font-size:18px;font-weight:bold;" ng-model="Detail.Add_OH_PID_D.PACK_TYPE" ng-options="city for city in Rcpk_S">
                                 </select>
                             </div>
                         </div>
@@ -50,8 +54,10 @@
                     <div class="row">
                         <div class="col col-80" style="padding:0px;">
                             <label class="item item-input">
+                               <span class ="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Pid</span>
-                                <input type="text" maxlength="8" id="txt-addPID_NO" ng-model="Detail.Add_OH_PID_D.PID_NO" placeholder="Pid" ng-blur="blnVerifyInput('AddPID_NO',Detail.Add_OH_PID_D.PID_NO)">
+</span>
+                                <input type="text"   style="font-size:18px;font-weight:bold;" maxlength="8" id="txt-addPID_NO" ng-model="Detail.Add_OH_PID_D.PID_NO" placeholder="Pid" ng-blur="blnVerifyInput('AddPID_NO',Detail.Add_OH_PID_D.PID_NO)">
                             </label>
                         </div>
                         <div class="col col-10">
@@ -71,13 +77,13 @@
                 <div class="imc-scroll">
                     <div>
                         <table border="1px">
-                            <tr>
+                            <tr class ="done">
                                 <th style="font-weight:600"> &nbsp;&nbsp;Un No &nbsp;</th>
                                 <th style="font-weight:600">DG Class &nbsp;</th>
                                 <th style="font-weight:600">DG Description &nbsp;</th>
                                   <th style="font-weight:600;align:right" ></th>
                             </tr>
-                            <tr class="" ng-repeat="Rcdg1 in Detail.Rcdg1s">
+                            <tr class="done" ng-repeat="Rcdg1 in Detail.Rcdg1s">
                                 <td> &nbsp;&nbsp;<span ng-bind="Rcdg1.UnNo">&nbsp;&nbsp;</span> &nbsp;</td>
                                 <td> <span ng-bind="Rcdg1.DGClass"></span> &nbsp;</td>
                                 <td> <span ng-bind="Rcdg1.DGDescription"></span> &nbsp;</td>
@@ -95,50 +101,60 @@
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                      <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Weight</span>
-                                <input type="number" id="" ng-model="Detail.Add_OH_PID_D.GROSS_LB" placeholder="Weight">
+</span>
+                                <input style="font-size:18px;font-weight:bold;" type="number" id="" ng-model="Detail.Add_OH_PID_D.GROSS_LB" placeholder="Weight">
                             </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Length</span>
+</span>
                             </label>
                         </div>
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Width</span>
+</span>
                             </label>
                         </div>
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                    <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Height</span>
+</span>
                             </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
-                                <input type="number" id="" ng-model="Detail.Add_OH_PID_D.LENGTH" placeholder="Length">
+                                <input  style="font-size:18px;font-weight:bold;" type="number" id="" ng-model="Detail.Add_OH_PID_D.LENGTH" placeholder="Length">
                             </label>
                         </div>
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
-                                <input type="number" id="" ng-model="Detail.Add_OH_PID_D.WIDTH" placeholder="Width">
+                                <input style="font-size:18px;font-weight:bold;"  type="number" id="" ng-model="Detail.Add_OH_PID_D.WIDTH" placeholder="Width">
                             </label>
                         </div>
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
-                                <input type="number" id="" ng-model="Detail.Add_OH_PID_D.HEIGHT" placeholder="Height">
+                                <input   style="font-size:18px;font-weight:bold;" type="number" id="" ng-model="Detail.Add_OH_PID_D.HEIGHT" placeholder="Height">
                             </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                              <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Remark</span>
-                                <input type="text" id="" ng-model="Detail.Add_OH_PID_D.Remark" placeholder=Remark>
+</span>
+                                <input type="text" style="font-size:18px;font-weight:bold;" id="" ng-model="Detail.Add_OH_PID_D.Remark" placeholder=Remark>
                             </label>
                         </div>
                     </div>

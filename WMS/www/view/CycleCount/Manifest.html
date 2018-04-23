@@ -7,10 +7,10 @@
         <div class="list card" style="overflow:visible;">
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-33" style="text-align:center;">
-                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAWB No</label>
+                    <label class="done">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAWB No</label>
                 </div>
                 <div class="col col-50">
-    {{Detail.MAwbNo}}
+                    <span class="done">  {{Detail.MAwbNo}} </span>
                 </div>
                 <div class="col">
 
@@ -20,8 +20,10 @@
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-80">
                     <label class="item item-input" style="margin-left:5px;">
+                        <span class="done">
                         <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">PID No&nbsp;</span>
-                        <input type="text" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
+                        </span>
+                        <input type="text" style="font-size:18px;font-weight:bold;" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
                     </label>
                 </div>
                 <div class="col col-10">
@@ -37,24 +39,26 @@
         <div class="list card">
             <div class="row">
                 <div class="col col-60">
-                    <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
+                    <span class="done">&nbsp;&nbsp;Unmatched PID No&nbsp;:</span>
                     <div class="" ng-repeat="Pid in Detail.Aemt1N" id="" ng-click="">
                         <div class="item item-input">
                             <div class="col-57">
                                 <div class="item-text-wrap">
                                     <p>
+                                        <span class="done">
                                         <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
+                                        </span>
                                     </p>
                                 </div>
                             </div>
                             <div class="col-30">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
+                                    &nbsp;&nbsp;<span class="done" ng-bind="Pid.LOC_CODE"></span>
                                 </p>
                             </div>
                             <div class="col">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Pid.ONHAND_NO"></span>
+                                    &nbsp;&nbsp;<span class="done" ng-bind="Pid.ONHAND_NO"></span>
                                 </p>
                             </div>
                         </div>
@@ -62,24 +66,26 @@
                 </div>
 
                 <div class="col">
-                    <h5> PID No&nbsp;:</h5>
+                    <span class="done"> PID No&nbsp;:</span>
                     <div class="" ng-repeat="Aemt1 in Detail.Aemt1Y" id="" ng-click="">
                         <div class="item item-input">
                             <div class="col-57">
                                 <div class="item-text-wrap">
                                     <p>
+                                        <span class="done">
                                         <span class="pull-right" ng-bind="Aemt1.PID_NO"></span>
+                                        </span>
                                     </p>
                                 </div>
                             </div>
                             <div class="col-30">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Aemt1.LOC_CODE"></span>
+                                    &nbsp;&nbsp;<span class="done" ng-bind="Aemt1.LOC_CODE"></span>
                                 </p>
                             </div>
                             <div class="col">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Aemt1.ONHAND_NO"></span>
+                                    &nbsp;&nbsp;<span class="done" ng-bind="Aemt1.ONHAND_NO"></span>
                                 </p>
                             </div>
                         </div>

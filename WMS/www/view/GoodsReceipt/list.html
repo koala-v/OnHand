@@ -17,7 +17,7 @@
                 <button class="button button-block button-positive" ng-show="Detail.Title !=='New'" ng-click="Update()">Update</button>
             </div>
 
-            <div  class ="done" ng-show="Detail.TableTitle ==='Enquiry'">
+            <div class="done" ng-show="Detail.TableTitle ==='Enquiry'">
                 <div class="row">
                     <div class="col col-33" style="text-align:center;">
                         <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">&nbsp;&nbsp;&nbsp;OnhandNo</span>
@@ -26,8 +26,8 @@
 
                         <ui-select ng-model="Onhand_DForOnhandNo.selected" theme="bootstrap" reset-search-input="true" on-select="findOnhand(Onhand_DForOnhandNo.selected.onhand_no)">
                             <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.onhand_no | limitTo:16}}</ui-select-match>
-                            <ui-select-choices  style="font-size:18px;font-weight:bold;" repeat="Onhand_DForOnhandNo in Onhand_DForOnhandNos track by $index" refresh="refreshOnhand_D($select.search)" refresh-delay="0" position="down">
-                                <div  ng-bind-html="Onhand_DForOnhandNo.onhand_no | highlight: $select.search"></div>
+                            <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="Onhand_DForOnhandNo in Onhand_DForOnhandNos track by $index" refresh="refreshOnhand_D($select.search)" refresh-delay="0" position="down">
+                                <div ng-bind-html="Onhand_DForOnhandNo.onhand_no | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
                     </div>
@@ -57,33 +57,39 @@
                         <div class="col" style="padding:0px;">
                             <div class="item item-input item-select">
                                 <div class="input-label">
-                                    Domestic
+                                    <span class="done">Domestic</span>
                                 </div>
                                 <select ng-model="Detail.ONHAND_D.DomesticFlag" data-ng-disabled="Detail.disabled">
                                     <!-- <option value="">None</option> -->
-                                    <option value="Y" style="float:left">Y</option>
-                                    <option value="N" style="float:left">N</option>
+                                    <option value="Y" style="float:left;font-size:18px;font-weight:bold;">Y</option>
+                                    <option value="N" style="float:left;font-size:18px;font-weight:bold;">N</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
+
                         <div class="col col-33" style="text-align:center;">
+                            <span class="done">
                             <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Shipper Code</span>
+                            </span>
                         </div>
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="">
                                 <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyCode }} </ui-select-match>
-                                <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1('',$select.search)" refresh-delay="0" position="down">
+                                <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1('',$select.search)" refresh-delay="0" position="down">
                                     <div ng-bind-html="Rcbp1.BusinessPartyCode | highlight: $select.search"></div>
                                 </ui-select-choices>
                             </ui-select>
                         </div>
+
                     </div>
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
+                            <span class="done">
                             <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Shipper Name</span>
+                            </span>
                         </div>
                         <button class="button button-positive button-small" ng-click="InsertPercent()">
                             %
@@ -96,7 +102,7 @@
 
                             <ui-select ng-model="Rcbp1.selected" theme="bootstrap" reset-search-input="true" on-select="">
                                 <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }} </ui-select-match>
-                                <ui-select-choices repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search,'')" refresh-delay="0" position="down">
+                                <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="Rcbp1 in Rcbp1s track by $index" refresh="refreshRcbp1($select.search,'')" refresh-delay="0" position="down">
                                     <i ng-bind-html="Rcbp1.BusinessPartyName | highlight: $select.search"> </i>
                                     </br>
                                     &nbsp;&nbsp;<i ng-bind-html="Rcbp1.Address1"> </i> &nbsp;&nbsp;
@@ -110,12 +116,14 @@
                     </br>
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
+                            <span class="done">
                             <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Consignee Code</span>
+                            </span>
                         </div>
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1ForConsinnee.selected" theme="bootstrap" reset-search-input="true" on-select="ShowConsigneeAddress(Rcbp1.selected.BusinessPartyCode)">
                                 <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;"> {{$select.selected.BusinessPartyCode }} </ui-select-match>
-                                <ui-select-choices repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee('',$select.search)" refresh-delay="0" position="down">
+                                <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee('',$select.search)" refresh-delay="0" position="down">
                                     <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyCode | highlight: $select.search"></div>
                                     <!-- <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyName | highlight: $select.search"></div> -->
                                 </ui-select-choices>
@@ -124,7 +132,9 @@
                     </div>
                     <div class="row">
                         <div class="col col-33" style="text-align:center;">
+                            <span class="done">
                             <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Consignee Name</span>
+                            </span>
                         </div>
                         <button class="button button-positive button-small" ng-click="InsertPercentConSignee()">
                             %
@@ -135,7 +145,7 @@
                         <div class="col" style="padding:0px;">
                             <ui-select ng-model="Rcbp1ForConsinnee.selected" theme="bootstrap" reset-search-input="true" on-select="">
                                 <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.BusinessPartyName }}</ui-select-match>
-                                <ui-select-choices repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee($select.search,'')" refresh-delay="0" position="down">
+                                <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="Rcbp1ForConsinnee in Rcbp1ForConsinnees track by $index" refresh="refreshRcbp1ForConsinnee($select.search,'')" refresh-delay="0" position="down">
                                     <!-- <div ng-bind-html="Rcbp1ForConsinnee.BusinessPartyName | highlight: $select.search"></div>
                                       <div ng-bind-html="Rcbp1ForConsinnee.Address1 | highlight: $select.search"></div>
                                     <div ng-bind-html="Rcbp1ForConsinnee.Address1 | highlight: $select.search"></div>
@@ -155,20 +165,25 @@
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Onhand Date</span>
+                                </span>
                                 <button class="button button-light" id="id_DateCompleted">
                                     <i class="icon ion-calendar"></i>&nbsp;&nbsp;
-                                    <span ng-bind="Detail.ONHAND_D.ONHAND_date"></span>&nbsp;
+                                    <span class="done" ng-bind="Detail.ONHAND_D.ONHAND_date"></span>&nbsp;
                                     <i class="icon ion-android-arrow-dropdown"></i>
                                 </button>
+
                             </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">FMS Case</span>
-                                <input type="text" maxlength="4" id="" ng-model="Detail.ONHAND_D.CASE_NO" placeholder="Case No" style="padding-right: 14px;">
+                                </span>
+                                <input type="text" maxlength="4" id="" ng-model="Detail.ONHAND_D.CASE_NO" placeholder="Case No" style="padding-right: 14px;font-size:18px;font-weight:bold;">
                             </label>
                         </div>
                     </div>
@@ -186,31 +201,32 @@
                         </div>
                     </div> -->
                     <div class="row">
+
                         <div class="col col-30" style="padding:0px;">
                             <ion-checkbox ng-model="Detail.pushPublication.checked" ng-change="pushChange()">
-                                Publication
+                                <span class="done">  Publication  </span>
                             </ion-checkbox>
                         </div>
                         <div class="col col-30" style="padding:0px;">
                             <ion-checkbox ng-model="Detail.pushHazardous.checked" ng-change="pushChange()">
-                                Hazardous
+                                <span class="done">    Hazardous </span>
                             </ion-checkbox>
                         </div>
                         <div class="col" style="padding:0px;">
                             <ion-checkbox ng-model="Detail.chkSHP_MODE.checked" ng-change="AOGChange()">
-                                AOG
+                                <span class="done">    AOG </span>
                             </ion-checkbox>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col col-30" style="padding:0px;">
                             <ion-checkbox ng-model="Detail.pushClassified.checked" ng-change="pushChange()">
-                                Classified &nbsp;&nbsp;
+                                <span class="done">  Classified &nbsp;&nbsp;</span>
                             </ion-checkbox>
                         </div>
                         <div class="col col-30" style="padding:0px;">
                             <ion-checkbox ng-model="Detail.pushExercise.checked" ng-change="pushChange()">
-                                Exercise
+                                <span class="done">    Exercise</span>
                             </ion-checkbox>
                         </div>
                         <div class="col" style="padding:0px;">
@@ -222,10 +238,14 @@
                             <div class="item item-input item-select">
                                 <div class="row">
                                     <div class="input-label">
+                                        <span class="done">
                                         Location
+                                        </span>
                                     </div>
                                     <button style="text-align:left" class="button button-clear button-positive button-small" ng-click="openCam('Location')"><i class="icon ion-qr-scanner"></i></button>
-                                    <select ng-model="Detail.ONHAND_D.LOC_CODE" ng-options="city for city in LOCATION_KS"> </select>
+                                    <span class="done">
+                                    <select  style="font-size:18px;font-weight:bold;" ng-model="Detail.ONHAND_D.LOC_CODE" ng-options="city for city in LOCATION_KS"> </select>
+</span>
                                 </div>
                             </div>
                         </div>
@@ -234,9 +254,11 @@
                         <div class="col" style="padding:0px;">
                             <div class="item item-input item-select">
                                 <div class="input-label">
+                                    <span class="done">
                                     Trucker
+                                    </span>
                                 </div>
-                                <select ng-model="Detail.ONHAND_D.TRK_CODE" ng-options="city for city in Rcbp1_S">
+                                <select style="font-size:18px;font-weight:bold;" ng-model="Detail.ONHAND_D.TRK_CODE" ng-options="city for city in Rcbp1_S">
 
                                 </select>
                             </div>
@@ -244,7 +266,7 @@
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
-                            <ion-radio ng-repeat="item in ChargeType" ng-value="item.value" ng-model="Detail.ChargeType.NewItem">
+                            <ion-radio class="done" ng-repeat="item in ChargeType" ng-value="item.value" ng-model="Detail.ChargeType.NewItem">
                                 {{ item.text }}
                             </ion-radio>
                         </div>
@@ -252,10 +274,12 @@
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Vendor Ship Date</span>
+                                </span>
                                 <button class="button button-light" id="id_DateCompleted" ng-click="OnDatePickerForVendorShipDate()">
                                     <i class="icon ion-calendar"></i>&nbsp;&nbsp;
-                                    <span ng-bind="Detail.ONHAND_D.PICKUP_SUP_datetime"></span>&nbsp;
+                                    <span class="done" ng-bind="Detail.ONHAND_D.PICKUP_SUP_datetime"></span>&nbsp;
                                     <i class="icon ion-android-arrow-dropdown"></i>
                                 </button>
                             </label>
@@ -268,24 +292,31 @@
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" maxlength="5" style="padding-top:2px; padding-bottom: 2px;">No Of Invoices</span>
-                                <input type="number" id="" ng-model="Detail.ONHAND_D.NO_INV_WH" placeholder="No Of Invoices" style="padding-right: 14px;">
+                                </span>
+                                <input type="number" id="" ng-model="Detail.ONHAND_D.NO_INV_WH" placeholder="No Of Invoices" style="padding-right: 14px;font-size:18px;font-weight:bold;">
+
                             </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Total PCS &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                                <input type="text" id="" ng-model="Detail.ONHAND_D.TotalPCS" placeholder="Total PCS" style="padding-right: 14px;" readonly="true">
+                                </span>
+                                <input type="text" id="" ng-model="Detail.ONHAND_D.TotalPCS" placeholder="Total PCS" style="padding-right: 14px;font-size:18px;font-weight:bold;" readonly="true">
                             </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col" style="padding:0px;">
                             <label class="item item-input">
+                                <span class="done">
                                 <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">Total Weight &nbsp;&nbsp;</span>
-                                <input type="text" id="" ng-model="Detail.ONHAND_D.TotalWeight" placeholder="Total Weight" style="padding-right: 14px;" readonly="true">
+                                </span>
+                                <input type="text" id="" ng-model="Detail.ONHAND_D.TotalWeight" placeholder="Total Weight" style="padding-right: 14px; font-size:18px;font-weight:bold;" readonly="true">
                             </label>
                         </div>
                     </div>

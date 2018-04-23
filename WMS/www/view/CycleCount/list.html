@@ -7,12 +7,12 @@
         <div class="list card" style="overflow:visible;">
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-33" style="text-align:center;">
-                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAWB No</label>
+                    <label class="done">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MAWB No</label>
                 </div>
                 <div class="col col-50">
                     <ui-select ng-model="Ae1.selected" theme="bootstrap" reset-search-input="true" on-select="">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.MAwbNo | limitTo:16}}</ui-select-match>
-                        <ui-select-choices repeat="Ae1 in Aeaw1s track by $index" refresh="refreshAeaw($select.search)" refresh-delay="0" position="down">
+                        <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="Ae1 in Aeaw1s track by $index" refresh="refreshAeaw($select.search)" refresh-delay="0" position="down">
                             <div ng-bind-html="Ae1.MAwbNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
@@ -23,12 +23,12 @@
             </div>
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-33" style="text-align:center;">
-                    <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Location</label>
+                    <label class="done">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Location</label>
                 </div>
                 <div class="col col-50" style="padding:0px;">
                     <ui-select ng-model="LOCATION_K.selected" theme="bootstrap" reset-search-input="true" on-select="">
                         <ui-select-match allow-clear="true" placeholder="Enter to search..." style="overflow:hidden;">{{$select.selected.LOC_CODE | limitTo:16}}</ui-select-match>
-                        <ui-select-choices repeat="LOCATION_K in LOCATION_KS track by $index" refresh="refreshLocation($select.search)" refresh-delay="0" position="down">
+                        <ui-select-choices style="font-size:18px;font-weight:bold;" repeat="LOCATION_K in LOCATION_KS track by $index" refresh="refreshLocation($select.search)" refresh-delay="0" position="down">
                             <div ng-bind-html="LOCATION_K.LOC_CODE | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
@@ -52,7 +52,7 @@
                     <button class="button button-clear button-positive button-small" data-ng-disabled="Detail.disabled" ng-click="DelLocaiton(Location.LOC_CODE)"><i class="icon ion-android-close"></i></button>
                 </div>
                 <div class="col" style="padding:0px;">
-                    <p>
+                    <p class="done">
                         <span class="pull-right" ng-bind="Location.LOC_CODE"> </span>
                     </p>
                 </div>
@@ -70,8 +70,10 @@
             <div class="row row-center" id="div-list-rcbp">
                 <div class="col col-80">
                     <label class="item item-input" style="margin-left:5px;">
+                        <span class="done">
                         <span class="input-label" style="padding-top:2px; padding-bottom: 2px;">PID No&nbsp;</span>
-                        <input type="text" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
+                        </span>
+                        <input type="text" style="font-size:18px;font-weight:bold;" id="txt-PID_NO" ng-model="Detail.Scan.PID_NO" style="padding-right: 14px;" ng-keypress="enter($event, 'PID_NO')">
                     </label>
                 </div>
                 <div class="col col-10">
@@ -87,24 +89,26 @@
         <div class="list card">
             <div class="row">
                 <div class="col col-60">
-                    <h5>&nbsp;&nbsp;Unmatched PID No&nbsp;:</h5>
+                    <span class="done">&nbsp;&nbsp;Unmatched PID No&nbsp;:</span>
                     <div class="" ng-repeat="Pid in Detail.PidS" id="" ng-click="">
                         <div class="item item-input">
                             <div class="col-57">
                                 <div class="item-text-wrap">
-                                    <p>
-                                        <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
+
+                                    <span class="done">
+                         <span class="pull-right" ng-bind="Pid.PID_NO"> </span>
+                                    </span>
                                     </p>
                                 </div>
                             </div>
                             <div class="col-30">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Pid.LOC_CODE"></span>
+                                    &nbsp;&nbsp;<span class="done" ng-bind="Pid.LOC_CODE"></span>
                                 </p>
                             </div>
                             <div class="col">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Pid.ONHAND_NO"></span>
+                                    &nbsp;&nbsp;<span class="done" ng-bind="Pid.ONHAND_NO"></span>
                                 </p>
                             </div>
                         </div>
@@ -112,24 +116,26 @@
                 </div>
 
                 <div class="col">
-                    <h5> PID No&nbsp;:</h5>
-                    <div class="" ng-repeat="Aemt1 in Detail.Aemt1S" id="" ng-click="">
+                <span class ="done"> PID No&nbsp;:</span>
+                    <div class="done" ng-repeat="Aemt1 in Detail.Aemt1S" id="" ng-click="">
                         <div class="item item-input">
                             <div class="col-57">
                                 <div class="item-text-wrap">
                                     <p>
+                                    <span class ="done">
                                         <span class="pull-right" ng-bind="Aemt1.PID_NO"></span>
+</span>
                                     </p>
                                 </div>
                             </div>
                             <div class="col-30">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Aemt1.LOC_CODE"></span>
+                                    &nbsp;&nbsp;<span class ="done" ng-bind="Aemt1.LOC_CODE"></span>
                                 </p>
                             </div>
                             <div class="col">
                                 <p>
-                                    &nbsp;&nbsp;<span ng-bind="Aemt1.ONHAND_NO"></span>
+                                    &nbsp;&nbsp;<span class ="done" ng-bind="Aemt1.ONHAND_NO"></span>
                                 </p>
                             </div>
                         </div>
